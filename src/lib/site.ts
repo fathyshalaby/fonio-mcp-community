@@ -56,10 +56,15 @@ export const TOOLS = [
     summary: "Verify FONIO_API_KEY against POST /public/v1/test-api-key.",
   },
   {
+    name: "prepare_outbound_call",
+    kind: "Calls",
+    summary: "Validate a destination and prepare a short-lived confirmation token without dialing.",
+  },
+  {
     name: "trigger_outbound_call",
     kind: "Calls",
     summary:
-      "Place a real outbound call. fromNumber selects the assistant. Confirm the destination first — this incurs carrier cost.",
+      "Place a real outbound call with a matching confirmation token. Confirm the destination first — this incurs carrier cost.",
   },
 ] as const;
 

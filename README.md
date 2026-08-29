@@ -76,11 +76,12 @@ Open `/examples` on the site, or ask the connected assistant for `list_examples`
 | `list_examples` | Ready-to-paste prompts |
 | `get_api_reference` | OpenAPI, webhook IPs, `{{variables}}` |
 | `test_api_key` | Connected workspace or `FONIO_API_KEY` |
-| `trigger_outbound_call` | Real call — requires `confirmedToNumber` after you confirm the number |
+| `prepare_outbound_call` | Validate a destination and return a short-lived confirmation token |
+| `trigger_outbound_call` | Real call — requires a matching `confirmationToken` and `confirmedToNumber` after you confirm the number |
 
 Docs tools work before login. Live calls need the OAuth session (hosted) or `FONIO_API_KEY` (local stdio). Outbound still requires a fonio Teams plan, KYC, and an imported/SIP `fromNumber`. You are responsible for any carrier cost.
 
-The outbound tool will only proceed when `confirmedToNumber` repeats the exact destination number after you have explicitly confirmed it. This guard helps prevent accidental or unreviewed calls.
+The outbound flow first prepares the exact numbers without dialing. It will only proceed when the short-lived `confirmationToken` and `confirmedToNumber` both match that preparation after you have explicitly confirmed the destination. The token is consumed after use to help prevent accidental or repeated calls.
 
 ## Local
 

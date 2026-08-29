@@ -7,6 +7,7 @@ import {
 import { z } from "zod";
 import {
   assertConfirmedDestination,
+  assertE164,
   FonioApiError,
   FonioClient,
   getApiKey,
@@ -22,6 +23,10 @@ import {
 import { FONIO_OPENAPI } from "./openapi";
 import { EXAMPLES } from "@/lib/examples";
 import { SERVER_NAME, SERVER_VERSION } from "./version";
+import {
+  consumeOutboundConfirmation,
+  issueOutboundConfirmation,
+} from "@/oauth/tokens";
 
 const readOnly: ToolAnnotations = {
   readOnlyHint: true,
@@ -219,11 +224,58 @@ export function registerFonioMcp(
   );
 
   server.registerTool(
+    "prepare_outbound_call",
+    {
+      title: "Prepare an outbound call",
+      description:
+        "Validate an intended outbound call and return a short-lived confirmation token. This does not place a call. Ask the user to confirm the exact destination before using the token with trigger_outbound_call.",
+      inputSchema: z.object({
+        fromNumber: z
+          .string()
+          .describe(
+            "Your outbound-capable fonio number in E.164, e.g. +43123456789. Selects the outbound assistant.",
+          ),
+        toNumber: z
+          .string()
+          .describe("Destination number in E.164, e.g. +4915123456789."),
+        context: z
+          .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
+          .optional()
+          .describe(
+            "Optional prompt variables, e.g. { name: 'Ada', company: 'Acme' } → {{context.name}}.",
+          ),
+      }),
+      annotations: { ...writeCall, destructiveHint: false },
+    },
+    async ({ fromNumber, toNumber, context }, ctx) => {
+      try {
+        const normalizedFromNumber = assertE164("fromNumber", fromNumber);
+        const normalizedToNumber = assertE164("toNumber", toNumber);
+        requireClient(ctx, allowEnvApiKey);
+        return jsonResult({
+          status: "ready_for_confirmation",
+          fromNumber: normalizedFromNumber,
+          toNumber: normalizedToNumber,
+          context,
+          confirmationToken: issueOutboundConfirmation({
+            fromNumber: normalizedFromNumber,
+            toNumber: normalizedToNumber,
+          }),
+          next:
+            "Ask the user to confirm this exact destination number. Then call trigger_outbound_call with the token and confirmedToNumber.",
+        });
+      } catch (error) {
+        return textResult(formatError(error));
+      }
+    },
+  );
+
+  server.registerTool(
     "trigger_outbound_call",
     {
       title: "Trigger outbound call",
       description:
-        "COST: Places a real phone call via POST /public/v1/outbound_call. Requires Teams plan, KYC, and an imported or SIP fromNumber. Confirm the destination with the user before calling. fromNumber selects the outbound assistant assigned to that number. context is injected as {{context.field}} in the prompt.",
+        "COST: Places a real phone call via POST /public/v1/outbound_call. Requires a confirmationToken from prepare_outbound_call, confirmedToNumber matching the user-confirmed destination, Teams plan, KYC, and an imported or SIP fromNumber. fromNumber selects the outbound assistant assigned to that number. context is injected as {{context.field}} in the prompt.",
       inputSchema: z.object({
         fromNumber: z
           .string()
@@ -244,17 +296,33 @@ export function registerFonioMcp(
           .describe(
             "Required confirmation guard: repeat the exact destination number in E.164 only after the user explicitly confirmed that number. It must match toNumber after normalization.",
           ),
+        confirmationToken: z
+          .string()
+          .describe(
+            "Short-lived token returned by prepare_outbound_call for this exact destination. Only use it after the user confirmed the number.",
+          ),
       }),
       annotations: writeCall,
     },
-    async ({ fromNumber, toNumber, context, confirmedToNumber }, ctx) => {
+    async ({ fromNumber, toNumber, context, confirmedToNumber, confirmationToken }, ctx) => {
       try {
         const normalizedToNumber = assertConfirmedDestination(
           toNumber,
           confirmedToNumber,
         );
-        const result = await requireClient(ctx, allowEnvApiKey).triggerOutboundCall({
-          fromNumber,
+        const normalizedFromNumber = assertE164("fromNumber", fromNumber);
+        const client = requireClient(ctx, allowEnvApiKey);
+        const pending = consumeOutboundConfirmation(confirmationToken);
+        if (
+          pending.fromNumber !== normalizedFromNumber ||
+          pending.toNumber !== normalizedToNumber
+        ) {
+          throw new Error(
+            "Confirmation token does not match this call. Prepare the exact fromNumber and toNumber again, then ask the user to confirm.",
+          );
+        }
+        const result = await client.triggerOutboundCall({
+          fromNumber: normalizedFromNumber,
           toNumber: normalizedToNumber,
           context,
         });
@@ -454,7 +522,7 @@ fonio is a European AI phone and WhatsApp assistant platform (app.fonio.ai, docs
 
 Rules:
 - Search or read docs before inventing product behaviour.
-- Never place an outbound call unless the user clearly asked and confirmed the destination number. The trigger tool requires confirmedToNumber to repeat the exact confirmed destination.
+- Never place an outbound call unless the user clearly asked and confirmed the destination number. First use prepare_outbound_call, ask for confirmation, then use its short-lived token plus confirmedToNumber with trigger_outbound_call.
 - Outbound calls cost money and need KYC + an imported/SIP fromNumber. The user is responsible for those costs.
 - Docs and list_examples work without a key. Live API tools use the Sign in with fonio OAuth session (official login at app.fonio.ai), or FONIO_API_KEY for local stdio.
 - If a live tool fails for missing auth, tell the user to complete Connect / Sign in with fonio in their MCP client.`;

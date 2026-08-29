@@ -59,13 +59,13 @@ Once connected, an assistant can look up Fonio docs (the same knowledge publishe
 - Search and read fonio help-center articles
 - Return the public OpenAPI reference (outbound calls + API key test)
 - Test a FONIO_API_KEY
-- Trigger an outbound call from one of your imported / SIP numbers
+- Prepare and, after confirmation, trigger an outbound call from one of your imported / SIP numbers
 
 ## Authentication
 
 Hosted MCP: complete **Sign in with fonio** (login at https://app.fonio.ai/login, then get a workspace key from https://app.fonio.ai/api-keys). Local stdio: set \`FONIO_API_KEY\`. Docs search works without a key. Live API tools require a connected workspace.
 
-Outbound calls incur carrier cost, require the Teams plan, an imported or SIP number, and completed KYC. After the user confirms the exact destination, pass that same E.164 value as \`confirmedToNumber\` to the trigger tool.
+Outbound calls incur carrier cost, require the Teams plan, an imported or SIP number, and completed KYC. Prepare the call first, ask the user to confirm the exact destination, then pass the short-lived \`confirmationToken\` and the same E.164 value as \`confirmedToNumber\` to the trigger tool.
 
 ## Hosted HTTP vs local stdio
 

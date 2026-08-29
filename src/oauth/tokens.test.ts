@@ -3,6 +3,9 @@ import {
   issueAccessToken,
   issueAuthCode,
   issueClientId,
+  issueOutboundConfirmation,
+  consumeAuthCode,
+  consumeOutboundConfirmation,
   issueWorkspaceCookieValue,
   pkceS256,
   readAccessToken,
@@ -39,6 +42,30 @@ describe("oauth tokens", () => {
     const issued = readAuthCode(code);
     expect(issued.apiKey).toBe("k");
     expect(pkceS256(verifier)).toBe(issued.challenge);
+  });
+
+  it("consumes authorization and outbound confirmation tokens once", () => {
+    const clientId = issueClientId({
+      name: "test",
+      redirectUris: ["http://127.0.0.1:9/cb"],
+    });
+    const code = issueAuthCode({
+      apiKey: "k",
+      clientId,
+      redirectUri: "http://127.0.0.1:9/cb",
+      challenge: "challenge",
+    });
+    expect(consumeAuthCode(code).apiKey).toBe("k");
+    expect(() => consumeAuthCode(code)).toThrow(/already used/);
+
+    const confirmation = issueOutboundConfirmation({
+      fromNumber: "+43123456789",
+      toNumber: "+4915123456789",
+    });
+    expect(consumeOutboundConfirmation(confirmation).toNumber).toBe(
+      "+4915123456789",
+    );
+    expect(() => consumeOutboundConfirmation(confirmation)).toThrow(/already used/);
   });
 
   it("round-trips an encrypted workspace session cookie value", () => {

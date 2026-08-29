@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   issueAccessToken,
+  consumeAuthCode,
   pkceS256,
   readAuthCode,
   readClient,
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
     if (pkceS256(verifier) !== issued.challenge) {
       throw new Error("PKCE verification failed");
     }
+    consumeAuthCode(code);
     const accessToken = issueAccessToken({
       apiKey: issued.apiKey,
       clientId: issued.clientId,

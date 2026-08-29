@@ -40,7 +40,7 @@ export function decryptSecret(packed: string): string {
 
 export type SignedToken<T> = {
   v: 1;
-  t: "client" | "code" | "access" | "session";
+  t: "client" | "code" | "access" | "session" | "confirmation";
   exp: number;
   d: T;
 };
@@ -104,6 +104,22 @@ export type WorkspaceSession = {
   fingerprint: string;
 };
 
+export type OutboundConfirmation = {
+  fromNumber: string;
+  toNumber: string;
+};
+
+const consumedTokens = new Map<string, number>();
+
+function consumeOnce(token: string, expiresAt: number): void {
+  const now = Date.now();
+  for (const [value, expiry] of consumedTokens) {
+    if (expiry <= now) consumedTokens.delete(value);
+  }
+  if (consumedTokens.has(token)) throw new Error("Confirmation token already used");
+  consumedTokens.set(token, expiresAt * 1000);
+}
+
 export function fingerprintKey(apiKey: string): string {
   return apiKey.trim().slice(-4);
 }
@@ -151,6 +167,12 @@ export function readAuthCode(code: string): AuthCodeRecord {
   return { ...data, apiKey: decryptSecret(data.apiKey) };
 }
 
+export function consumeAuthCode(code: string): AuthCodeRecord {
+  const issued = readAuthCode(code);
+  consumeOnce(code, Math.floor(Date.now() / 1000) + 10 * 60);
+  return issued;
+}
+
 export function issueAccessToken(record: AccessRecord): string {
   return signToken(
     "access",
@@ -162,6 +184,16 @@ export function issueAccessToken(record: AccessRecord): string {
 export function readAccessToken(token: string): AccessRecord {
   const data = verifyToken<AccessRecord & { apiKey: string }>("access", token);
   return { ...data, apiKey: decryptSecret(data.apiKey) };
+}
+
+export function issueOutboundConfirmation(record: OutboundConfirmation): string {
+  return signToken("confirmation", record, 5 * 60);
+}
+
+export function consumeOutboundConfirmation(token: string): OutboundConfirmation {
+  const confirmation = verifyToken<OutboundConfirmation>("confirmation", token);
+  consumeOnce(token, Math.floor(Date.now() / 1000) + 5 * 60);
+  return confirmation;
 }
 
 export function pkceS256(verifier: string): string {

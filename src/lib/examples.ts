@@ -98,7 +98,7 @@ export const EXAMPLES: Example[] = [
       "The cost tool. Claude verifies the key, restates the destination, and only then calls trigger_outbound_call.",
     prompt:
       "My imported number is +43123456789. Call +4915123456789. Context: name=Ada, reason=Q3 quote. Confirm the destination back to me before you dial.",
-    tools: ["test_api_key", "trigger_outbound_call"],
+    tools: ["test_api_key", "prepare_outbound_call", "trigger_outbound_call"],
     thread: [
       {
         role: "user",

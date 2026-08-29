@@ -40,7 +40,8 @@ export default function ApiPage() {
         outbound assistant. <code>toNumber</code> must match{" "}
         <code>^+\\d+$</code>. Optional <code>context</code> becomes{" "}
         <code>{"{{context.field}}"}</code> in the prompt. Requires Teams, KYC, and
-        outbound-capable numbers.
+        outbound-capable numbers. In the MCP flow, prepare the call first and
+        confirm the destination before triggering it.
       </p>
       <div className="mt-4">
         <CopyBlock code={curl} />
