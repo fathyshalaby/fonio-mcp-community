@@ -1,8 +1,8 @@
 export const SITE = {
   name: "fonio MCP",
-  tagline: "Bring fonio to Claude, ChatGPT, and Cursor",
+  tagline: "Unofficial community MCP for fonio.ai",
   description:
-    "Official-style Model Context Protocol server for fonio.ai. Search the help center, inspect the public API, and trigger outbound calls from the assistants you already use.",
+    "Independent open-source MCP server for fonio’s public API. Not affiliated with fonio GmbH. MIT licensed, no warranty.",
   app: "https://app.fonio.ai",
   login: "https://app.fonio.ai/login",
   apiKeys: "https://app.fonio.ai/api-keys",
@@ -10,6 +10,7 @@ export const SITE = {
   academy: "https://fonio.academy",
   apiDocs: "https://app.fonio.ai/api/docs",
   support: "mailto:support@fonio.ai",
+  github: "https://github.com/fathyshalaby/fonio-mcp-community",
 };
 
 export const NAV = [
@@ -19,6 +20,7 @@ export const NAV = [
   { href: "/docs", label: "Docs" },
   { href: "/api", label: "API" },
   { href: "/share", label: "Share" },
+  { href: "/legal", label: "Legal" },
 ];
 
 export const TOOLS = [

@@ -15,16 +15,13 @@ export default async function SharePage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <p className="text-sm font-medium text-primary">For the fonio team</p>
+      <p className="text-sm font-medium text-primary">Community</p>
       <h1 className="mt-1 text-3xl font-semibold tracking-tight">
-        Publish this on LinkedIn
+        Share this project
       </h1>
       <p className="mt-2 text-muted-foreground">
-        Copy a post, paste into LinkedIn, and attach a screenshot of{" "}
-        <a href="/examples" className="text-primary hover:underline">
-          /examples
-        </a>
-        . The hosted MCP URL to mention is:
+        Unofficial, MIT, not affiliated with fonio. Copy a post and mention the
+        GitHub repo. Hosted MCP URL:
       </p>
       <div className="mt-4">
         <CopyBlock code={mcp} />

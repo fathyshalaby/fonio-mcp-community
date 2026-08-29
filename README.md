@@ -1,8 +1,16 @@
-# fonio MCP
+# fonio MCP (community)
 
-Hosted Model Context Protocol server for [fonio.ai](https://www.fonio.ai). Same shape as the ElevenLabs MCP: add a URL in Claude, ChatGPT, or Cursor, **Sign in with fonio** on the official app, then search [fonio.info](https://fonio.info) and trigger outbound calls.
+**Unofficial open-source community project.** MIT licensed.
 
-fonio’s public API is API-key based today (no workspace OAuth client yet). Sign in with fonio opens [app.fonio.ai/login](https://app.fonio.ai/login). After you copy a key from [API keys](https://app.fonio.ai/api-keys), we verify it live with `POST /public/v1/test-api-key` and keep an encrypted session on this host — not in the chat. We never collect your fonio password.
+This repository is **not affiliated with, endorsed by, sponsored by, or associated with fonio GmbH or fonio.ai**. The maintainers have no relationship with fonio. fonio® and related marks belong to their owners.
+
+The software is provided **“as is”**, without warranty of any kind. The authors and contributors are **not liable** for anything that results from using it — including billed phone calls, account issues, data loss, or other damages. See [LICENSE](./LICENSE).
+
+---
+
+Community [Model Context Protocol](https://modelcontextprotocol.io) server that talks to [fonio.ai](https://www.fonio.ai)’s **public** API. Same idea as the ElevenLabs MCP: add a URL in Claude, ChatGPT, or Cursor, complete **Sign in with fonio** on the official app, then search [fonio.info](https://fonio.info) and trigger outbound calls.
+
+fonio’s public API is API-key based today (no workspace OAuth client yet). Sign in with fonio opens [app.fonio.ai/login](https://app.fonio.ai/login). After you copy a key from [API keys](https://app.fonio.ai/api-keys), this server verifies it live with `POST /public/v1/test-api-key` and keeps an encrypted session on the host — not in the chat. It never collects your fonio password.
 
 ## Connect (hosted)
 
@@ -60,8 +68,6 @@ Open `/examples` on the site, or ask the connected assistant for `list_examples`
 | A lead submitted the form — call Ada back about the Q3 quote | Outbound API curl, KYC checklist |
 | Yes, dial +4915… from our imported number | `trigger_outbound_call` after confirm |
 
-LinkedIn copy (EN + DE) lives at `/share`.
-
 ## Tools
 
 | Tool | Purpose |
@@ -72,11 +78,13 @@ LinkedIn copy (EN + DE) lives at `/share`.
 | `test_api_key` | Connected workspace or `FONIO_API_KEY` |
 | `trigger_outbound_call` | Real call — confirm the number first |
 
-Docs tools work before login. Live calls need the OAuth session (hosted) or `FONIO_API_KEY` (local stdio). Outbound still requires Teams, KYC, and an imported/SIP `fromNumber`.
+Docs tools work before login. Live calls need the OAuth session (hosted) or `FONIO_API_KEY` (local stdio). Outbound still requires a fonio Teams plan, KYC, and an imported/SIP `fromNumber`. You are responsible for any carrier cost.
 
 ## Local
 
 ```bash
+git clone https://github.com/fathyshalaby/fonio-mcp-community.git
+cd fonio-mcp-community
 npm install
 cp .env.example .env.local
 # FONIO_MCP_SECRET=long-random-string
@@ -93,6 +101,4 @@ npm test
 - `GET/POST /oauth/authorize` (Sign in with fonio — official login + encrypted workspace session)
 - `POST /oauth/token` (PKCE S256)
 
-When fonio GmbH ships a workspace OAuth app, replace the API-key step with a redirect to `app.fonio.ai` — the MCP client flow stays the same.
-
-Official API: [app.fonio.ai/api/docs](https://app.fonio.ai/api/docs). Support: support@fonio.ai.
+Official fonio API (not this project): [app.fonio.ai/api/docs](https://app.fonio.ai/api/docs). Official support: support@fonio.ai.

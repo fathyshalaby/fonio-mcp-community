@@ -434,13 +434,13 @@ function formatError(error: unknown): string {
   return String(error);
 }
 
-export const MCP_INSTRUCTIONS = `You are connected to the fonio.ai MCP server (${SERVER_NAME} v${SERVER_VERSION}).
+export const MCP_INSTRUCTIONS = `You are connected to an unofficial community MCP server for fonio.ai (${SERVER_NAME} v${SERVER_VERSION}). It is not affiliated with fonio GmbH. MIT licensed, no warranty.
 
 fonio is a European AI phone and WhatsApp assistant platform (app.fonio.ai, docs at fonio.info).
 
 Rules:
 - Search or read docs before inventing product behaviour.
 - Never place an outbound call unless the user clearly asked and confirmed the destination number.
-- Outbound calls cost money and need KYC + an imported/SIP fromNumber.
+- Outbound calls cost money and need KYC + an imported/SIP fromNumber. The user is responsible for those costs.
 - Docs and list_examples work without a key. Live API tools use the Sign in with fonio OAuth session (official login at app.fonio.ai), or FONIO_API_KEY for local stdio.
 - If a live tool fails for missing auth, tell the user to complete Connect / Sign in with fonio in their MCP client.`;

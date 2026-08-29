@@ -56,10 +56,8 @@ Your client opens Sign in with fonio (log in at app.fonio.ai, then allow access)
   return (
     <div className="rounded-2xl border bg-card p-4 shadow-sm sm:p-6">
       <p className="mb-4 text-sm text-muted-foreground">
-        Hosted MCP uses <strong>Sign in with fonio</strong> — the same OAuth dance as
-        ElevenLabs. Continue with fonio opens the official login; we verify a workspace
-        API key against app.fonio.ai and keep an encrypted session. It is not stored in
-        the chat.
+        Hosted MCP uses <strong>Sign in with fonio</strong> on the official app.
+        Unofficial community project — MIT, no warranty, not affiliated with fonio.
       </p>
       <Tabs defaultValue="claude-code">
         <TabsList className="mb-4 h-auto w-full flex-wrap justify-start">

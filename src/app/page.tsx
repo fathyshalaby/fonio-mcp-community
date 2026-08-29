@@ -21,16 +21,15 @@ export default async function HomePage() {
         <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:py-24">
           <div>
             <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/10">
-              Model Context Protocol
+              Unofficial · MIT · community
             </Badge>
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
               Bring fonio to the assistants you already use.
             </h1>
             <p className="mt-4 max-w-xl text-lg text-muted-foreground text-pretty">
-              Connect Claude, ChatGPT, Cursor, or any MCP client to fonio.ai.
-              Sign in with fonio on the official app, then search the help center,
-              inspect the public API, and place outbound calls in natural language
-              — the same idea as ElevenLabs MCP, for phone assistants.
+              Independent open-source MCP for fonio’s public API. Connect Claude,
+              ChatGPT, or Cursor, sign in on the official fonio app, then search
+              docs and place outbound calls. Not affiliated with fonio GmbH.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="#install" className={cn(buttonVariants({ size: "lg" }), "h-10 px-4")}>
@@ -45,9 +44,12 @@ export default async function HomePage() {
               </Link>
             </div>
             <p className="mt-6 text-sm text-muted-foreground">
-              Add the hosted <code className="rounded bg-muted px-1">/mcp</code> URL. Your
-              client opens <strong>Sign in with fonio</strong> — you log in at
-              app.fonio.ai, we never take your password. Docs tools work before that.
+              Add the hosted <code className="rounded bg-muted px-1">/mcp</code> URL.
+              MIT licensed, no warranty — outbound calls can incur cost.{" "}
+              <Link href="/legal" className="text-primary hover:underline">
+                License and disclaimer
+              </Link>
+              .
             </p>
           </div>
           <Card className="self-start shadow-lg">

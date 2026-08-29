@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "fonio MCP — Claude, ChatGPT and Cursor for AI phone assistants";
+export const alt = "Unofficial community MCP for fonio.ai — MIT, not affiliated with fonio";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -59,14 +59,15 @@ export default function OgImage() {
             Claude, ChatGPT and Cursor for your AI phone assistant.
           </div>
           <div style={{ marginTop: 24, fontSize: 28, color: "#5c6070", maxWidth: 820 }}>
-            Sign in with fonio. Search the docs. Place the call.
+            Sign in on fonio. Unofficial community project. MIT, no warranty.
           </div>
         </div>
         <div style={{ display: "flex", gap: 28, color: "#585dfe", fontSize: 22 }}>
           <span>Claude</span>
           <span>ChatGPT</span>
           <span>Cursor</span>
-          <span>VS Code</span>
+          <span>MIT</span>
+          <span>Unofficial</span>
         </div>
       </div>
     ),

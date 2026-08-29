@@ -50,7 +50,9 @@ export const articles: DocArticle[] = [
     tags: ["mcp", "claude", "openai", "cursor", "chatgpt"],
     body: `# fonio MCP server
 
-This MCP server is the Model Context Protocol interface for fonio.ai. Once connected, an assistant can look up official docs (the same knowledge published on fonio.info), inspect the public API, verify a workspace API key, and place outbound calls.
+This MCP server is an **unofficial community** Model Context Protocol interface for fonio’s public API. It is not affiliated with fonio GmbH. MIT licensed, no warranty.
+
+Once connected, an assistant can look up official docs (the same knowledge published on fonio.info), inspect the public API, verify a workspace API key, and trigger outbound calls. You are responsible for any call costs.
 
 ## What it can do
 

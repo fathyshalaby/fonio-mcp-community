@@ -31,13 +31,13 @@ export function SiteHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <Link
-            href="https://fonio.info"
+            href="https://github.com/fathyshalaby/fonio-mcp-community"
             className={cn(
               buttonVariants({ variant: "ghost", size: "sm" }),
               "hidden sm:inline-flex",
             )}
           >
-            Help center
+            GitHub
           </Link>
           <Link href="/connect" className={cn(buttonVariants({ size: "sm" }))}>
             Connect
@@ -56,24 +56,24 @@ export function SiteFooter() {
     <footer className="border-t border-border bg-card">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>
-          MCP for fonio.ai — Sign in with fonio on the official app, then search
-          docs and place outbound calls from Claude, ChatGPT, or Cursor.
+          Unofficial community MCP — MIT, no warranty, not affiliated with fonio
+          GmbH.{" "}
+          <Link href="/legal" className="hover:text-foreground">
+            License and disclaimer
+          </Link>
         </p>
         <div className="flex flex-wrap gap-4">
-          <a href="https://app.fonio.ai" className="hover:text-foreground">
-            Open app
+          <a
+            href="https://github.com/fathyshalaby/fonio-mcp-community"
+            className="hover:text-foreground"
+          >
+            GitHub
           </a>
-          <a href="https://app.fonio.ai/api-keys" className="hover:text-foreground">
-            API keys
+          <a href="https://app.fonio.ai" className="hover:text-foreground">
+            fonio app
           </a>
           <a href="https://app.fonio.ai/api/docs" className="hover:text-foreground">
-            API docs
-          </a>
-          <a href="https://fonio.academy" className="hover:text-foreground">
-            Academy
-          </a>
-          <a href="mailto:support@fonio.ai" className="hover:text-foreground">
-            support@fonio.ai
+            Public API
           </a>
         </div>
       </div>

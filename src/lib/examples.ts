@@ -131,47 +131,43 @@ export const EXAMPLES: Example[] = [
 ];
 
 export function linkedInPostEn(mcpUrl: string) {
-  return `fonio now speaks Claude, ChatGPT, and Cursor.
+  return `Unofficial community MCP for fonio.ai (not affiliated with fonio GmbH).
 
-We shipped a hosted MCP server for fonio.ai — the same idea as the ElevenLabs MCP, built for AI phone assistants.
+Open source, MIT, no warranty — I have no association with fonio. Use at your own risk (outbound calls can cost money).
 
-Add this URL, then Sign in with fonio (the official login at app.fonio.ai — we never take your password):
+Same idea as the ElevenLabs MCP: add this URL in Claude / ChatGPT / Cursor, then Sign in with fonio on the official app:
 
 ${mcpUrl}
 
-Then talk like this:
+Then you can say:
 
 “Write a receptionist prompt that books Prophylaxe in the Scheduler and transfers billing to Anna.”
 “Look this caller up in HubSpot before the greeting.”
 “A lead just submitted the form — call Ada back from our imported number about the Q3 quote.”
 
-Claude searches fonio.info, reads the public API, and can place a real outbound call. The server will not dial until you confirm the number.
+Repo: https://github.com/fathyshalaby/fonio-mcp-community
 
-For the fonio team: drop in workspace OAuth whenever you expose it — the MCP client flow (DCR + PKCE) already matches Claude / ChatGPT / Cursor.
-
-#MCP #VoiceAI #Claude #OpenAI #fonio`;
+#MCP #VoiceAI #Claude #OpenAI #OpenSource`;
 }
 
 export function linkedInPostDe(mcpUrl: string) {
-  return `fonio spricht jetzt Claude, ChatGPT und Cursor.
+  return `Inoffizieller Community-MCP für fonio.ai (keine Verbindung zu fonio GmbH).
 
-Wir haben einen gehosteten MCP-Server für fonio.ai gebaut — dasselbe Prinzip wie der ElevenLabs-MCP, für KI-Telefonassistenten.
+Open Source, MIT, ohne Gewähr — ich habe keine Verbindung zu fonio. Nutzung auf eigene Gefahr (Outbound-Anrufe können Kosten verursachen).
 
-Diese URL eintragen, dann Sign in with fonio (offizieller Login auf app.fonio.ai — wir fragen nie nach eurem Passwort):
+Wie der ElevenLabs-MCP: URL in Claude / ChatGPT / Cursor eintragen, dann auf der offiziellen App anmelden:
 
 ${mcpUrl}
 
-Dann einfach sagen:
+Dann z.B.:
 
 „Schreib einen Empfangs-Prompt, der Prophylaxe im Scheduler bucht und Billing an Anna weiterleitet.“
 „Schau den Anrufer vor der Begrüßung in HubSpot nach.“
 „Ein Lead hat das Formular abgeschickt — ruf Ada von unserer importierten Nummer wegen des Q3-Angebots zurück.“
 
-Claude durchsucht fonio.info, liest die Public API und kann einen echten Outbound-Anruf starten. Gewählt wird erst nach deiner Bestätigung.
+Repo: https://github.com/fathyshalaby/fonio-mcp-community
 
-Für das fonio-Team: Workspace-OAuth kann den Key-Schritt ersetzen, sobald ihr ihn anbietet. Der MCP-Client-Flow (DCR + PKCE) ist schon da.
-
-#MCP #VoiceAI #Claude #OpenAI #fonio`;
+#MCP #VoiceAI #Claude #OpenAI #OpenSource`;
 }
 
 export const LINKEDIN_POST_EN = linkedInPostEn("https://<your-host>/mcp");
