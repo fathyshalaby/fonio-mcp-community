@@ -131,9 +131,9 @@ export const EXAMPLES: Example[] = [
 ];
 
 export function linkedInPostEn(mcpUrl: string) {
-  return `Unofficial community MCP for fonio.ai (not affiliated with fonio GmbH).
+  return `Unofficial community MCP for fonio.ai (not affiliated with, endorsed by, or sponsored by fonio GmbH).
 
-Open source, MIT, no warranty — I have no association with fonio. Use at your own risk (outbound calls can cost money).
+Open source, MIT, no warranty — I have no association with fonio. The authors are not liable for use, including billed outbound calls.
 
 Same idea as the ElevenLabs MCP: add this URL in Claude / ChatGPT / Cursor, then Sign in with fonio on the official app:
 
@@ -151,9 +151,9 @@ Repo: https://github.com/fathyshalaby/fonio-mcp-community
 }
 
 export function linkedInPostDe(mcpUrl: string) {
-  return `Inoffizieller Community-MCP für fonio.ai (keine Verbindung zu fonio GmbH).
+  return `Inoffizieller Community-MCP für fonio.ai (keine Verbindung zu fonio GmbH, nicht von fonio unterstützt oder gesponsert).
 
-Open Source, MIT, ohne Gewähr — ich habe keine Verbindung zu fonio. Nutzung auf eigene Gefahr (Outbound-Anrufe können Kosten verursachen).
+Open Source, MIT, ohne Gewähr — ich habe keine Verbindung zu fonio. Keine Haftung für die Nutzung, einschließlich kostenpflichtiger Outbound-Anrufe.
 
 Wie der ElevenLabs-MCP: URL in Claude / ChatGPT / Cursor eintragen, dann auf der offiziellen App anmelden:
 

@@ -38,7 +38,7 @@ export const TOOLS = [
   {
     name: "list_docs",
     kind: "Docs",
-    summary: "Catalog every bundled article with category and official URL.",
+    summary: "Catalog every bundled article with category and Fonio source URL.",
   },
   {
     name: "list_examples",
@@ -66,7 +66,7 @@ export const TOOLS = [
 export const PROMPTS = [
   {
     name: "write_assistant_prompt",
-    summary: "Draft a production voice/WhatsApp prompt using fonio’s official structure.",
+    summary: "Draft a production voice/WhatsApp prompt using documented Fonio structure.",
   },
   {
     name: "setup_outbound_call",

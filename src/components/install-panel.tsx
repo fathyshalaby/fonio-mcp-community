@@ -57,7 +57,8 @@ Your client opens Sign in with fonio (log in at app.fonio.ai, then allow access)
     <div className="rounded-2xl border bg-card p-4 shadow-sm sm:p-6">
       <p className="mb-4 text-sm text-muted-foreground">
         Hosted MCP uses <strong>Sign in with fonio</strong> on the official app.
-        Unofficial community project — MIT, no warranty, not affiliated with fonio.
+        Unofficial community project — MIT, no warranty, not liable including for billed
+        phone calls, not affiliated with fonio.
       </p>
       <Tabs defaultValue="claude-code">
         <TabsList className="mb-4 h-auto w-full flex-wrap justify-start">

@@ -117,7 +117,7 @@ export default async function DocPage({ params }: Props) {
       </div>
       <div className="mt-6 space-y-4">{renderMarkdown(article.body)}</div>
       <p className="mt-10 text-sm">
-        Official article:{" "}
+        Source article:{" "}
         <a href={article.url} className="text-primary hover:underline">
           {article.url}
         </a>

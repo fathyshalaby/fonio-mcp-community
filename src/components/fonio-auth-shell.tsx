@@ -16,20 +16,18 @@ export function FonioAuthShell({
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(88,93,254,0.35),transparent_55%)]" />
         <div className="relative flex items-center gap-3">
           <FonioMark className="size-10 text-primary" />
-          <span className="text-lg font-semibold tracking-tight">fonio</span>
+          <span className="text-lg font-semibold tracking-tight">fonio MCP</span>
         </div>
         <div className="relative max-w-md">
-          <p className="text-3xl font-semibold tracking-tight text-balance">
-            More time for essentials
-          </p>
+          <p className="text-3xl font-semibold tracking-tight text-balance">Connect a workspace</p>
           <p className="mt-4 text-base text-white/70 text-pretty">
-            Our AI handles calls, relieves employees, and stays available. This
-            connector lets Claude, ChatGPT, and Cursor work in that same workspace.
+            This independent community connector lets Claude, ChatGPT, and Cursor
+            search Fonio docs and use the public API in your workspace.
           </p>
         </div>
         <p className="relative text-sm text-white/45">
-          You log in on {SITE.app.replace("https://", "")} — we never ask for your
-          fonio password.
+          Unofficial project · MIT · not affiliated with fonio GmbH. You log in on{" "}
+          {SITE.app.replace("https://", "")} — we never ask for your fonio password.
         </p>
       </aside>
 
@@ -37,9 +35,9 @@ export function FonioAuthShell({
         <div className="w-full max-w-md">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
             <FonioMark className="size-9 text-primary" />
-            <span className="font-semibold">fonio</span>
+            <span className="font-semibold">fonio MCP</span>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Connect with fonio</h1>
           <p className="mt-1 text-base text-muted-foreground">
             Log in to continue
           </p>
@@ -64,6 +62,9 @@ export function FonioAuthShell({
             {children}
           </div>
           <p className="mt-6 text-center text-xs text-muted-foreground">
+            Unofficial community MCP · MIT · no warranty · no liability for billed calls ·
+            not affiliated with, endorsed by, or sponsored by fonio GmbH
+            <br />
             Official app:{" "}
             <a
               href={SITE.login}

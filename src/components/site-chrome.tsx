@@ -56,8 +56,9 @@ export function SiteFooter() {
     <footer className="border-t border-border bg-card">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>
-          Unofficial community MCP — MIT, no warranty, not affiliated with fonio
-          GmbH.{" "}
+          Unofficial community MCP — MIT, no warranty, not liable including for
+          billed phone calls, not affiliated with, endorsed by, or sponsored by
+          fonio GmbH.{" "}
           <Link href="/legal" className="hover:text-foreground">
             License and disclaimer
           </Link>

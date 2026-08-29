@@ -20,7 +20,7 @@ export const FONIO_OPENAPI = {
         operationId: "triggerOutboundCall",
         summary: "Trigger an outbound call",
         description:
-          "Initiates an outbound call from one of your fonio phone numbers to a target number. The fromNumber selects which of your numbers (and therefore which outbound assistant) places the call. Authenticate with your fonio API key in the Authorization header (Bearer) or as apiKey in the body. Outbound calling requires an imported or SIP number, the Teams plan, and completed KYC.",
+          "Initiates an outbound call from one of your fonio phone numbers to a target number. The fromNumber selects which of your numbers (and therefore which outbound assistant) places the call. Authenticate with your workspace API key in the Authorization header (Bearer). Outbound calling requires an imported or SIP number, the Teams plan, and completed KYC.",
         tags: ["Outbound calls"],
         requestBody: {
           required: true,
@@ -49,7 +49,7 @@ export const FONIO_OPENAPI = {
         operationId: "testApiKey",
         summary: "Test an API key",
         description:
-          "Verifies that a fonio API key is valid. Provide the key in the Authorization header or as apiKey in the request body.",
+          "Verifies that a fonio workspace API key is valid. Provide the key in the Authorization header (Bearer).",
         tags: ["API key"],
         requestBody: {
           required: true,
@@ -77,7 +77,6 @@ export const FONIO_OPENAPI = {
       apiKey: {
         type: "http",
         scheme: "bearer",
-        bearerFormat: "JWT",
         description: "Your fonio API key from the workspace.",
       },
     },
@@ -86,7 +85,6 @@ export const FONIO_OPENAPI = {
         type: "object",
         required: ["fromNumber", "toNumber"],
         properties: {
-          apiKey: { type: "string" },
           fromNumber: {
             type: "string",
             description:
@@ -116,7 +114,6 @@ export const FONIO_OPENAPI = {
       TestApiKeyPayloadDto: {
         type: "object",
         properties: {
-          apiKey: { type: "string" },
         },
       },
       TestApiKeyResponseDto: {

@@ -49,18 +49,30 @@ export function assertE164(label: string, value: string): string {
   return normalized;
 }
 
-export function getApiKey(explicit?: string): string | undefined {
-  const fromArg = explicit?.trim();
-  if (fromArg) return fromArg;
+export function assertConfirmedDestination(
+  toNumber: string,
+  confirmedToNumber: string,
+): string {
+  const normalizedToNumber = assertE164("toNumber", toNumber);
+  const normalizedConfirmation = assertE164(
+    "confirmedToNumber",
+    confirmedToNumber,
+  );
+  if (normalizedConfirmation !== normalizedToNumber) {
+    throw new Error(
+      "Confirmation guard failed. Ask the user to confirm the exact destination number, then repeat that number in confirmedToNumber.",
+    );
+  }
+  return normalizedToNumber;
+}
+
+export function getApiKey(): string | undefined {
   const fromEnv = process.env.FONIO_API_KEY?.trim();
   return fromEnv || undefined;
 }
 
 export function getBaseUrl(): string {
-  return (process.env.FONIO_BASE_URL?.trim() || DEFAULT_API_BASE_URL).replace(
-    /\/$/,
-    "",
-  );
+  return DEFAULT_API_BASE_URL;
 }
 
 export class FonioClient {

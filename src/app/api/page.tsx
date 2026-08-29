@@ -19,7 +19,7 @@ export default function ApiPage() {
     <div className="mx-auto max-w-3xl px-4 py-12">
       <h1 className="text-3xl font-semibold tracking-tight">Public API</h1>
       <p className="mt-2 text-muted-foreground">
-        Official Swagger UI:{" "}
+        Fonio public API docs:{" "}
         <a href="https://app.fonio.ai/api/docs" className="text-primary hover:underline">
           app.fonio.ai/api/docs
         </a>
@@ -29,9 +29,8 @@ export default function ApiPage() {
 
       <h2 className="mt-10 text-xl font-semibold">Authentication</h2>
       <p className="mt-2 text-muted-foreground">
-        Create an API key in the fonio app. Send{" "}
-        <code>Authorization: Bearer &lt;key&gt;</code> or{" "}
-        <code>apiKey</code> in the JSON body. Test with{" "}
+        Create a workspace API key in the fonio app. Send{" "}
+        <code>Authorization: Bearer &lt;key&gt;</code>. Test with{" "}
         <code>POST /public/v1/test-api-key</code>.
       </p>
 

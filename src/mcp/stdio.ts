@@ -9,7 +9,7 @@ function createServer() {
     { name: SERVER_NAME, version: SERVER_VERSION },
     { instructions: MCP_INSTRUCTIONS },
   );
-  registerFonioMcp(server);
+  registerFonioMcp(server, { allowEnvApiKey: true });
   return server;
 }
 

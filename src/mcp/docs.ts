@@ -50,9 +50,9 @@ export const articles: DocArticle[] = [
     tags: ["mcp", "claude", "openai", "cursor", "chatgpt"],
     body: `# fonio MCP server
 
-This MCP server is an **unofficial community** Model Context Protocol interface for fonio’s public API. It is not affiliated with fonio GmbH. MIT licensed, no warranty.
+This MCP server is an **unofficial community** Model Context Protocol interface for fonio’s public API. It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software, including billed phone calls.
 
-Once connected, an assistant can look up official docs (the same knowledge published on fonio.info), inspect the public API, verify a workspace API key, and trigger outbound calls. You are responsible for any call costs.
+Once connected, an assistant can look up Fonio docs (the same knowledge published on fonio.info), inspect the public API, verify a workspace API key, and trigger outbound calls. You are responsible for any call costs.
 
 ## What it can do
 
@@ -63,9 +63,9 @@ Once connected, an assistant can look up official docs (the same knowledge publi
 
 ## Authentication
 
-Hosted MCP: complete **Sign in with fonio** (official login at https://app.fonio.ai/login, then a workspace key from https://app.fonio.ai/api-keys). Local stdio: set \`FONIO_API_KEY\`. Docs search works without a key. Live API tools require a connected workspace.
+Hosted MCP: complete **Sign in with fonio** (login at https://app.fonio.ai/login, then get a workspace key from https://app.fonio.ai/api-keys). Local stdio: set \`FONIO_API_KEY\`. Docs search works without a key. Live API tools require a connected workspace.
 
-Outbound calls incur carrier cost, require the Teams plan, an imported or SIP number, and completed KYC.
+Outbound calls incur carrier cost, require the Teams plan, an imported or SIP number, and completed KYC. After the user confirms the exact destination, pass that same E.164 value as \`confirmedToNumber\` to the trigger tool.
 
 ## Hosted HTTP vs local stdio
 
@@ -308,7 +308,7 @@ Base URL: \`https://app.fonio.ai/api\`
 
 ## Authentication
 
-Send the workspace API key as \`Authorization: Bearer <key>\` or as \`apiKey\` in the JSON body. Test a key with POST \`/public/v1/test-api-key\`.
+Send the workspace API key as \`Authorization: Bearer <key>\`. Test a key with POST \`/public/v1/test-api-key\`.
 
 ## Trigger a call
 

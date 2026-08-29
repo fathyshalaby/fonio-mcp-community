@@ -6,6 +6,7 @@ import {
 } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import {
+  assertConfirmedDestination,
   FonioApiError,
   FonioClient,
   getApiKey,
@@ -42,15 +43,21 @@ function jsonResult(value: unknown) {
   return textResult(JSON.stringify(value, null, 2));
 }
 
-function apiKeyFrom(ctx: ServerContext | undefined, explicit?: string): string | undefined {
-  if (explicit?.trim()) return explicit.trim();
+type RegisterOptions = {
+  allowEnvApiKey?: boolean;
+};
+
+function apiKeyFrom(
+  ctx: ServerContext | undefined,
+  allowEnvApiKey: boolean,
+): string | undefined {
   const extra = ctx?.http?.authInfo?.extra?.apiKey;
   if (typeof extra === "string" && extra.trim()) return extra.trim();
-  return getApiKey();
+  return allowEnvApiKey ? getApiKey() : undefined;
 }
 
-function requireClient(ctx?: ServerContext, explicit?: string): FonioClient {
-  const key = apiKeyFrom(ctx, explicit);
+function requireClient(ctx: ServerContext | undefined, allowEnvApiKey: boolean): FonioClient {
+  const key = apiKeyFrom(ctx, allowEnvApiKey);
   if (!key) {
     throw new Error(
       "Connect your fonio workspace first. In Claude, ChatGPT, or Cursor, complete Sign in with fonio (official login at app.fonio.ai). For local stdio, set FONIO_API_KEY.",
@@ -59,13 +66,17 @@ function requireClient(ctx?: ServerContext, explicit?: string): FonioClient {
   return new FonioClient(key);
 }
 
-export function registerFonioMcp(server: McpServer) {
+export function registerFonioMcp(
+  server: McpServer,
+  options: RegisterOptions = {},
+) {
+  const allowEnvApiKey = options.allowEnvApiKey === true;
   server.registerTool(
     "search_docs",
     {
       title: "Search fonio docs",
       description:
-        "Search official fonio.ai help-center knowledge (fonio.info): prompting, numbers, outbound API, webhooks, integrations, calendar, WhatsApp, GDPR, and this MCP. Use this before guessing how a feature works.",
+        "Search fonio.ai help-center knowledge reproduced by this independent community MCP (fonio.info): prompting, numbers, outbound API, webhooks, integrations, calendar, WhatsApp, GDPR, and this MCP. Use this before guessing how a feature works.",
       inputSchema: z.object({
         query: z
           .string()
@@ -193,18 +204,13 @@ export function registerFonioMcp(server: McpServer) {
     {
       title: "Test fonio API key",
       description:
-        "Verify that the connected fonio workspace key is valid via POST /public/v1/test-api-key. Uses the OAuth session, FONIO_API_KEY, or an explicit apiKey.",
-      inputSchema: z.object({
-        apiKey: z
-          .string()
-          .optional()
-          .describe("Override API key. Prefer Sign in with fonio (app.fonio.ai) or FONIO_API_KEY."),
-      }),
+        "Verify that the connected fonio workspace key is valid via POST /public/v1/test-api-key. Uses the hosted OAuth session or FONIO_API_KEY for local stdio.",
+      inputSchema: z.object({}),
       annotations: { ...readOnly, openWorldHint: true },
     },
-    async ({ apiKey }, ctx) => {
+    async (_input, ctx) => {
       try {
-        const result = await requireClient(ctx, apiKey).testApiKey();
+        const result = await requireClient(ctx, allowEnvApiKey).testApiKey();
         return jsonResult(result);
       } catch (error) {
         return textResult(formatError(error));
@@ -233,15 +239,23 @@ export function registerFonioMcp(server: McpServer) {
           .describe(
             "Optional prompt variables, e.g. { name: 'Ada', company: 'Acme' } → {{context.name}}.",
           ),
-        apiKey: z.string().optional().describe("Override the connected workspace key."),
+        confirmedToNumber: z
+          .string()
+          .describe(
+            "Required confirmation guard: repeat the exact destination number in E.164 only after the user explicitly confirmed that number. It must match toNumber after normalization.",
+          ),
       }),
       annotations: writeCall,
     },
-    async ({ fromNumber, toNumber, context, apiKey }, ctx) => {
+    async ({ fromNumber, toNumber, context, confirmedToNumber }, ctx) => {
       try {
-        const result = await requireClient(ctx, apiKey).triggerOutboundCall({
-          fromNumber,
+        const normalizedToNumber = assertConfirmedDestination(
           toNumber,
+          confirmedToNumber,
+        );
+        const result = await requireClient(ctx, allowEnvApiKey).triggerOutboundCall({
+          fromNumber,
+          toNumber: normalizedToNumber,
           context,
         });
         return jsonResult(result);
@@ -330,7 +344,7 @@ export function registerFonioMcp(server: McpServer) {
           {
             uri: uri.href,
             mimeType: "text/markdown",
-            text: `# ${article.title}\n\n${article.body}\n\n---\nOfficial: ${article.url}`,
+            text: `# ${article.title}\n\n${article.body}\n\n---\nSource (Fonio docs): ${article.url}`,
           },
         ],
       };
@@ -342,7 +356,7 @@ export function registerFonioMcp(server: McpServer) {
     {
       title: "Write a fonio assistant prompt",
       description:
-        "Draft a production prompt for a fonio voice or WhatsApp assistant using official structure.",
+        "Draft a production prompt for a fonio voice or WhatsApp assistant using documented Fonio structure.",
       argsSchema: z.object({
         company: z.string().describe("Company or practice name."),
         useCase: z
@@ -434,13 +448,13 @@ function formatError(error: unknown): string {
   return String(error);
 }
 
-export const MCP_INSTRUCTIONS = `You are connected to an unofficial community MCP server for fonio.ai (${SERVER_NAME} v${SERVER_VERSION}). It is not affiliated with fonio GmbH. MIT licensed, no warranty.
+export const MCP_INSTRUCTIONS = `You are connected to an unofficial community MCP server for fonio.ai (${SERVER_NAME} v${SERVER_VERSION}). It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software, including billed phone calls.
 
 fonio is a European AI phone and WhatsApp assistant platform (app.fonio.ai, docs at fonio.info).
 
 Rules:
 - Search or read docs before inventing product behaviour.
-- Never place an outbound call unless the user clearly asked and confirmed the destination number.
+- Never place an outbound call unless the user clearly asked and confirmed the destination number. The trigger tool requires confirmedToNumber to repeat the exact confirmed destination.
 - Outbound calls cost money and need KYC + an imported/SIP fromNumber. The user is responsible for those costs.
 - Docs and list_examples work without a key. Live API tools use the Sign in with fonio OAuth session (official login at app.fonio.ai), or FONIO_API_KEY for local stdio.
 - If a live tool fails for missing auth, tell the user to complete Connect / Sign in with fonio in their MCP client.`;

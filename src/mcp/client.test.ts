@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   assertE164,
+  assertConfirmedDestination,
   FonioApiError,
   FonioClient,
   normalizePhoneNumber,
@@ -21,6 +22,17 @@ describe("assertE164", () => {
 
   it("rejects missing plus", () => {
     expect(() => assertE164("toNumber", "43123456789")).toThrow(/international format/);
+  });
+});
+
+describe("assertConfirmedDestination", () => {
+  it("requires the confirmed number to match the destination", () => {
+    expect(
+      assertConfirmedDestination("+43123456789", "+43 1 234 567 89"),
+    ).toBe("+43123456789");
+    expect(() =>
+      assertConfirmedDestination("+43123456789", "+4915123456789"),
+    ).toThrow(/Confirmation guard failed/);
   });
 });
 

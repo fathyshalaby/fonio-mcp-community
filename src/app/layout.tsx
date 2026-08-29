@@ -19,6 +19,10 @@ export const metadata: Metadata = {
     default: `${SITE.name} — ${SITE.tagline}`,
     template: `%s · ${SITE.name}`,
   },
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_MCP_ORIGIN ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:43147"),
+  ),
   description: SITE.description,
   openGraph: {
     title: SITE.name,

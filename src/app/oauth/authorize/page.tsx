@@ -8,7 +8,7 @@ import {
 import { getWorkspaceSession } from "@/oauth/session";
 import { readClient, redirectUriAllowed } from "@/oauth/tokens";
 
-export const metadata = { title: "Sign in with fonio" };
+export const metadata = { title: "Sign in with fonio · community connector" };
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
