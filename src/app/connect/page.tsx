@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ConnectForm, ConnectShell } from "@/components/connect-form";
+import { setWorkspaceSession } from "@/oauth/session";
 import { verifyFonioApiKey } from "@/oauth/verify-key";
 import { redirect } from "next/navigation";
 
@@ -17,6 +18,7 @@ export default async function ConnectPage({
     const apiKey = String(formData.get("apiKey") ?? "");
     try {
       await verifyFonioApiKey(apiKey);
+      await setWorkspaceSession(apiKey);
       redirect("/connect?ok=1");
     } catch (err) {
       if (typeof err === "object" && err && "digest" in err) throw err;
@@ -26,13 +28,14 @@ export default async function ConnectPage({
   }
 
   return (
-    <ConnectShell title="Test your fonio key">
+    <ConnectShell title="Connect your fonio workspace">
       {ok ? (
         <p className="text-sm">
-          Key is valid. Add this site’s <code className="rounded bg-muted px-1">/mcp</code>{" "}
-          URL in Claude, ChatGPT, or Cursor — they will open{" "}
-          <strong>Sign in with fonio</strong> and keep an encrypted session so you
-          do not paste the key into chat.
+          Signed in. Add this site’s{" "}
+          <code className="rounded bg-muted px-1">/mcp</code> URL in Claude, ChatGPT,
+          or Cursor — they open <strong>Sign in with fonio</strong> (the official
+          login at app.fonio.ai) and reuse this encrypted session so you do not
+          paste the key into chat.
         </p>
       ) : (
         <ConnectForm action={connect} error={error} submitLabel="Verify with fonio" />

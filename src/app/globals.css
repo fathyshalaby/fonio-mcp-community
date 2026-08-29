@@ -128,3 +128,8 @@
     @apply font-sans;
   }
 }
+
+body:has([data-oauth-shell]) header,
+body:has([data-oauth-shell]) footer {
+  display: none;
+}

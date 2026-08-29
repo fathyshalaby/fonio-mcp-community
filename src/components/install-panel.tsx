@@ -9,7 +9,7 @@ export function InstallPanel({ origin }: { origin: string }) {
 
   const snippets = useMemo(
     () => ({
-      claude: `Add a custom connector in Claude with this URL, then complete Sign in with fonio:
+      claude: `Add a custom connector in Claude with this URL, then complete Sign in with fonio (official app.fonio.ai login):
 
 ${httpUrl}
 
@@ -29,7 +29,7 @@ Claude Desktop (local stdio) still uses npm run mcp + FONIO_API_KEY if you prefe
 
 ${httpUrl}
 
-Your client opens Sign in with fonio (workspace API key from app.fonio.ai). Docs tools work before that; live calls need the connected session.`,
+Your client opens Sign in with fonio (log in at app.fonio.ai, then allow access). Docs tools work before that; live calls need the connected session.`,
       vscode: `{
   "servers": {
     "fonio": {
@@ -57,8 +57,9 @@ Your client opens Sign in with fonio (workspace API key from app.fonio.ai). Docs
     <div className="rounded-2xl border bg-card p-4 shadow-sm sm:p-6">
       <p className="mb-4 text-sm text-muted-foreground">
         Hosted MCP uses <strong>Sign in with fonio</strong> — the same OAuth dance as
-        ElevenLabs. Paste your workspace API key once on our connect screen (verified
-        live against app.fonio.ai). It is not stored in the chat.
+        ElevenLabs. Continue with fonio opens the official login; we verify a workspace
+        API key against app.fonio.ai and keep an encrypted session. It is not stored in
+        the chat.
       </p>
       <Tabs defaultValue="claude-code">
         <TabsList className="mb-4 h-auto w-full flex-wrap justify-start">

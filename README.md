@@ -1,8 +1,8 @@
 # fonio MCP
 
-Hosted Model Context Protocol server for [fonio.ai](https://www.fonio.ai). Same shape as the ElevenLabs MCP: add a URL in Claude, ChatGPT, or Cursor, **Sign in with fonio**, then search [fonio.info](https://fonio.info) and trigger outbound calls.
+Hosted Model Context Protocol server for [fonio.ai](https://www.fonio.ai). Same shape as the ElevenLabs MCP: add a URL in Claude, ChatGPT, or Cursor, **Sign in with fonio** on the official app, then search [fonio.info](https://fonio.info) and trigger outbound calls.
 
-fonio’s public API is API-key based today (no account OAuth yet). The native connect screen verifies that key live against `POST /public/v1/test-api-key` and keeps an encrypted session token in the MCP client — not in the chat.
+fonio’s public API is API-key based today (no workspace OAuth client yet). Sign in with fonio opens [app.fonio.ai/login](https://app.fonio.ai/login). After you copy a key from [API keys](https://app.fonio.ai/api-keys), we verify it live with `POST /public/v1/test-api-key` and keep an encrypted session on this host — not in the chat. We never collect your fonio password.
 
 ## Connect (hosted)
 
@@ -18,9 +18,36 @@ Claude Code:
 claude mcp add --transport http fonio https://<your-host>/mcp
 ```
 
-Then run `/mcp` and complete **Sign in with fonio** (paste the workspace key from [app.fonio.ai](https://app.fonio.ai)).
+Then run `/mcp` and complete **Sign in with fonio**. The next time, Allow access is one click (workspace cookie on this host).
 
-Deploy this Next.js app (Vercel is one command: `npx vercel --prod`). Set `FONIO_MCP_SECRET` to a long random string and `NEXT_PUBLIC_MCP_ORIGIN` to the public HTTPS origin.
+## Host it
+
+### Vercel (public HTTPS)
+
+```bash
+npx vercel --prod
+```
+
+Set:
+
+| Variable | Value |
+| --- | --- |
+| `FONIO_MCP_SECRET` | long random string (`openssl rand -hex 32`) |
+| `NEXT_PUBLIC_MCP_ORIGIN` | the deployment URL, e.g. `https://your-app.vercel.app` |
+
+Without `NEXT_PUBLIC_MCP_ORIGIN`, OAuth metadata is inferred from the `Host` header.
+
+### Docker
+
+```bash
+docker build -t fonio-mcp .
+docker run --rm -p 43147:43147 \
+  -e FONIO_MCP_SECRET="$(openssl rand -hex 32)" \
+  -e NEXT_PUBLIC_MCP_ORIGIN="https://your.public.host" \
+  fonio-mcp
+```
+
+Put a reverse proxy or Cloudflare Tunnel in front so Claude/ChatGPT can reach HTTPS.
 
 ## Examples
 
@@ -63,9 +90,9 @@ npm test
 - `/.well-known/oauth-protected-resource`
 - `/.well-known/oauth-authorization-server`
 - `POST /oauth/register` (dynamic client registration)
-- `GET/POST /oauth/authorize` (Sign in with fonio)
+- `GET/POST /oauth/authorize` (Sign in with fonio — official login + encrypted workspace session)
 - `POST /oauth/token` (PKCE S256)
 
-When fonio GmbH ships workspace OAuth, replace the API-key form with a redirect to `app.fonio.ai` — the MCP client flow stays the same.
+When fonio GmbH ships a workspace OAuth app, replace the API-key step with a redirect to `app.fonio.ai` — the MCP client flow stays the same.
 
 Official API: [app.fonio.ai/api/docs](https://app.fonio.ai/api/docs). Support: support@fonio.ai.

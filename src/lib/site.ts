@@ -4,6 +4,8 @@ export const SITE = {
   description:
     "Official-style Model Context Protocol server for fonio.ai. Search the help center, inspect the public API, and trigger outbound calls from the assistants you already use.",
   app: "https://app.fonio.ai",
+  login: "https://app.fonio.ai/login",
+  apiKeys: "https://app.fonio.ai/api-keys",
   docs: "https://fonio.info",
   academy: "https://fonio.academy",
   apiDocs: "https://app.fonio.ai/api/docs",

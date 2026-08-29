@@ -61,7 +61,7 @@ This MCP server is the Model Context Protocol interface for fonio.ai. Once conne
 
 ## Authentication
 
-Set \`FONIO_API_KEY\` in the MCP client environment. Create the key in the fonio app (app.fonio.ai). Docs search works without a key. Live API tools require one.
+Hosted MCP: complete **Sign in with fonio** (official login at https://app.fonio.ai/login, then a workspace key from https://app.fonio.ai/api-keys). Local stdio: set \`FONIO_API_KEY\`. Docs search works without a key. Live API tools require a connected workspace.
 
 Outbound calls incur carrier cost, require the Teams plan, an imported or SIP number, and completed KYC.
 

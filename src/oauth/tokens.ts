@@ -40,7 +40,7 @@ export function decryptSecret(packed: string): string {
 
 export type SignedToken<T> = {
   v: 1;
-  t: "client" | "code" | "access";
+  t: "client" | "code" | "access" | "session";
   exp: number;
   d: T;
 };
@@ -98,6 +98,37 @@ export type AccessRecord = {
   apiKey: string;
   clientId: string;
 };
+
+export type WorkspaceSession = {
+  apiKey: string;
+  fingerprint: string;
+};
+
+export function fingerprintKey(apiKey: string): string {
+  return apiKey.trim().slice(-4);
+}
+
+export function issueWorkspaceCookieValue(apiKey: string): string {
+  return signToken(
+    "session",
+    {
+      apiKey: encryptSecret(apiKey),
+      fingerprint: fingerprintKey(apiKey),
+    },
+    60 * 60 * 24 * 30,
+  );
+}
+
+export function readWorkspaceCookieValue(token: string): WorkspaceSession {
+  const data = verifyToken<{ apiKey: string; fingerprint: string }>(
+    "session",
+    token,
+  );
+  return {
+    apiKey: decryptSecret(data.apiKey),
+    fingerprint: data.fingerprint,
+  };
+}
 
 export function issueClientId(record: ClientRecord): string {
   return signToken("client", record, 60 * 60 * 24 * 365);

@@ -53,7 +53,7 @@ function requireClient(ctx?: ServerContext, explicit?: string): FonioClient {
   const key = apiKeyFrom(ctx, explicit);
   if (!key) {
     throw new Error(
-      "Connect your fonio workspace first. In Claude, ChatGPT, or Cursor, complete Sign in with fonio (paste the API key from app.fonio.ai). For local stdio, set FONIO_API_KEY.",
+      "Connect your fonio workspace first. In Claude, ChatGPT, or Cursor, complete Sign in with fonio (official login at app.fonio.ai). For local stdio, set FONIO_API_KEY.",
     );
   }
   return new FonioClient(key);
@@ -198,7 +198,7 @@ export function registerFonioMcp(server: McpServer) {
         apiKey: z
           .string()
           .optional()
-          .describe("Override API key. Prefer Sign in with fonio or FONIO_API_KEY."),
+          .describe("Override API key. Prefer Sign in with fonio (app.fonio.ai) or FONIO_API_KEY."),
       }),
       annotations: { ...readOnly, openWorldHint: true },
     },
@@ -442,5 +442,5 @@ Rules:
 - Search or read docs before inventing product behaviour.
 - Never place an outbound call unless the user clearly asked and confirmed the destination number.
 - Outbound calls cost money and need KYC + an imported/SIP fromNumber.
-- Docs and list_examples work without a key. Live API tools use the Sign in with fonio OAuth session, or FONIO_API_KEY for local stdio.
+- Docs and list_examples work without a key. Live API tools use the Sign in with fonio OAuth session (official login at app.fonio.ai), or FONIO_API_KEY for local stdio.
 - If a live tool fails for missing auth, tell the user to complete Connect / Sign in with fonio in their MCP client.`;

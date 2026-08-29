@@ -3,10 +3,12 @@ import {
   issueAccessToken,
   issueAuthCode,
   issueClientId,
+  issueWorkspaceCookieValue,
   pkceS256,
   readAccessToken,
   readAuthCode,
   readClient,
+  readWorkspaceCookieValue,
   redirectUriAllowed,
 } from "@/oauth/tokens";
 
@@ -37,6 +39,13 @@ describe("oauth tokens", () => {
     const issued = readAuthCode(code);
     expect(issued.apiKey).toBe("k");
     expect(pkceS256(verifier)).toBe(issued.challenge);
+  });
+
+  it("round-trips an encrypted workspace session cookie value", () => {
+    const packed = issueWorkspaceCookieValue("sk_live_workspace_9f3a");
+    const session = readWorkspaceCookieValue(packed);
+    expect(session.apiKey).toBe("sk_live_workspace_9f3a");
+    expect(session.fingerprint).toBe("9f3a");
   });
 
   it("allows any localhost redirect once a localhost URI was registered", () => {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { CopyButton } from "@/components/copy-button";
 import { CopyBlock } from "@/components/copy-block";
-import { LINKEDIN_POST_DE, LINKEDIN_POST_EN } from "@/lib/examples";
+import { linkedInPostDe, linkedInPostEn } from "@/lib/examples";
 import { headers } from "next/headers";
 import { originFromHeaders } from "@/lib/origin";
 
@@ -10,6 +10,8 @@ export const metadata: Metadata = { title: "Share" };
 export default async function SharePage() {
   const origin = originFromHeaders(await headers());
   const mcp = `${origin}/mcp`;
+  const postEn = linkedInPostEn(mcp);
+  const postDe = linkedInPostDe(mcp);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
@@ -30,18 +32,18 @@ export default async function SharePage() {
 
       <div className="mt-10 flex items-center justify-between">
         <h2 className="text-xl font-semibold">English</h2>
-        <CopyButton text={LINKEDIN_POST_EN} label="Copy post" />
+        <CopyButton text={postEn} label="Copy post" />
       </div>
       <pre className="mt-3 whitespace-pre-wrap rounded-2xl border bg-card p-5 text-sm leading-relaxed">
-        {LINKEDIN_POST_EN}
+        {postEn}
       </pre>
 
       <div className="mt-10 flex items-center justify-between">
         <h2 className="text-xl font-semibold">Deutsch</h2>
-        <CopyButton text={LINKEDIN_POST_DE} label="Copy post" />
+        <CopyButton text={postDe} label="Copy post" />
       </div>
       <pre className="mt-3 whitespace-pre-wrap rounded-2xl border bg-card p-5 text-sm leading-relaxed">
-        {LINKEDIN_POST_DE}
+        {postDe}
       </pre>
     </div>
   );

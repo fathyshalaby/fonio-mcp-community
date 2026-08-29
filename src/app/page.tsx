@@ -28,9 +28,9 @@ export default async function HomePage() {
             </h1>
             <p className="mt-4 max-w-xl text-lg text-muted-foreground text-pretty">
               Connect Claude, ChatGPT, Cursor, or any MCP client to fonio.ai.
-              Sign in with fonio once, then search the help center, inspect the
-              public API, and place outbound calls in natural language — the same
-              idea as ElevenLabs MCP, for phone assistants.
+              Sign in with fonio on the official app, then search the help center,
+              inspect the public API, and place outbound calls in natural language
+              — the same idea as ElevenLabs MCP, for phone assistants.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="#install" className={cn(buttonVariants({ size: "lg" }), "h-10 px-4")}>
@@ -46,8 +46,8 @@ export default async function HomePage() {
             </div>
             <p className="mt-6 text-sm text-muted-foreground">
               Add the hosted <code className="rounded bg-muted px-1">/mcp</code> URL. Your
-              client opens <strong>Sign in with fonio</strong> — we verify the workspace
-              key against app.fonio.ai. Docs tools work before that.
+              client opens <strong>Sign in with fonio</strong> — you log in at
+              app.fonio.ai, we never take your password. Docs tools work before that.
             </p>
           </div>
           <Card className="self-start shadow-lg">
@@ -79,8 +79,8 @@ export default async function HomePage() {
             },
             {
               icon: KeyRound,
-              title: "Your workspace key",
-              body: "Local stdio or hosted HTTP. No OAuth yet — same pattern as the public REST API.",
+              title: "Sign in with fonio",
+              body: "MCP OAuth opens the official login. After that, one click on this site — we never collect your fonio password.",
             },
             {
               icon: Shield,
@@ -104,7 +104,8 @@ export default async function HomePage() {
         <h2 className="mt-1 text-3xl font-semibold tracking-tight">Add fonio to your client</h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Hosted MCP is at <code className="rounded bg-muted px-1 text-sm">{origin}/mcp</code>.
-          Keep this docs site running, then paste a snippet below.
+          Paste a snippet below — Claude, ChatGPT, and Cursor will open Sign in with
+          fonio on this host.
         </p>
         <div className="mt-8">
           <InstallPanel origin={origin} />
