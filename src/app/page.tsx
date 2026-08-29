@@ -5,15 +5,14 @@ import { InstallPanel } from "@/components/install-panel";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PROMPTS, SITE, TOOLS } from "@/lib/site";
+import { headers } from "next/headers";
+import { originFromHeaders } from "@/lib/origin";
+import { EXAMPLES } from "@/lib/examples";
+import { PROMPTS, TOOLS } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-export default function HomePage() {
-  const origin =
-    process.env.NEXT_PUBLIC_MCP_ORIGIN ??
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://127.0.0.1:43147");
+export default async function HomePage() {
+  const origin = originFromHeaders(await headers());
 
   return (
     <div>
@@ -29,9 +28,9 @@ export default function HomePage() {
             </h1>
             <p className="mt-4 max-w-xl text-lg text-muted-foreground text-pretty">
               Connect Claude, ChatGPT, Cursor, or any MCP client to fonio.ai.
-              Search the {SITE.docs.replace("https://", "")} knowledge base, inspect
-              the public API, and place outbound calls in natural language — the
-              same idea as ElevenLabs MCP, for phone assistants.
+              Sign in with fonio once, then search the help center, inspect the
+              public API, and place outbound calls in natural language — the same
+              idea as ElevenLabs MCP, for phone assistants.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="#install" className={cn(buttonVariants({ size: "lg" }), "h-10 px-4")}>
@@ -39,19 +38,16 @@ export default function HomePage() {
                 <ArrowRight />
               </Link>
               <Link
-                href="/docs"
+                href="/examples"
                 className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-10 px-4")}
               >
-                Browse docs
+                See examples
               </Link>
             </div>
             <p className="mt-6 text-sm text-muted-foreground">
-              Docs tools work without a key. Live calls need{" "}
-              <code className="rounded bg-muted px-1">FONIO_API_KEY</code> from{" "}
-              <a href={SITE.app} className="text-primary hover:underline">
-                app.fonio.ai
-              </a>
-              .
+              Add the hosted <code className="rounded bg-muted px-1">/mcp</code> URL. Your
+              client opens <strong>Sign in with fonio</strong> — we verify the workspace
+              key against app.fonio.ai. Docs tools work before that.
             </p>
           </div>
           <Card className="self-start shadow-lg">
@@ -158,19 +154,28 @@ export default function HomePage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <h2 className="text-3xl font-semibold tracking-tight">Try asking</h2>
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h2 className="text-3xl font-semibold tracking-tight">Try asking</h2>
+            <p className="mt-2 text-muted-foreground">
+              Full threads with tool calls live on the examples page.
+            </p>
+          </div>
+          <Link href="/examples" className="text-sm text-primary hover:underline">
+            All examples
+          </Link>
+        </div>
         <ul className="mt-6 grid gap-3 md:grid-cols-2">
-          {[
-            "How do I write a fonio receptionist prompt that transfers billing to Anna?",
-            "Draft an inbound webhook that looks up callers in HubSpot before the greeting.",
-            "Explain fromNumber vs toNumber on the outbound API, then give me curl.",
-            "Call +4915123456789 from my imported number and pass context name=Ada — only if I confirm.",
-          ].map((example) => (
-            <li
-              key={example}
-              className="rounded-xl border bg-card px-4 py-3 text-sm text-muted-foreground"
-            >
-              “{example}”
+          {EXAMPLES.map((example) => (
+            <li key={example.slug}>
+              <Link
+                href={`/examples#${example.slug}`}
+                className="block rounded-xl border bg-card px-4 py-3 hover:border-primary/40"
+              >
+                <p className="text-xs font-medium text-primary">{example.eyebrow}</p>
+                <p className="mt-1 font-medium">{example.title}</p>
+                <p className="mt-1 text-sm text-muted-foreground">“{example.prompt}”</p>
+              </Link>
             </li>
           ))}
         </ul>

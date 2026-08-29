@@ -1,6 +1,7 @@
 import {
-  McpServer,
   ResourceTemplate,
+  type McpServer,
+  type ServerContext,
   type ToolAnnotations,
 } from "@modelcontextprotocol/server";
 import { z } from "zod";
@@ -18,6 +19,7 @@ import {
   WEBHOOK_SOURCE_IPS,
 } from "./docs";
 import { FONIO_OPENAPI } from "./openapi";
+import { EXAMPLES } from "@/lib/examples";
 import { SERVER_NAME, SERVER_VERSION } from "./version";
 
 const readOnly: ToolAnnotations = {
@@ -40,11 +42,18 @@ function jsonResult(value: unknown) {
   return textResult(JSON.stringify(value, null, 2));
 }
 
-function requireClient(apiKey?: string): FonioClient {
-  const key = getApiKey(apiKey);
+function apiKeyFrom(ctx: ServerContext | undefined, explicit?: string): string | undefined {
+  if (explicit?.trim()) return explicit.trim();
+  const extra = ctx?.http?.authInfo?.extra?.apiKey;
+  if (typeof extra === "string" && extra.trim()) return extra.trim();
+  return getApiKey();
+}
+
+function requireClient(ctx?: ServerContext, explicit?: string): FonioClient {
+  const key = apiKeyFrom(ctx, explicit);
   if (!key) {
     throw new Error(
-      "Missing FONIO_API_KEY. Create a key in the fonio app, then set it in the MCP client env (or pass apiKey). Docs tools work without a key.",
+      "Connect your fonio workspace first. In Claude, ChatGPT, or Cursor, complete Sign in with fonio (paste the API key from app.fonio.ai). For local stdio, set FONIO_API_KEY.",
     );
   }
   return new FonioClient(key);
@@ -160,22 +169,42 @@ export function registerFonioMcp(server: McpServer) {
   );
 
   server.registerTool(
+    "list_examples",
+    {
+      title: "Example prompts",
+      description:
+        "Ready-to-paste prompts that show how to use this MCP: receptionist prompts, inbound webhooks, form-to-call, and a confirmed outbound call.",
+      inputSchema: z.object({}),
+      annotations: readOnly,
+    },
+    async () =>
+      jsonResult(
+        EXAMPLES.map((example) => ({
+          slug: example.slug,
+          title: example.title,
+          prompt: example.prompt,
+          tools: example.tools,
+        })),
+      ),
+  );
+
+  server.registerTool(
     "test_api_key",
     {
       title: "Test fonio API key",
       description:
-        "Verify that a fonio workspace API key is valid via POST /public/v1/test-api-key. Uses FONIO_API_KEY unless apiKey is passed.",
+        "Verify that the connected fonio workspace key is valid via POST /public/v1/test-api-key. Uses the OAuth session, FONIO_API_KEY, or an explicit apiKey.",
       inputSchema: z.object({
         apiKey: z
           .string()
           .optional()
-          .describe("Override API key. Prefer FONIO_API_KEY in the client env."),
+          .describe("Override API key. Prefer Sign in with fonio or FONIO_API_KEY."),
       }),
       annotations: { ...readOnly, openWorldHint: true },
     },
-    async ({ apiKey }) => {
+    async ({ apiKey }, ctx) => {
       try {
-        const result = await requireClient(apiKey).testApiKey();
+        const result = await requireClient(ctx, apiKey).testApiKey();
         return jsonResult(result);
       } catch (error) {
         return textResult(formatError(error));
@@ -204,13 +233,13 @@ export function registerFonioMcp(server: McpServer) {
           .describe(
             "Optional prompt variables, e.g. { name: 'Ada', company: 'Acme' } → {{context.name}}.",
           ),
-        apiKey: z.string().optional().describe("Override FONIO_API_KEY."),
+        apiKey: z.string().optional().describe("Override the connected workspace key."),
       }),
       annotations: writeCall,
     },
-    async ({ fromNumber, toNumber, context, apiKey }) => {
+    async ({ fromNumber, toNumber, context, apiKey }, ctx) => {
       try {
-        const result = await requireClient(apiKey).triggerOutboundCall({
+        const result = await requireClient(ctx, apiKey).triggerOutboundCall({
           fromNumber,
           toNumber,
           context,
@@ -413,4 +442,5 @@ Rules:
 - Search or read docs before inventing product behaviour.
 - Never place an outbound call unless the user clearly asked and confirmed the destination number.
 - Outbound calls cost money and need KYC + an imported/SIP fromNumber.
-- Docs tools work without FONIO_API_KEY. test_api_key and trigger_outbound_call need a key.`;
+- Docs and list_examples work without a key. Live API tools use the Sign in with fonio OAuth session, or FONIO_API_KEY for local stdio.
+- If a live tool fails for missing auth, tell the user to complete Connect / Sign in with fonio in their MCP client.`;

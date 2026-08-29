@@ -12,9 +12,11 @@ export const SITE = {
 
 export const NAV = [
   { href: "/", label: "Overview" },
+  { href: "/examples", label: "Examples" },
   { href: "/tools", label: "Tools" },
   { href: "/docs", label: "Docs" },
   { href: "/api", label: "API" },
+  { href: "/share", label: "Share" },
 ];
 
 export const TOOLS = [
@@ -33,6 +35,11 @@ export const TOOLS = [
     name: "list_docs",
     kind: "Docs",
     summary: "Catalog every bundled article with category and official URL.",
+  },
+  {
+    name: "list_examples",
+    kind: "Docs",
+    summary: "Ready-to-paste prompts: receptionist, inbound webhook, form-to-call, confirmed dial.",
   },
   {
     name: "get_api_reference",

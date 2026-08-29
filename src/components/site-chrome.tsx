@@ -12,7 +12,7 @@ export function SiteHeader() {
           <FonioMark className="size-8 text-primary" />
           <span>fonio MCP</span>
         </Link>
-        <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
+        <nav className="hidden items-center gap-5 text-sm text-muted-foreground lg:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}
@@ -33,7 +33,7 @@ export function SiteHeader() {
           >
             Help center
           </Link>
-          <Link href="/#install" className={cn(buttonVariants({ size: "sm" }))}>
+          <Link href="/connect" className={cn(buttonVariants({ size: "sm" }))}>
             Connect
           </Link>
         </div>
@@ -46,7 +46,10 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <p>Unofficial MCP server for fonio.ai — built from the public API and fonio.info docs.</p>
+        <p>
+          MCP for fonio.ai — Sign in with fonio, then search docs and place outbound
+          calls from Claude, ChatGPT, or Cursor.
+        </p>
         <div className="flex flex-wrap gap-4">
           <a href="https://app.fonio.ai" className="hover:text-foreground">
             Open app
