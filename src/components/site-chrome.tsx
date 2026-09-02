@@ -19,7 +19,7 @@ export function SiteHeader() {
           <span className="leading-tight">
             Community MCP
             <span className="block text-[11px] font-normal text-muted-foreground">
-              unofficial · for fonio.ai
+              unofficial · open source
             </span>
           </span>
         </Link>
@@ -45,7 +45,7 @@ export function SiteHeader() {
             GitHub
           </Link>
           <Link href="/connect" className={cn(buttonVariants({ size: "sm" }))}>
-            Connect
+            Add API key
           </Link>
         </div>
       </div>
@@ -61,9 +61,10 @@ export function SiteFooter() {
     <footer className="border-t border-border bg-card">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>
-          Unofficial community MCP by a community member — not fonio staff. MIT,
-          no warranty, not liable including for billed phone calls, not
-          affiliated with, endorsed by, or sponsored by fonio GmbH.{" "}
+          Open-source MCP, not a SaaS. Unofficial community project — not fonio
+          staff. MIT, no warranty, not liable including billed calls or a
+          volunteer-hosted URL. Not affiliated with, endorsed by, or sponsored
+          by fonio GmbH.{" "}
           <Link href="/legal" className="hover:text-foreground">
             License and disclaimer
           </Link>

@@ -171,11 +171,11 @@ export const EXAMPLES: Example[] = [
 ];
 
 export function linkedInPostEn(mcpUrl: string) {
-  return `Unofficial community MCP for fonio.ai (not affiliated with, endorsed by, or sponsored by fonio GmbH).
+  return `Unofficial open-source MCP for fonio.ai — not a SaaS, not affiliated with fonio GmbH.
 
-Open source, MIT, no warranty — I have no association with fonio. The authors are not liable for use, including billed outbound calls.
+MIT, no warranty. I have no association with fonio. No liability for use, including billed outbound calls or a volunteer-hosted URL. Self-host the repo, or add a /mcp URL at your own risk.
 
-Same idea as the ElevenLabs MCP, but unofficial: add this URL in Claude / ChatGPT / Cursor, paste a workspace API key on the community connector (not fonio GmbH OAuth), then build voice and WhatsApp agents in chat:
+Same idea as the ElevenLabs MCP, but unofficial: paste a workspace API key (not a fonio password), then build voice and WhatsApp agents in chat:
 
 ${mcpUrl}
 
@@ -191,11 +191,11 @@ Repo: https://github.com/fathyshalaby/fonio-mcp-community
 }
 
 export function linkedInPostDe(mcpUrl: string) {
-  return `Inoffizieller Community-MCP für fonio.ai (keine Verbindung zu fonio GmbH, nicht von fonio unterstützt oder gesponsert).
+  return `Inoffizieller Open-Source-MCP für fonio.ai — kein SaaS, keine Verbindung zu fonio GmbH.
 
-Open Source, MIT, ohne Gewähr — ich habe keine Verbindung zu fonio. Keine Haftung für die Nutzung, einschließlich kostenpflichtiger Outbound-Anrufe.
+MIT, ohne Gewähr. Ich habe keine Verbindung zu fonio. Keine Haftung, auch nicht für kostenpflichtige Outbound-Anrufe oder eine ehrenamtlich gehostete URL. Repo selbst hosten oder /mcp auf eigenes Risiko nutzen.
 
-Wie der ElevenLabs-MCP, aber inoffiziell: URL in Claude / ChatGPT / Cursor eintragen, Workspace-API-Key im Community-Connector einfügen (kein fonio-GmbH-Login), dann Sprach- und WhatsApp-Agenten im Chat bauen:
+Wie der ElevenLabs-MCP, aber inoffiziell: Workspace-API-Key einfügen (kein fonio-Passwort), dann Sprach- und WhatsApp-Agenten im Chat bauen:
 
 ${mcpUrl}
 

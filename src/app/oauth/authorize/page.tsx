@@ -8,7 +8,7 @@ import {
 import { getWorkspaceSession } from "@/oauth/session";
 import { readClient, redirectUriAllowed } from "@/oauth/tokens";
 
-export const metadata = { title: "Connect a workspace key · unofficial community MCP" };
+export const metadata = { title: "Add a workspace key · unofficial open-source MCP" };
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

@@ -883,11 +883,11 @@ function formatError(error: unknown): string {
   return String(error);
 }
 
-export const MCP_INSTRUCTIONS = `You are connected to an unofficial community MCP server for fonio.ai (${SERVER_NAME} v${SERVER_VERSION}). The authors are community members, not fonio staff. Not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, not liable including billed phone calls. Bundled docs can be wrong — prefer fonio.info and app.fonio.ai.
+export const MCP_INSTRUCTIONS = `You are connected to an unofficial open-source MCP server for fonio.ai (${SERVER_NAME} v${SERVER_VERSION}). This is not a SaaS product. The authors are community members, not fonio staff. Not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, not liable including billed phone calls, downtime, or stored API keys on a volunteer URL. Bundled docs can be wrong — prefer fonio.info and app.fonio.ai.
 
 fonio is a European AI phone and WhatsApp assistant platform (app.fonio.ai, docs at fonio.info). This MCP lets Claude, ChatGPT, or Cursor configure a complete paste-ready agent and call the documented public API. ${MCP_LIMITATION}
 
-Auth: hosted Claude/ChatGPT must complete this community connector (open official app.fonio.ai/login, then paste a workspace key from app.fonio.ai/api-keys). That is not fonio GmbH OAuth and never collects a password. Local stdio uses FONIO_API_KEY. Call get_connection_status if unsure. If it is not connected, tell the user to finish the community connector in their MCP client (or self-host this repo so the operator never holds their key).
+Auth: HTTP Claude/ChatGPT must complete this community connector (open official app.fonio.ai/login, then paste a workspace key from app.fonio.ai/api-keys). That is not fonio GmbH OAuth and never collects a password. Local stdio uses FONIO_API_KEY. Call get_connection_status if unsure. If it is not connected, tell the user to finish the connector or run this repo themselves. A volunteer-hosted URL is unpaid, no SLA, no liability.
 
 When the user wants to create, design, configure, or improve an assistant:
 1. Call get_connection_status if they also want live API actions.

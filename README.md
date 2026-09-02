@@ -1,45 +1,47 @@
 # Community MCP for fonio (unofficial)
 
-**Unofficial open-source community project by a community member — not fonio staff.** MIT licensed.
+**Open-source MCP server — not a SaaS product.** Unofficial community project by a community member, not fonio staff. MIT licensed.
 
 This repository is **not affiliated with, endorsed by, sponsored by, or associated with fonio GmbH or fonio.ai**. The maintainers have no employment or contractor relationship with fonio. fonio® and related marks belong to their owners.
 
-The software is provided **“as is”**, without warranty of any kind. The authors and contributors are **not liable** for anything that results from using it — including billed phone calls, account issues, data loss, or other damages. See [LICENSE](./LICENSE). Bundled help-center copy can lag [fonio.info](https://fonio.info); trust the official app and docs if they disagree.
+The software is provided **“as is”**, without warranty of any kind. The authors and contributors are **not liable** for anything that results from using the code **or a volunteer-hosted copy** — including downtime, billed phone calls, stored API keys, account issues, data loss, or other damages. See [LICENSE](./LICENSE). Bundled help-center copy can lag [fonio.info](https://fonio.info); trust the official app and docs if they disagree.
 
 ---
 
-Community [Model Context Protocol](https://modelcontextprotocol.io) for [fonio.ai](https://www.fonio.ai)’s **public** API. Claude, ChatGPT, and Cursor can **configure a full paste-ready agent** (prompt, greetings, knowledge, transfers, calendar, webhooks, technical/GDPR, phone) and call the documented live endpoints. There is **no create-assistant API** — never claim the agent was saved in the workspace.
+Open-source [Model Context Protocol](https://modelcontextprotocol.io) for [fonio.ai](https://www.fonio.ai)’s **public** API. Self-host it (or run local stdio). A volunteer may also put a copy on a **free domain** so Claude/ChatGPT have an HTTPS URL — that is unpaid, no SLA, no support, **no liability**.
 
-Auth is a **workspace API key** from [app.fonio.ai/api-keys](https://app.fonio.ai/api-keys), verified with `POST /public/v1/test-api-key`. Hosted MCP OAuth is a **community PKCE wrapper** around that key. It is **not** fonio GmbH login. This project never collects your fonio password.
+Claude, ChatGPT, and Cursor can **configure a full paste-ready agent** and call the documented live endpoints. There is **no create-assistant API** — never claim the agent was saved in the workspace.
 
-## Best way to run this (community host)
+Auth is a **workspace API key** from [app.fonio.ai/api-keys](https://app.fonio.ai/api-keys), verified with `POST /public/v1/test-api-key`. HTTP MCP OAuth is a **community PKCE wrapper** around that key. It is **not** fonio GmbH login. This project never collects your fonio password.
 
-If you do not work at fonio, do not ship a login that looks official.
+## How to run it
 
-1. **Safest — local stdio.** Each user runs `npm run mcp` with `FONIO_API_KEY` on their machine. You never see anyone’s key.
-2. **Best for Claude / ChatGPT — self-host.** Each user deploys this repo (Docker or Vercel) on their own HTTPS origin. They hold their own encrypted session. You publish code, not an official-looking fonio login.
-3. **Public community host (optional).** Label it unofficial everywhere, never collect passwords, only call the documented public API, and tell users the host stores an encrypted API key. People who do not trust the operator should self-host.
+This is software you run, not a company you sign up for.
+
+1. **Recommended — yourself.** `npm run mcp` with `FONIO_API_KEY`, or Docker/Vercel on your own origin.
+2. **Optional volunteer URL.** Someone may host a copy on a free domain. Use it at your own risk. Self-host if you do not want a volunteer storing an encrypted key.
+
+Do not ship a login that looks like official fonio.
 
 ## What shows up in the assistant
 
-Hosting this does **not** put it in Claude’s or ChatGPT’s official connector catalogs. Anthropic/OpenAI will not promote it for you.
+This does **not** go into Claude’s or ChatGPT’s official connector catalogs. Anthropic/OpenAI will not promote it.
 
-It **does** show up as a normal custom MCP **for the people who add your `/mcp` URL** (or run local stdio):
+It **does** show up as a custom MCP **for people who add a `/mcp` URL** (or run local stdio):
 
-- Claude, ChatGPT, and Cursor list the server as `fonio-community` and the model can call the tools in that chat.
-- That is opt-in per user or workspace, not a store listing.
+- The client lists `fonio-community` and the model can call the tools in that chat.
+- Opt-in per user or workspace — not a store listing, not a SaaS.
 - It does **not** appear inside fonio’s own phone/WhatsApp assistants on app.fonio.ai.
-- Do not submit it to connector directories as “the fonio MCP”. If you mention it anywhere, call it an unofficial community connector.
 
-## Connect (hosted)
+## Add it to a client
 
-Point Claude, ChatGPT, or Cursor at:
+Point Claude, ChatGPT, or Cursor at your self-hosted origin, or at a volunteer free-domain `/mcp` if you accept no warranty:
 
 ```
-https://<your-host>/mcp
+https://<your-host-or-volunteer-domain>/mcp
 ```
 
-The HTTP MCP **requires** a Bearer token so those clients start OAuth (401 + `WWW-Authenticate` resource metadata). They open **this** community connector: official login stays on [app.fonio.ai/login](https://app.fonio.ai/login), then paste a workspace key.
+HTTP MCP **requires** a Bearer token so those clients start OAuth (401 + `WWW-Authenticate`). Official login stays on [app.fonio.ai/login](https://app.fonio.ai/login), then paste a workspace key.
 
 Claude Code:
 
@@ -47,9 +49,9 @@ Claude Code:
 claude mcp add --transport http fonio-community https://<your-host>/mcp
 ```
 
-Then `/mcp` and paste the key. Next time, Allow is one click (encrypted cookie on **this** host).
+Then `/mcp` and paste the key.
 
-## Host it
+## Self-host
 
 ### Vercel (public HTTPS)
 
@@ -104,7 +106,7 @@ Open `/examples` on the site, or ask the connected assistant for `list_examples`
 | `prepare_outbound_call` | Validate a destination and return a short-lived confirmation token |
 | `trigger_outbound_call` | Real call — requires a matching `confirmationToken` and `confirmedToNumber` |
 
-Hosted HTTP MCP requires OAuth + a verified key for **all** tools so Claude/ChatGPT actually connect. Local stdio can use docs/builder with or without `FONIO_API_KEY`; live calls still need the key. Outbound still requires a fonio Teams plan, KYC, and an imported/SIP `fromNumber`. You are responsible for any carrier cost.
+Hosted HTTP MCP requires OAuth + a verified key for **all** tools so Claude/ChatGPT actually connect. Local stdio can use docs/builder with or without `FONIO_API_KEY`; live calls still need the key. Outbound still requires a fonio Teams plan, KYC, and an imported/SIP `fromNumber`. You are responsible for any carrier cost. A volunteer free-domain instance is unpaid and carries no liability.
 
 The outbound flow first prepares the exact numbers without dialing. It will only proceed when the short-lived `confirmationToken` and `confirmedToNumber` both match that preparation after you have explicitly confirmed the destination. The token is consumed after use to help prevent accidental or repeated calls.
 
@@ -121,7 +123,9 @@ npm run mcp          # stdio for Claude Desktop
 npm test
 ```
 
-## OAuth endpoints (MCP spec, this community host)
+## OAuth endpoints (MCP spec)
+
+These exist so Claude/ChatGPT can authorize against **your** process (self-host or a volunteer copy). They are not fonio GmbH OAuth.
 
 - `/.well-known/oauth-protected-resource`
 - `/.well-known/oauth-authorization-server`

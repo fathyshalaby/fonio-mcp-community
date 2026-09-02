@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "private": true,
   "license": "MIT",
-  "description": "Unofficial community MCP server for building fonio.ai agents in Claude, ChatGPT, and Cursor. Not affiliated with fonio GmbH.",
+  "description": "Unofficial open-source MCP server for fonio.ai. Not a SaaS, not affiliated with fonio GmbH. MIT, no warranty.",
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 43147",
     "build": "next build",

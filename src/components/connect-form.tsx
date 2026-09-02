@@ -48,8 +48,8 @@ export function ConnectForm({
         Open official fonio login (app.fonio.ai)
       </a>
       <p className="text-center text-xs text-muted-foreground">
-        That site is fonio GmbH. This page is an unofficial community connector.
-        We never collect your fonio password.
+        That site is fonio GmbH. This page is open-source community software,
+        not a SaaS. We never collect your fonio password.
       </p>
 
       <div className="relative py-1">
@@ -71,9 +71,10 @@ export function ConnectForm({
           app.fonio.ai/api-keys
         </a>
         . We verify it with fonio’s public{" "}
-        <code className="text-xs">test-api-key</code> endpoint. This host then
-        stores an encrypted copy so Claude/ChatGPT can call the public API —
-        self-host this repo if you do not want that.
+        <code className="text-xs">test-api-key</code> endpoint. This volunteer
+        instance then stores an encrypted copy so Claude/ChatGPT can call the
+        public API — no warranty, no liability. Run the repo yourself if you do
+        not want that.
       </p>
       <div className="space-y-2">
         <Label htmlFor="apiKey">Workspace API key</Label>
@@ -117,7 +118,7 @@ export function ResumeSessionForm({
   return (
     <div className="space-y-4">
       <div className="rounded-xl bg-muted/70 px-3 py-3 text-sm">
-        <p className="font-medium">Workspace key saved on this community host</p>
+        <p className="font-medium">Workspace key saved on this volunteer instance</p>
         <p className="mt-0.5 text-muted-foreground">
           Key ending in ••••{fingerprint} (encrypted session, not a fonio
           password)
@@ -176,7 +177,7 @@ export function ConnectShell({
         </p>
         <p className="font-semibold">Community MCP for fonio</p>
         <p className="text-xs text-muted-foreground">
-          Not fonio GmbH · MIT · workspace API key only
+          Open source · not a SaaS · MIT · no liability
         </p>
       </div>
       <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
@@ -188,8 +189,8 @@ export function ConnectShell({
       ) : (
         <p className="mt-2 text-sm text-muted-foreground">
           Log in on the official fonio app in a new tab, then paste a workspace
-          API key here. We verify it against app.fonio.ai and keep an encrypted
-          session — not in the chat transcript.
+          API key here. This is not a SaaS. A volunteer instance may keep an
+          encrypted session — at your own risk, not in the chat transcript.
         </p>
       )}
       <div className="mt-6 rounded-2xl border bg-card p-5 shadow-sm">{children}</div>

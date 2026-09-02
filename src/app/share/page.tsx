@@ -20,9 +20,10 @@ export default async function SharePage() {
         Share this project
       </h1>
       <p className="mt-2 text-muted-foreground">
-        Unofficial community project, MIT, no warranty, and no liability including
-        billed phone calls. Not affiliated with, endorsed by, or sponsored by fonio.
-        Copy a post and mention the GitHub repo. Hosted MCP URL:
+        Open-source MCP, not a SaaS. MIT, no warranty, no liability including
+        billed phone calls or a volunteer-hosted URL. Not affiliated with,
+        endorsed by, or sponsored by fonio. Copy a post and mention the GitHub
+        repo. Example /mcp URL on this origin:
       </p>
       <div className="mt-4">
         <CopyBlock code={mcp} />

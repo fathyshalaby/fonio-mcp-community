@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Connect a workspace key · unofficial community MCP",
+  title: "Add a workspace key · unofficial open-source MCP",
 };
 
 export default function OAuthLayout({ children }: { children: React.ReactNode }) {

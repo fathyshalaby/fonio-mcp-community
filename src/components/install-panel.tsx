@@ -15,7 +15,7 @@ ${httpUrl}
 
 On that screen: open official app.fonio.ai/login, copy a workspace key from app.fonio.ai/api-keys, paste it, allow access.
 
-Prefer local stdio if you do not want a host to store an encrypted key: npm run mcp + FONIO_API_KEY.`,
+Prefer running this repo yourself (npm run mcp + FONIO_API_KEY, or Docker). A volunteer URL is unpaid, no warranty, no liability.`,
       claudeCode: `claude mcp add --transport http fonio-community ${httpUrl}
 
 # then inside a session:
@@ -32,7 +32,7 @@ Prefer local stdio if you do not want a host to store an encrypted key: npm run 
 
 ${httpUrl}
 
-ChatGPT starts community MCP OAuth (401 + resource metadata). Log in on official app.fonio.ai, paste a workspace API key, allow this unofficial MCP. Live tools will not work until that key is verified.`,
+ChatGPT starts community MCP OAuth (401 + resource metadata). Log in on official app.fonio.ai, paste a workspace API key. This is open-source software, not a SaaS. A volunteer URL has no warranty.`,
       vscode: `{
   "servers": {
     "fonio-community": {
@@ -59,11 +59,10 @@ ChatGPT starts community MCP OAuth (401 + resource metadata). Log in on official
   return (
     <div className="rounded-2xl border bg-card p-4 shadow-sm sm:p-6">
       <p className="mb-4 text-sm text-muted-foreground">
-        Hosted MCP requires a <strong>workspace API key</strong> so Claude and
-        ChatGPT actually work. This is a community PKCE wrapper — not “Sign in
-        with fonio” from fonio GmbH. Unofficial, MIT, no warranty, not affiliated
-        with fonio. Self-host this repo unless you trust the operator with an
-        encrypted key.
+        Open-source MCP, not a SaaS. HTTP needs a <strong>workspace API key</strong>{" "}
+        (community PKCE — not fonio GmbH login). MIT, no warranty, no liability —
+        including a volunteer free-domain URL. Run it yourself unless you accept
+        an encrypted key on someone else’s machine.
       </p>
       <Tabs defaultValue="claude-code">
         <TabsList className="mb-4 h-auto w-full flex-wrap justify-start">

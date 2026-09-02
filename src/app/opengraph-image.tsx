@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Unofficial community MCP for fonio.ai — not fonio GmbH, MIT";
+export const alt = "Unofficial open-source MCP for fonio.ai — not a SaaS, MIT, no liability";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -56,10 +56,10 @@ export default function OgImage() {
               maxWidth: 900,
             }}
           >
-            Unofficial. Workspace API key. Paste-ready agents.
+            Open source. Not a SaaS. Self-host or volunteer URL.
           </div>
           <div style={{ marginTop: 24, fontSize: 28, color: "#5c6070", maxWidth: 820 }}>
-            Not fonio GmbH. MIT, no warranty. Prefer self-host.
+            Not fonio GmbH. MIT, no warranty, no liability.
           </div>
         </div>
         <div style={{ display: "flex", gap: 28, color: "#585dfe", fontSize: 22 }}>

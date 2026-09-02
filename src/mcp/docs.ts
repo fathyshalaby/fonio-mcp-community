@@ -44,13 +44,13 @@ export const articles: DocArticle[] = [
     slug: "mcp",
     title: "Community MCP for fonio",
     summary:
-      "Unofficial community MCP: Claude, ChatGPT, and Cursor configure paste-ready agents and call the public API with a workspace API key. Not fonio GmbH.",
+      "Unofficial open-source MCP (not a SaaS): Claude, ChatGPT, and Cursor configure paste-ready agents and call the public API with a workspace API key. Not fonio GmbH.",
     category: "API",
     url: "https://fonio.info",
     tags: ["mcp", "claude", "openai", "cursor", "chatgpt", "agents"],
     body: `# Community MCP for fonio (unofficial)
 
-This MCP server is an **unofficial community** Model Context Protocol interface for fonio. The authors are community members, not fonio staff. It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software, including billed phone calls.
+This MCP server is an **unofficial open-source** Model Context Protocol interface for fonio — **not a SaaS product**. The authors are community members, not fonio staff. It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software or a volunteer-hosted copy, including billed phone calls and stored API keys.
 
 Bundled articles can be incomplete or wrong versus https://fonio.info — trust the official app and docs if they disagree.
 
@@ -70,7 +70,7 @@ The goal: connect Claude, ChatGPT, or Cursor, then **configure a full paste-read
 
 ## Authentication
 
-Hosted Claude/ChatGPT: the HTTP MCP returns 401 without a Bearer token so the client starts **community MCP OAuth** (not fonio GmbH login). Open https://app.fonio.ai/login, copy a workspace key from https://app.fonio.ai/api-keys, paste it on this host. The host encrypts the key. It never collects your fonio password. Prefer self-hosting this repo if you do not want the operator to store that encrypted key.
+Hosted Claude/ChatGPT: the HTTP MCP returns 401 without a Bearer token so the client starts **community MCP OAuth** (not fonio GmbH login). Open https://app.fonio.ai/login, copy a workspace key from https://app.fonio.ai/api-keys, paste it. A volunteer instance encrypts the key with **no warranty and no liability**. It never collects your fonio password. Run this repo yourself if you do not want a volunteer storing that key.
 
 Local stdio: set \`FONIO_API_KEY\`.
 
@@ -83,7 +83,7 @@ Outbound calls incur carrier cost, require the Teams plan, an imported or SIP nu
 
 ## What shows up in Claude / ChatGPT
 
-This is a custom MCP. It appears in the assistant only for people who add the host’s \`/mcp\` URL (or local stdio). It is not listed in Anthropic or OpenAI connector catalogs, and it is not loaded by fonio’s own phone/WhatsApp product.
+This is a custom MCP, not a SaaS. It appears in the assistant only for people who add a \`/mcp\` URL (or local stdio). It is not listed in Anthropic or OpenAI connector catalogs, and it is not loaded by fonio’s own phone/WhatsApp product.
 `,
   },
   {

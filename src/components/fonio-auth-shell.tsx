@@ -15,7 +15,7 @@ export function FonioAuthShell({
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(88,93,254,0.35),transparent_55%)]" />
         <div className="relative">
           <p className="text-xs font-medium uppercase tracking-wide text-white/55">
-            Unofficial · community member project
+            Open source · not a SaaS · community member
           </p>
           <p className="mt-2 text-lg font-semibold tracking-tight">
             Community MCP for fonio
@@ -26,16 +26,16 @@ export function FonioAuthShell({
             Connect a workspace API key
           </p>
           <p className="mt-4 text-base text-white/70 text-pretty">
-            This is not fonio GmbH. Claude, ChatGPT, and Cursor use a workspace
-            key from the official app so they can configure paste-ready agents
-            and call the documented public API.
+            This is not a SaaS and not fonio GmbH. Claude, ChatGPT, and Cursor
+            use a workspace key from the official app so they can configure
+            paste-ready agents and call the documented public API.
           </p>
         </div>
         <p className="relative text-sm text-white/45">
           MIT · not affiliated with fonio GmbH. You log in on{" "}
-          {SITE.app.replace("https://", "")} — this host never asks for your
-          fonio password. Prefer self-hosting if you do not want an encrypted
-          key stored here.
+          {SITE.app.replace("https://", "")} — this volunteer instance never
+          asks for your fonio password. No warranty, no liability. Run the repo
+          yourself if you do not want an encrypted key stored here.
         </p>
       </aside>
 
@@ -62,8 +62,9 @@ export function FonioAuthShell({
             </p>
           ) : (
             <p className="mt-3 text-sm text-muted-foreground">
-              After the official login, copy a key from API keys. The key stays
-              in an encrypted session on this community host — not in the chat.
+              After the official login, copy a key from API keys. On a volunteer
+              URL the key stays in an encrypted session — unpaid, no warranty.
+              Not in the chat.
             </p>
           )}
           {error ? (
@@ -75,9 +76,10 @@ export function FonioAuthShell({
             {children}
           </div>
           <p className="mt-6 text-center text-xs text-muted-foreground">
-            Unofficial community MCP · authors are not fonio employees · MIT ·
-            no warranty · no liability for billed calls · not affiliated with,
-            endorsed by, or sponsored by fonio GmbH
+            Unofficial open-source MCP · not a SaaS · authors are not fonio
+            employees · MIT · no warranty · no liability for billed calls or
+            volunteer hosting · not affiliated with, endorsed by, or sponsored
+            by fonio GmbH
             <br />
             Official app:{" "}
             <a

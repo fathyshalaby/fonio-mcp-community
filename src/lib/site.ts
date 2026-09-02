@@ -1,8 +1,8 @@
 export const SITE = {
   name: "Community MCP for fonio",
-  tagline: "Unofficial — build agents in Claude",
+  tagline: "Open-source MCP — not a SaaS",
   description:
-    "Independent open-source community MCP for fonio.ai. Not fonio GmbH. Connect Claude, ChatGPT, or Cursor with a workspace API key, then build a full paste-ready voice or WhatsApp agent. MIT licensed, no warranty.",
+    "Unofficial MIT open-source MCP server for fonio.ai. Not a SaaS, not fonio GmbH. Self-host it, or use a volunteer free-domain copy with no warranty and no liability.",
   app: "https://app.fonio.ai",
   login: "https://app.fonio.ai/login",
   apiKeys: "https://app.fonio.ai/api-keys",
