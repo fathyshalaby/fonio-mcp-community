@@ -4,7 +4,7 @@ export const AFFILIATION_DISCLAIMER =
   "This is an independent, unofficial, open-source community project. It is not affiliated with, endorsed by, sponsored by, or associated with fonio GmbH or fonio.ai. The authors are community members and have no employment or contractor relationship with fonio.";
 
 export const NOT_SAAS =
-  "This is not a SaaS product, company, or paid service. It is an MIT-licensed open-source MCP server. You run it yourself (local stdio or self-host). A volunteer may also put a copy on a free domain as a convenience. That copy is not a product: no accounts, no subscription, no SLA, no support, and no liability.";
+  "This is not a SaaS product, company, or paid service. It is a weekend open-source MCP server (MIT). You run it yourself (local stdio or self-host). A volunteer may also put a copy on a free domain as a convenience. That copy is not a product: no accounts, no subscription, no SLA, no support, and no liability.";
 
 export const LIABILITY_DISCLAIMER =
   "The software is licensed under the MIT License and provided “as is”, without warranty of any kind. The authors and contributors are not liable for anything that happens if you use the code or a volunteer-hosted copy — including downtime, lost data, billed phone calls, leaked or stored API keys, account issues, or other damages. Using a free-domain instance is entirely at your own risk.";

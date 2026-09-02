@@ -21,16 +21,15 @@ export default async function HomePage() {
         <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:py-24">
           <div>
             <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/10">
-              Open source · MIT · not a SaaS
+              Weekend project · MIT · not a SaaS
             </Badge>
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
               An unofficial MCP for fonio agents in Claude and ChatGPT.
             </h1>
             <p className="mt-4 max-w-xl text-lg text-muted-foreground text-pretty">
-              Software you run yourself — not a product, not fonio GmbH. Self-host
-              or use local stdio. A volunteer may also put a copy on a free
-              domain; that instance has no SLA and no liability. Paste-ready
-              voice and WhatsApp specs plus the public API.
+              Software you run yourself — a weekend project by a community
+              member, not a product, not fonio GmbH. Self-host or use local
+              stdio. A volunteer free-domain copy has no SLA and no liability.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="#install" className={cn(buttonVariants({ size: "lg" }), "h-10 px-4")}>
@@ -41,7 +40,13 @@ export default async function HomePage() {
                 href="/examples"
                 className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-10 px-4")}
               >
-                See examples
+                Examples
+              </Link>
+              <Link
+                href="/share"
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-10 px-4")}
+              >
+                Share copy
               </Link>
             </div>
             <p className="mt-6 text-sm text-muted-foreground">

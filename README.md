@@ -1,6 +1,6 @@
 # Community MCP for fonio (unofficial)
 
-**Open-source MCP server — not a SaaS product.** Unofficial community project by a community member, not fonio staff. MIT licensed.
+**Weekend project: an open-source MCP server — not a SaaS product.** Built by a fonio community member, not fonio staff. MIT licensed.
 
 This repository is **not affiliated with, endorsed by, sponsored by, or associated with fonio GmbH or fonio.ai**. The maintainers have no employment or contractor relationship with fonio. fonio® and related marks belong to their owners.
 
