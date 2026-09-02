@@ -1,0 +1,715 @@
+export const PROMPT_CHARACTER_LIMIT = 100_000;
+
+export type AssistantChannel = "voice" | "whatsapp";
+export type AssistantDirection = "inbound" | "outbound" | "both";
+export type AssistantTemplateSlug =
+  | "receptionist"
+  | "answering_machine"
+  | "appointment_scheduling"
+  | "first_level_support"
+  | "outbound_callback"
+  | "whatsapp_booking";
+
+export type AssistantTemplate = {
+  slug: AssistantTemplateSlug;
+  title: string;
+  summary: string;
+  channel: AssistantChannel;
+  direction: AssistantDirection;
+  defaultVoice: string;
+  goal: string;
+  toolsToEnable: string[];
+  extraIfThen: string[];
+};
+
+export type KnowledgeEntry = {
+  question: string;
+  answer: string;
+};
+
+export type PromptIssue = {
+  severity: "error" | "warning";
+  code: string;
+  message: string;
+};
+
+export type BuildAssistantInput = {
+  company: string;
+  useCase: string;
+  template?: AssistantTemplateSlug | string;
+  assistantName?: string;
+  languages?: string;
+  transferTargets?: string;
+  bookingEvent?: string;
+  channel?: AssistantChannel | string;
+  direction?: AssistantDirection | string;
+  companyFacts?: string;
+  formality?: string;
+  hours?: string;
+};
+
+export const ASSISTANT_TEMPLATES: AssistantTemplate[] = [
+  {
+    slug: "receptionist",
+    title: "Receptionist",
+    summary:
+      "Greet callers, answer routine questions from the knowledge base, book in a named Scheduler event, and transfer named topics to people.",
+    channel: "voice",
+    direction: "inbound",
+    defaultVoice: "Anna",
+    goal: "identify the caller’s request, resolve what you can, book or transfer the rest",
+    toolsToEnable: [
+      "Call transfer (named targets)",
+      "fonio Scheduler or Cal.com event connected to this assistant",
+      "After-call email to a fixed recipient",
+      "Answer Questions → knowledge base",
+    ],
+    extraIfThen: [
+      "If the caller wants to book or reschedule, then book in the named Scheduler event and confirm the slot out loud.",
+      "If the caller asks for a named person or a topic that has a transfer target, then transfer after a one-sentence recap.",
+    ],
+  },
+  {
+    slug: "answering_machine",
+    title: "Intelligent answering machine",
+    summary:
+      "After-hours or overflow: capture the concern and a callback number, do not debate the content, then end politely.",
+    channel: "voice",
+    direction: "inbound",
+    defaultVoice: "Sophie",
+    goal: "take a complete message (name, callback number, concern) so a human can call back",
+    toolsToEnable: [
+      "After-call email with {{plainTranscript}} to a fixed inbox",
+      "Optional SMS confirmation to the caller",
+    ],
+    extraIfThen: [
+      "If the caller already stated their concern, confirm it in one sentence and do not ask content questions.",
+      "If they cannot be reached on the current number, ask for an alternative callback number.",
+      "If they want a live person and a transfer target exists, transfer; otherwise take the message.",
+    ],
+  },
+  {
+    slug: "appointment_scheduling",
+    title: "Appointment scheduling",
+    summary:
+      "One job: find a slot, book/reschedule/cancel in a named calendar event, and send a confirmation.",
+    channel: "voice",
+    direction: "inbound",
+    defaultVoice: "Anna",
+    goal: "book, reschedule, or cancel in the named calendar event",
+    toolsToEnable: [
+      "fonio Scheduler (preferred if you do not want to collect email) or Cal.com / Calendly",
+      "SMS booking-link fallback if the SMS add-on is enabled",
+      "After-call email or SMS confirmation",
+    ],
+    extraIfThen: [
+      "If they want a new appointment, then offer slots from the named event and book only after they confirm a time.",
+      "If they want to reschedule or cancel, then identify the existing booking (phone number or name) and use the event’s reschedule/cancel capability.",
+      "If no slots exist, say so and offer a callback instead of inventing availability.",
+    ],
+  },
+  {
+    slug: "first_level_support",
+    title: "First-level support",
+    summary:
+      "Triage, look up order/account status via HTTP when configured, solve documented issues, escalate the rest.",
+    channel: "voice",
+    direction: "inbound",
+    defaultVoice: "Ben",
+    goal: "solve documented issues, collect IDs, and escalate anything that needs a human",
+    toolsToEnable: [
+      "During-call HTTP Request for order/account lookup",
+      "Call transfer for billing, complaints, and anything off-script",
+      "After-call email or ticket webhook",
+      "Knowledge base Q&A for how-to answers",
+    ],
+    extraIfThen: [
+      "If they have an order, ticket, or customer number, collect it (expected format in the prompt) before looking it up.",
+      "If the HTTP lookup returns a status, read the relevant fields back; do not invent a status.",
+      "If they are angry, ask for a refund, or the issue is not in the knowledge base, transfer.",
+    ],
+  },
+  {
+    slug: "outbound_callback",
+    title: "Outbound lead callback",
+    summary:
+      "You are calling them. Use {{context.*}} from the outbound API or campaign CSV. Qualify and optionally book.",
+    channel: "voice",
+    direction: "outbound",
+    defaultVoice: "Brian",
+    goal: "confirm you reached the right person, qualify the lead, and book or take a next step",
+    toolsToEnable: [
+      "Imported or SIP fromNumber assigned to this outbound assistant",
+      "Teams plan + KYC",
+      "fonio Scheduler event if you want to book live",
+      "After-call email to sales",
+    ],
+    extraIfThen: [
+      "If voicemail is detected, hang up — fonio already ends voicemail calls; do not leave a looping message.",
+      "If they are not the right person, apologise and end.",
+      "If they agree to a meeting, book the named event or take three time windows.",
+    ],
+  },
+  {
+    slug: "whatsapp_booking",
+    title: "WhatsApp booking assistant",
+    summary:
+      "Same knowledge and hours as voice, but in WhatsApp chat. Keep turns short; offer a booking link if live slots fail.",
+    channel: "whatsapp",
+    direction: "inbound",
+    defaultVoice: "Anna",
+    goal: "answer in chat and book, reschedule, or cancel in the named event",
+    toolsToEnable: [
+      "WhatsApp Assistant connected to a WABA number",
+      "Scheduler or Cal.com",
+      "Human takeover from the unified inbox for billing/refunds",
+    ],
+    extraIfThen: [
+      "If they want to book, then book in the named event or send the public booking page.",
+      "If they ask for a human, then stop and leave the conversation for inbox takeover.",
+    ],
+  },
+];
+
+export const VOICES = [
+  {
+    name: "Anna",
+    gender: "female",
+    multilingualCapable: true,
+    gdprNote:
+      "Named in fonio FAQ as a multilingual-capable voice. Set language to Multi separately — it is not automatic.",
+  },
+  {
+    name: "Sophie",
+    gender: "female",
+    multilingualCapable: true,
+    gdprNote:
+      "Named in fonio FAQ as a multilingual-capable voice. Set language to Multi separately — it is not automatic.",
+  },
+  {
+    name: "Ben",
+    gender: "male",
+    multilingualCapable: true,
+    gdprNote:
+      "Named in fonio FAQ as a multilingual-capable voice. Set language to Multi separately — it is not automatic.",
+  },
+  {
+    name: "Brian",
+    gender: "male",
+    multilingualCapable: true,
+    gdprNote:
+      "Named in fonio FAQ as a multilingual-capable voice. Set language to Multi separately — it is not automatic.",
+  },
+  {
+    name: "Maria",
+    gender: "female",
+    multilingualCapable: false,
+    gdprNote:
+      "FAQ: GDPR depends on the voice provider. Azure voices hosted in Europe are treated as GDPR-compliant; ElevenLabs voices are not yet.",
+  },
+] as const;
+
+export const LANGUAGE_NOTES = [
+  {
+    id: "single",
+    label: "Single language",
+    detail:
+      "Pick the caller’s language in the assistant. All listed languages are included in the plan.",
+  },
+  {
+    id: "multi",
+    label: "Multi (mid-call switching)",
+    detail:
+      "Switches among about eight languages when both voice and language are Multi. Requires a multilingual voice (Anna, Sophie, Ben, Brian) and Deepgram STT. If Multi is greyed out, the voice or STT provider is wrong.",
+  },
+] as const;
+
+export function listAssistantTemplates() {
+  return ASSISTANT_TEMPLATES.map((template) => ({
+    slug: template.slug,
+    title: template.title,
+    summary: template.summary,
+    channel: template.channel,
+    direction: template.direction,
+    defaultVoice: template.defaultVoice,
+    toolsToEnable: template.toolsToEnable,
+  }));
+}
+
+export function getAssistantTemplate(
+  slug?: string,
+): AssistantTemplate | undefined {
+  if (!slug) return undefined;
+  const key = slug.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  return ASSISTANT_TEMPLATES.find((template) => template.slug === key);
+}
+
+export function inferTemplate(
+  useCase: string,
+  channel?: string,
+): AssistantTemplate {
+  const text = `${channel ?? ""} ${useCase}`.toLowerCase();
+  if (/\bwhats?app\b/.test(text)) return getAssistantTemplate("whatsapp_booking")!;
+  if (/\b(outbound|callback|lead|form[- ]to[- ]call|campaign)\b/.test(text)) {
+    return getAssistantTemplate("outbound_callback")!;
+  }
+  if (/\b(voicemail|answering machine|after[- ]hours|overflow)\b/.test(text)) {
+    return getAssistantTemplate("answering_machine")!;
+  }
+  if (/\b(support|helpdesk|ticket|order status|first[- ]level)\b/.test(text)) {
+    return getAssistantTemplate("first_level_support")!;
+  }
+  if (/\b(receptionist|reception|front desk|greeting)\b/.test(text)) {
+    return getAssistantTemplate("receptionist")!;
+  }
+  if (/\b(book|appointment|calendar|scheduler|reschedule)\b/.test(text)) {
+    return getAssistantTemplate("appointment_scheduling")!;
+  }
+  return getAssistantTemplate("receptionist")!;
+}
+
+export function listVoicesAndLanguages() {
+  return {
+    limitation:
+      "fonio has no public voice-list API. This catalog is the multilingual voices named in the official FAQ, plus GDPR notes. Always pick the live voice in app.fonio.ai → Technical → Voice & language.",
+    voices: VOICES,
+    languages: LANGUAGE_NOTES,
+    gdpr: {
+      recording:
+        "Regardless of the Record audio toggle, the assistant must tell callers it is an AI and that the call is recorded.",
+      providers:
+        "FAQ: Azure voices in Europe are treated as GDPR-compliant; ElevenLabs voices are not yet. Confirm the current provider badge in the app.",
+    },
+  };
+}
+
+function looksGerman(text: string): boolean {
+  return /\b(german|deutsch|sie|du|vienna|wien|berlin|munich|münchen|austria|österreich|praxis|gmbh)\b/i.test(
+    text,
+  );
+}
+
+function defaultName(channel: AssistantChannel, german: boolean): string {
+  if (channel === "whatsapp") return german ? "Lena" : "Lena";
+  return german ? "Marie" : "Marie";
+}
+
+export function draftKnowledgeBase(input: {
+  company: string;
+  facts?: string;
+  hours?: string;
+  language?: string;
+}): KnowledgeEntry[] {
+  const german = looksGerman(`${input.language ?? ""} ${input.facts ?? ""} ${input.company}`);
+  const entries: KnowledgeEntry[] = [];
+  const seen = new Set<string>();
+
+  function add(question: string, answer: string) {
+    const key = question.trim().toLowerCase();
+    if (!key || !answer.trim() || seen.has(key)) return;
+    seen.add(key);
+    entries.push({ question: question.trim(), answer: answer.trim() });
+  }
+
+  if (input.hours?.trim()) {
+    add(
+      german ? "Wann habt ihr geöffnet?" : "What are your opening hours?",
+      input.hours.trim(),
+    );
+  }
+
+  const facts = (input.facts ?? "").trim();
+  if (facts) {
+    const chunks = facts
+      .split(/\n+|;\s+/)
+      .map((chunk) => chunk.replace(/^[-*]\s+/, "").trim())
+      .filter(Boolean);
+
+    for (const chunk of chunks) {
+      const qa = chunk.match(/^(?:q(?:uestion)?\s*[:.-]\s*)?(.+\?)\s*(?:a(?:nswer)?\s*[:.-]\s*)?(.+)$/i);
+      if (qa) {
+        add(qa[1]!, qa[2]!);
+        continue;
+      }
+      const split = chunk.split(/\s+[—–-]\s+|:\s+/);
+      if (split.length >= 2 && split[0] && split[0].length < 80) {
+        const question = split[0].endsWith("?") ? split[0] : `${split[0].trim()}?`;
+        add(question, split.slice(1).join(": "));
+        continue;
+      }
+      if (/hour|open|öffn/i.test(chunk)) {
+        add(
+          german ? "Wann habt ihr geöffnet?" : "What are your opening hours?",
+          chunk,
+        );
+      } else if (/park/i.test(chunk)) {
+        add(german ? "Gibt es Parkplätze?" : "Do you have parking?", chunk);
+      } else if (/address|adresse|located|sitz/i.test(chunk)) {
+        add(german ? "Wo seid ihr?" : "Where are you located?", chunk);
+      } else {
+        add(
+          german
+            ? `Was sollte ich über ${input.company} wissen: ${chunk.slice(0, 48)}?`
+            : `What should callers know: ${chunk.slice(0, 48)}?`,
+          chunk,
+        );
+      }
+    }
+  }
+
+  if (entries.length === 0) {
+    add(
+      german
+        ? `Wobei kann ${input.company} helfen?`
+        : `What does ${input.company} help with?`,
+      german
+        ? `Kurzbeschreibung ergänzen — Fakten gehören in die Knowledge Base, nicht doppelt in den Prompt.`
+        : `Add a one-line description. Facts belong in the knowledge base, not duplicated in the prompt.`,
+    );
+  }
+
+  return entries.slice(0, 16);
+}
+
+export function validateAssistantPrompt(prompt: string): {
+  ok: boolean;
+  characterCount: number;
+  limit: number;
+  issues: PromptIssue[];
+} {
+  const text = prompt ?? "";
+  const issues: PromptIssue[] = [];
+  const lower = text.toLowerCase();
+
+  if (text.length > PROMPT_CHARACTER_LIMIT) {
+    issues.push({
+      severity: "error",
+      code: "character_limit",
+      message: `Prompt is ${text.length} characters; fonio allows ${PROMPT_CHARACTER_LIMIT}.`,
+    });
+  }
+  if (text.trim().length < 120) {
+    issues.push({
+      severity: "error",
+      code: "too_short",
+      message: "Prompt is too short to act as a production script. Add flow, if-then rules, and an escape hatch.",
+    });
+  }
+  if (!/^#\s+/m.test(text)) {
+    issues.push({
+      severity: "error",
+      code: "headings",
+      message: "Use Markdown headings (`# Conversation flow`) so fonio can follow sections. `#` is a heading, not a comment.",
+    });
+  }
+  if (!/\bif\b[\s\S]{0,80}\bthen\b/i.test(text) && !/if-then/i.test(text)) {
+    issues.push({
+      severity: "error",
+      code: "if_then",
+      message: "Add If-Then rules for the main paths (book, transfer, unclear request, recording refused).",
+    });
+  }
+  if (!/\b(ai|künstliche intelligenz|ki-telefon|telephone assistant|whatsapp assistant)\b/i.test(text)) {
+    issues.push({
+      severity: "error",
+      code: "ai_disclosure",
+      message: "The assistant must introduce itself as an AI (GDPR / EU AI Act).",
+    });
+  }
+  if (!/\b(record|recorded|aufnahme|aufgezeichnet)\b/i.test(text)) {
+    issues.push({
+      severity: "error",
+      code: "recording_disclosure",
+      message: "Tell the caller the call is recorded. Without this, AI calls are not possible.",
+    });
+  }
+  if (!/\b(escape|cannot assist|nicht (helfen|unterstützen)|unclear|others|callback|nachricht)\b/i.test(text)) {
+    issues.push({
+      severity: "error",
+      code: "escape_hatch",
+      message: "Give an escape hatch when the request is unclear or off-script (message, transfer, or polite end).",
+    });
+  }
+  if (!/\bknowledge base\b/i.test(text) && !/\bwissensdatenbank\b/i.test(text)) {
+    issues.push({
+      severity: "warning",
+      code: "knowledge_base",
+      message: 'Put a line like: "For company-specific information, use only the stored knowledge base." Keep facts out of the prompt.',
+    });
+  }
+  if (!/\b(legal|medizin|medical|politic|religion|sensitiv)\b/i.test(text)) {
+    issues.push({
+      severity: "warning",
+      code: "sensitive_topics",
+      message: "List sensitive topics the assistant must refuse (legal, medical advice, politics, religion).",
+    });
+  }
+  if (/\b(todo|fixme|ignore this|comment:)\b/i.test(text)) {
+    issues.push({
+      severity: "warning",
+      code: "comments",
+      message: "The entire prompt is used. Do not leave comments for yourself.",
+    });
+  }
+  if (lower.includes("{{context.") === false && /outbound/i.test(text)) {
+    issues.push({
+      severity: "warning",
+      code: "outbound_context",
+      message: "Outbound prompts should read {{context.field}} for CSV/API variables.",
+    });
+  }
+
+  return {
+    ok: issues.every((issue) => issue.severity !== "error"),
+    characterCount: text.length,
+    limit: PROMPT_CHARACTER_LIMIT,
+    issues,
+  };
+}
+
+function recommendVoice(template: AssistantTemplate, languages: string): string {
+  if (/\bmulti\b/i.test(languages)) return template.defaultVoice;
+  return template.defaultVoice;
+}
+
+function languageSetting(languages: string): { appValue: string; promptLine: string } {
+  const raw = languages.trim() || "match the business";
+  if (/\bmulti\b/i.test(raw)) {
+    return {
+      appValue: "Multi (and pick a multilingual voice: Anna, Sophie, Ben, or Brian)",
+      promptLine: `Start in the caller’s language. If they switch (e.g. “Can we continue in English?”), switch. App language must be Multi.`,
+    };
+  }
+  return {
+    appValue: raw,
+    promptLine: `Speak ${raw}.`,
+  };
+}
+
+export function buildAssistantPrompt(input: {
+  template: AssistantTemplate;
+  name: string;
+  german: boolean;
+  company: string;
+  useCase: string;
+  languages?: string;
+  transferTargets?: string;
+  bookingEvent?: string;
+  formality?: string;
+  hours?: string;
+  direction?: string;
+}): string {
+  const { template, name, german, company, useCase } = input;
+  const languages = languageSetting(input.languages ?? (german ? "German" : "English"));
+  const event = input.bookingEvent?.trim();
+  const transfers = input.transferTargets?.trim();
+  const hours = input.hours?.trim();
+  const outbound = template.direction === "outbound" || input.direction === "outbound";
+
+  const ifThen = [
+    ...template.extraIfThen,
+    "If the request is unclear, ask one open follow-up question, then continue.",
+    "If the caller refuses recording, stop content work: end the call or transfer so automatic deletion can run.",
+    event
+      ? `If you schedule an appointment, use the event “${event}”.`
+      : undefined,
+    transfers
+      ? `If the caller matches these transfer rules, transfer: ${transfers}. Recap in one sentence first. Wait the platform default (~30 seconds) if the target does not pick up.`
+      : undefined,
+    hours
+      ? `If they ask whether you are open, use the knowledge base / stated hours: ${hours}.`
+      : undefined,
+  ].filter((line): line is string => Boolean(line));
+
+  const faqBlock = german
+    ? `- Question: Wer sind Sie?\n  Answer: Ich bin ${name}, die KI-Telefonassistenz von ${company}. Fakten zu Stunden und Leistungen nur aus der Knowledge Base.`
+    : `- Question: Who are you?\n  Answer: I am ${name}, the AI telephone assistant from ${company}. Hours and services come only from the knowledge base.`;
+
+  const sensitive = german
+    ? `- Rechtliche Fragen\n- Medizinische Beratung\n- Politische Themen\n- Religion\n- Rabatte oder Angebote, die nicht in der Knowledge Base stehen`
+    : `- Legal questions\n- Medical advice\n- Political topics\n- Religion\n- Discounts or quotes that are not in the knowledge base`;
+
+  const outboundBlock = outbound
+    ? `
+# Outbound context
+You placed this call. Use only {{context.*}} fields you actually received.
+- You are calling {{context.name}}{{#if context.company}} at {{context.company}}{{/if}}{{#if context.reason}} about {{context.reason}}{{/if}}.
+- If a field is missing, skip it. Never invent a name or reason.
+`
+    : "";
+
+  return `# Conversation flow
+You are ${name}, an AI ${template.channel === "whatsapp" ? "WhatsApp" : "telephone"} assistant from ${company}.
+Single goal: ${template.goal}. Use case from the operator: ${useCase}.
+${languages.promptLine}
+
+# Behavioral rules
+- Introduce yourself as an AI and mention that the ${template.channel === "whatsapp" ? "chat may be stored" : "call is recorded"} (GDPR / EU AI Act).
+- For company-specific information (hours, prices, address, services, names of staff), use only the stored knowledge base. Do not invent facts.
+- One question at a time. Keep turns short enough for ${template.channel === "whatsapp" ? "chat" : "the phone"}.
+- ${input.formality ? `Address the person with “${input.formality}”.` : german ? "Use Sie unless the operator specified Du." : "Use a polite professional register."}
+- Never give legal, medical, or political advice.
+
+## If-Then rules
+${ifThen.map((line) => `- ${line}`).join("\n")}
+
+# General information
+- About you: You are an AI ${template.channel === "whatsapp" ? "WhatsApp" : "telephone"} assistant from ${company}
+- Your name: ${name}
+- The company you work for: ${company}
+${outboundBlock}
+# Frequently asked questions
+${faqBlock}
+Do not duplicate long facts here — they live in the knowledge base.
+
+# Sensitive topics
+If the customer talks about the following, say you cannot assist:
+${sensitive}
+
+# Escape hatch
+If none of the paths apply, take a callback number and a short message, confirm both, then end politely.
+`;
+}
+
+function startMessage(input: {
+  name: string;
+  company: string;
+  german: boolean;
+  template: AssistantTemplate;
+}): { inbound: string; outbound: string } {
+  const { name, company, german } = input;
+  if (input.template.channel === "whatsapp") {
+    return {
+      inbound: german
+        ? `{{#if firstname}}Hallo {{firstname}}{{else}}Hallo{{/if}}, hier ist ${name} von ${company}. Wie kann ich helfen?`
+        : `{{#if firstname}}Hi {{firstname}}{{else}}Hi{{/if}}, this is ${name} from ${company}. How can I help?`,
+      outbound: german
+        ? `Hallo{{#if context.name}} {{context.name}}{{/if}}, hier ist ${name} von ${company}.`
+        : `Hello{{#if context.name}} {{context.name}}{{/if}}, this is ${name} from ${company}.`,
+    };
+  }
+  return {
+    inbound: german
+      ? `{{#if firstname}}Guten Tag {{firstname}}{{else}}Guten Tag{{/if}}, hier ist ${name} von ${company}. Wie kann ich Ihnen helfen?`
+      : `{{#if firstname}}Hello {{firstname}}{{else}}Hello{{/if}}, this is ${name} from ${company}. How can I help you today?`,
+    outbound: german
+      ? `Guten Tag{{#if context.name}} {{context.name}}{{/if}}, hier ist ${name} von ${company}.{{#if context.reason}} Ich rufe an wegen {{context.reason}}.{{/if}}`
+      : `Hello{{#if context.name}} {{context.name}}{{/if}}, this is ${name} from ${company}.{{#if context.reason}} I’m calling about {{context.reason}}.{{/if}}`,
+  };
+}
+
+export function setupChecklist(input: {
+  template: AssistantTemplate;
+  name: string;
+  languages: string;
+  voice: string;
+  event?: string;
+}): string[] {
+  const steps = [
+    `Open ${input.template.channel === "whatsapp" ? "Assistants → Create New → WhatsApp Assistant" : "Assistants → Create New"}.`,
+    `Name the assistant “${input.name}”. Paste the start message. Pick voice “${input.voice}” (confirm the live list in the app).`,
+    `Set language to: ${languageSetting(input.languages).appValue}.`,
+    "Paste the prompt into the prompt field. Do not leave comments — the whole text is used.",
+    "Knowledge Base → Information: add the Q&A entries. Enable Answer Questions on this assistant. Put website/PDF facts there, not in the prompt.",
+    ...input.template.toolsToEnable.map((tool) => `Enable: ${tool}.`),
+    input.event
+      ? `Connect calendar event “${input.event}” to this assistant. The prompt already names that event.`
+      : "If you book appointments, create an event type and name it in the prompt.",
+    "Technical: set max call duration from typical calls + buffer; enable automatic deletion if recording is refused.",
+    "Phone: buy or forward a fonio number for inbound. Outbound needs an imported or SIP number, Teams, and KYC.",
+    "Test with 3–5 real calls (Test Call cannot test forwarding). Watch handover rate and missing paths, then shorten the prompt.",
+  ];
+  return steps;
+}
+
+export function buildAssistant(input: BuildAssistantInput) {
+  const company = input.company.trim();
+  const useCase = input.useCase.trim();
+  if (!company) throw new Error("company is required.");
+  if (!useCase) throw new Error("useCase is required.");
+
+  const template =
+    getAssistantTemplate(input.template) ?? inferTemplate(useCase, input.channel);
+  const channel = (input.channel as AssistantChannel) || template.channel;
+  const german = looksGerman(
+    `${input.languages ?? ""} ${useCase} ${company} ${input.formality ?? ""}`,
+  );
+  const name = (input.assistantName ?? "").trim() || defaultName(channel, german);
+  const languages = input.languages?.trim() || (german ? "German" : "English");
+  const voice = recommendVoice(template, languages);
+  const resolvedTemplate = { ...template, channel };
+  const prompt = buildAssistantPrompt({
+    template: resolvedTemplate,
+    name,
+    german,
+    company,
+    useCase,
+    languages,
+    transferTargets: input.transferTargets,
+    bookingEvent: input.bookingEvent,
+    formality: input.formality,
+    hours: input.hours,
+    direction: input.direction,
+  });
+  const knowledge = draftKnowledgeBase({
+    company,
+    facts: input.companyFacts,
+    hours: input.hours,
+    language: languages,
+  });
+  const greetings = startMessage({
+    name,
+    company,
+    german,
+    template: resolvedTemplate,
+  });
+  const validation = validateAssistantPrompt(prompt);
+  const outbound = template.direction === "outbound" || input.direction === "outbound";
+
+  return {
+    status: "ready_to_paste" as const,
+    limitation:
+      "fonio’s public API cannot create or update assistants. Paste this spec into app.fonio.ai. This MCP can then test the API key and, after you confirm a number, place an outbound call.",
+    template: {
+      slug: template.slug,
+      title: template.title,
+    },
+    assistant: {
+      name,
+      channel,
+      direction: input.direction || template.direction,
+      voice,
+      language: languageSetting(languages).appValue,
+      startMessage: outbound ? greetings.outbound : greetings.inbound,
+      startMessageInbound: greetings.inbound,
+      startMessageOutbound: greetings.outbound,
+      prompt,
+    },
+    knowledgeBase: {
+      entries: knowledge,
+      promptReminder:
+        "For company-specific information, use only the stored knowledge base.",
+    },
+    toolsToEnable: template.toolsToEnable,
+    technical: {
+      maxCallDuration: "Set from typical calls plus a buffer.",
+      interruptSensitivity:
+        "Lower in noisy sites; raise for quiet or elderly callers.",
+      accurateInformationProcessing:
+        "Enable for emails, customer numbers, and spelled names.",
+      recording:
+        "Record audio ~30 days. Always disclose AI + recording. Prefer automatic deletion if refused.",
+    },
+    variables: outbound
+      ? ["{{context.name}}", "{{context.company}}", "{{context.reason}}"]
+      : ["{{firstname}} from inbound webhook JSON", "{{personNumber}}", "{{conversationLink}}"],
+    appChecklist: setupChecklist({
+      template: resolvedTemplate,
+      name,
+      languages,
+      voice,
+      event: input.bookingEvent,
+    }),
+    validation,
+  };
+}

@@ -27,6 +27,15 @@ import {
   consumeOutboundConfirmation,
   issueOutboundConfirmation,
 } from "@/oauth/tokens";
+import {
+  ASSISTANT_TEMPLATES,
+  buildAssistant,
+  draftKnowledgeBase,
+  listAssistantTemplates,
+  listVoicesAndLanguages,
+  validateAssistantPrompt,
+  type AssistantTemplateSlug,
+} from "./assistant";
 
 const readOnly: ToolAnnotations = {
   readOnlyHint: true,
@@ -189,7 +198,7 @@ export function registerFonioMcp(
     {
       title: "Example prompts",
       description:
-        "Ready-to-paste prompts that show how to use this MCP: receptionist prompts, inbound webhooks, form-to-call, and a confirmed outbound call.",
+        "Ready-to-paste prompts that show how to use this MCP: build an agent, receptionist prompts, inbound webhooks, form-to-call, and a confirmed outbound call.",
       inputSchema: z.object({}),
       annotations: readOnly,
     },
@@ -202,6 +211,137 @@ export function registerFonioMcp(
           tools: example.tools,
         })),
       ),
+  );
+
+  server.registerTool(
+    "list_assistant_templates",
+    {
+      title: "List assistant templates",
+      description:
+        "Starter kits for building a fonio agent in Claude: receptionist, intelligent answering machine, appointment scheduling, first-level support, outbound lead callback, WhatsApp booking. Use before build_assistant.",
+      inputSchema: z.object({}),
+      annotations: readOnly,
+    },
+    async () => jsonResult({ templates: listAssistantTemplates() }),
+  );
+
+  server.registerTool(
+    "list_voices",
+    {
+      title: "List fonio voices and languages",
+      description:
+        "Documented multilingual voices (Anna, Sophie, Ben, Brian, Maria), Multi-language rules, and GDPR notes. fonio has no public voice-list API — confirm the live picker in the app.",
+      inputSchema: z.object({}),
+      annotations: readOnly,
+    },
+    async () => jsonResult(listVoicesAndLanguages()),
+  );
+
+  server.registerTool(
+    "build_assistant",
+    {
+      title: "Build a fonio assistant",
+      description:
+        "Turn a business description into a paste-ready fonio agent: start message, structured prompt, knowledge Q&A, tools to enable, technical defaults, and an app.fonio.ai checklist. The public API cannot create assistants — paste the output in the app. Prefer this when the user wants to create or redesign an agent.",
+      inputSchema: z.object({
+        company: z.string().describe("Company or practice name."),
+        useCase: z
+          .string()
+          .describe(
+            "What the assistant should do, e.g. dental reception, after-hours plumber, outbound form callback.",
+          ),
+        template: z
+          .string()
+          .optional()
+          .describe(
+            "Optional slug from list_assistant_templates. Inferred from useCase when omitted.",
+          ),
+        assistantName: z
+          .string()
+          .optional()
+          .describe("Spoken name of the AI, e.g. Marie."),
+        languages: z
+          .string()
+          .optional()
+          .describe("e.g. German, English, or 'German and English, Multi'."),
+        transferTargets: z
+          .string()
+          .optional()
+          .describe("Who to transfer to and when, with numbers if known."),
+        bookingEvent: z
+          .string()
+          .optional()
+          .describe("Exact Scheduler / Cal.com event name to book."),
+        channel: z
+          .enum(["voice", "whatsapp"])
+          .optional()
+          .describe("voice (default) or whatsapp."),
+        direction: z
+          .enum(["inbound", "outbound", "both"])
+          .optional()
+          .describe("Call direction. Outbound uses {{context.*}}."),
+        companyFacts: z
+          .string()
+          .optional()
+          .describe(
+            "Hours, address, parking, services — becomes knowledge-base Q&A, not duplicated in the prompt.",
+          ),
+        formality: z
+          .string()
+          .optional()
+          .describe("Address form, e.g. Sie, Du, or first name."),
+        hours: z.string().optional().describe("Opening hours if known."),
+      }),
+      annotations: readOnly,
+    },
+    async (input) => {
+      try {
+        const spec = buildAssistant({
+          ...input,
+          template: input.template as AssistantTemplateSlug | undefined,
+        });
+        return jsonResult(spec);
+      } catch (error) {
+        return textResult(formatError(error));
+      }
+    },
+  );
+
+  server.registerTool(
+    "validate_assistant_prompt",
+    {
+      title: "Validate a fonio prompt",
+      description:
+        "Check a draft prompt against documented fonio rules: 100k character limit, Markdown headings, If-Then paths, AI + recording disclosure, knowledge-base instruction, escape hatch, sensitive topics.",
+      inputSchema: z.object({
+        prompt: z.string().describe("The full prompt text to check."),
+      }),
+      annotations: readOnly,
+    },
+    async ({ prompt }) => jsonResult(validateAssistantPrompt(prompt)),
+  );
+
+  server.registerTool(
+    "draft_knowledge_base",
+    {
+      title: "Draft knowledge-base Q&A",
+      description:
+        "Turn company facts into short Q&A entries phrased the way callers ask. Paste under Knowledge → Information. Do not copy these facts into the prompt.",
+      inputSchema: z.object({
+        company: z.string().describe("Company name."),
+        facts: z
+          .string()
+          .describe("Free text, bullets, or 'Question? Answer' lines."),
+        hours: z.string().optional().describe("Opening hours."),
+        language: z.string().optional().describe("German or English, for question wording."),
+      }),
+      annotations: readOnly,
+    },
+    async ({ company, facts, hours, language }) =>
+      jsonResult({
+        entries: draftKnowledgeBase({ company, facts, hours, language }),
+        hint: "Paste in Knowledge → Information. Enable Answer Questions on the assistant. One question = one entry.",
+      }),
   );
 
   server.registerTool(
@@ -333,6 +473,75 @@ export function registerFonioMcp(
     },
   );
 
+  server.registerTool(
+    "list_remote_integration_servers",
+    {
+      title: "List remote integration servers",
+      description:
+        "List development servers registered on the workspace via GET /integrations/remote-registry/servers. These serve live integration manifests to fonio (not Claude MCP). Requires Sign in with fonio or FONIO_API_KEY.",
+      inputSchema: z.object({}),
+      annotations: { ...readOnly, openWorldHint: true },
+    },
+    async (_input, ctx) => {
+      try {
+        const servers = await requireClient(ctx, allowEnvApiKey).listRemoteIntegrationServers();
+        return jsonResult({ servers });
+      } catch (error) {
+        return textResult(formatError(error));
+      }
+    },
+  );
+
+  server.registerTool(
+    "register_remote_integration_server",
+    {
+      title: "Register a remote integration server",
+      description:
+        "PUT /integrations/remote-registry/servers — register a public base URL that serves integration manifests. fonio sends authToken as Bearer on every call. Max 5 servers per company. Requires a connected workspace.",
+      inputSchema: z.object({
+        baseUrl: z
+          .string()
+          .describe("Public https base URL of the manifest server."),
+        authToken: z
+          .string()
+          .describe("Bearer token fonio should send to your server (1–512 chars)."),
+      }),
+      annotations: writeCall,
+    },
+    async ({ baseUrl, authToken }, ctx) => {
+      try {
+        const result = await requireClient(
+          ctx,
+          allowEnvApiKey,
+        ).registerRemoteIntegrationServer({ baseUrl, authToken });
+        return jsonResult(result);
+      } catch (error) {
+        return textResult(formatError(error));
+      }
+    },
+  );
+
+  server.registerTool(
+    "delete_remote_integration_server",
+    {
+      title: "Delete a remote integration server",
+      description:
+        "DELETE /integrations/remote-registry/servers — remove a registered manifest server by the UUID from list_remote_integration_servers.",
+      inputSchema: z.object({
+        id: z.string().describe("Server UUID from list_remote_integration_servers."),
+      }),
+      annotations: { ...writeCall, destructiveHint: true },
+    },
+    async ({ id }, ctx) => {
+      try {
+        const result = await requireClient(ctx, allowEnvApiKey).deleteRemoteIntegrationServer(id);
+        return jsonResult(result);
+      } catch (error) {
+        return textResult(formatError(error));
+      }
+    },
+  );
+
   server.registerResource(
     "openapi",
     "fonio://api/openapi",
@@ -370,6 +579,54 @@ export function registerFonioMcp(
             null,
             2,
           ),
+        },
+      ],
+    }),
+  );
+
+  server.registerResource(
+    "templates",
+    "fonio://assistants/templates",
+    {
+      title: "fonio assistant templates",
+      description: "Starter kits for building paste-ready fonio agents.",
+      mimeType: "application/json",
+    },
+    async (uri) => ({
+      contents: [
+        {
+          uri: uri.href,
+          mimeType: "application/json",
+          text: JSON.stringify(
+            ASSISTANT_TEMPLATES.map((template) => ({
+              slug: template.slug,
+              title: template.title,
+              summary: template.summary,
+              channel: template.channel,
+              toolsToEnable: template.toolsToEnable,
+            })),
+            null,
+            2,
+          ),
+        },
+      ],
+    }),
+  );
+
+  server.registerResource(
+    "voices",
+    "fonio://voices",
+    {
+      title: "fonio voices and languages",
+      description: "Documented voices, Multi-language rules, and GDPR notes.",
+      mimeType: "application/json",
+    },
+    async (uri) => ({
+      contents: [
+        {
+          uri: uri.href,
+          mimeType: "application/json",
+          text: JSON.stringify(listVoicesAndLanguages(), null, 2),
         },
       ],
     }),
@@ -417,6 +674,34 @@ export function registerFonioMcp(
         ],
       };
     },
+  );
+
+  server.registerPrompt(
+    "build_voice_agent",
+    {
+      title: "Build a fonio voice or WhatsApp agent",
+      description:
+        "Create a production fonio assistant from a business description: template, prompt, knowledge Q&A, and app checklist.",
+      argsSchema: z.object({
+        company: z.string().describe("Company or practice name."),
+        useCase: z.string().describe("What the assistant should do."),
+      }),
+    },
+    ({ company, useCase }) => ({
+      messages: [
+        {
+          role: "user" as const,
+          content: {
+            type: "text" as const,
+            text: `Build a production fonio.ai assistant for ${company}. Use case: ${useCase}.
+
+Call list_assistant_templates, then build_assistant with the best slug. If facts are missing, ask only for essentials (languages, transfers, booking event, hours). Run validate_assistant_prompt and fix errors. If I pasted company facts, also call draft_knowledge_base.
+
+Return: (1) start message, (2) paste-ready prompt, (3) knowledge Q&A, (4) tools to enable, (5) the app.fonio.ai checklist. The public API cannot save the assistant — never claim you created it in the workspace.`,
+          },
+        },
+      ],
+    }),
   );
 
   server.registerPrompt(
@@ -518,11 +803,19 @@ function formatError(error: unknown): string {
 
 export const MCP_INSTRUCTIONS = `You are connected to an unofficial community MCP server for fonio.ai (${SERVER_NAME} v${SERVER_VERSION}). It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software, including billed phone calls.
 
-fonio is a European AI phone and WhatsApp assistant platform (app.fonio.ai, docs at fonio.info).
+fonio is a European AI phone and WhatsApp assistant platform (app.fonio.ai, docs at fonio.info). This MCP is for building those agents from Claude, ChatGPT, or Cursor — same idea as the ElevenLabs MCP, scoped to fonio’s public API plus paste-ready assistant specs.
+
+When the user wants to create, design, or improve an assistant:
+1. Call list_assistant_templates (and list_voices if they ask about voice, Multi, or GDPR).
+2. Call build_assistant with company, use case, languages, transfers, booking event, and facts you already have. Ask only for missing essentials.
+3. Run validate_assistant_prompt and fix errors before handing the prompt over.
+4. If they provided hours, FAQs, or a website summary, call draft_knowledge_base. Facts stay in the knowledge base, not duplicated in the prompt.
+5. Give a paste-ready start message, prompt, Q&A, tools to enable, and the app.fonio.ai checklist.
+The public API cannot create or update assistants. Never claim you saved the agent in the fonio workspace.
 
 Rules:
 - Search or read docs before inventing product behaviour.
 - Never place an outbound call unless the user clearly asked and confirmed the destination number. First use prepare_outbound_call, ask for confirmation, then use its short-lived token plus confirmedToNumber with trigger_outbound_call.
 - Outbound calls cost money and need KYC + an imported/SIP fromNumber. The user is responsible for those costs.
-- Docs and list_examples work without a key. Live API tools use the Sign in with fonio OAuth session (official login at app.fonio.ai), or FONIO_API_KEY for local stdio.
+- Docs, templates, and build_assistant work without a key. Live API tools (test_api_key, outbound, remote integration servers) use the Sign in with fonio OAuth session (official login at app.fonio.ai), or FONIO_API_KEY for local stdio.
 - If a live tool fails for missing auth, tell the user to complete Connect / Sign in with fonio in their MCP client.`;

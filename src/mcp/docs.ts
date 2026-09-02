@@ -44,26 +44,32 @@ export const articles: DocArticle[] = [
     slug: "mcp",
     title: "fonio MCP server",
     summary:
-      "Connect Claude, ChatGPT, Cursor, and other MCP clients to fonio: search docs, inspect the public API, test an API key, and trigger outbound calls.",
+      "Connect Claude, ChatGPT, Cursor, and other MCP clients to fonio: build paste-ready agents, search docs, inspect the public API, test an API key, and trigger outbound calls.",
     category: "API",
     url: "https://fonio.info",
-    tags: ["mcp", "claude", "openai", "cursor", "chatgpt"],
+    tags: ["mcp", "claude", "openai", "cursor", "chatgpt", "agents"],
     body: `# fonio MCP server
 
-This MCP server is an **unofficial community** Model Context Protocol interface for fonio’s public API. It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software, including billed phone calls.
+This MCP server is an **unofficial community** Model Context Protocol interface for fonio. It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software, including billed phone calls.
 
-Once connected, an assistant can look up Fonio docs (the same knowledge published on fonio.info), inspect the public API, verify a workspace API key, and trigger outbound calls. You are responsible for any call costs.
+The goal is the same as the ElevenLabs MCP: connect Claude, ChatGPT, or Cursor, then **build and operate fonio agents in chat**. fonio’s public API cannot create assistants, so this server generates paste-ready specs (prompt, start message, knowledge Q&A, app checklist) and wraps the live public endpoints (API-key test, outbound calls, remote integration servers).
+
+Once connected, an assistant can design a voice or WhatsApp agent, look up Fonio docs, inspect the public API, verify a workspace API key, and trigger outbound calls. You are responsible for any call costs.
 
 ## What it can do
 
+- Build a paste-ready assistant from a business description (\`build_assistant\`)
+- Validate prompts against documented fonio rules (headings, If-Then, AI + recording disclosure)
+- Draft knowledge-base Q&A from company facts
 - Search and read fonio help-center articles
-- Return the public OpenAPI reference (outbound calls + API key test)
+- Return the public OpenAPI reference (outbound calls, API-key test, remote integration servers)
 - Test a FONIO_API_KEY
 - Prepare and, after confirmation, trigger an outbound call from one of your imported / SIP numbers
+- List, register, and delete remote integration servers that serve live manifests to fonio
 
 ## Authentication
 
-Hosted MCP: complete **Sign in with fonio** (login at https://app.fonio.ai/login, then get a workspace key from https://app.fonio.ai/api-keys). Local stdio: set \`FONIO_API_KEY\`. Docs search works without a key. Live API tools require a connected workspace.
+Hosted MCP: complete **Sign in with fonio** (login at https://app.fonio.ai/login, then get a workspace key from https://app.fonio.ai/api-keys). Local stdio: set \`FONIO_API_KEY\`. Docs search and agent-builder tools work without a key. Live API tools require a connected workspace.
 
 Outbound calls incur carrier cost, require the Teams plan, an imported or SIP number, and completed KYC. Prepare the call first, ask the user to confirm the exact destination, then pass the short-lived \`confirmationToken\` and the same E.164 value as \`confirmedToNumber\` to the trigger tool.
 
@@ -71,6 +77,40 @@ Outbound calls incur carrier cost, require the Teams plan, an imported or SIP nu
 
 - HTTP (Claude Code, Cursor, ChatGPT connectors): \`/mcp\` on this docs site
 - stdio (Claude Desktop): \`npm run mcp\` with FONIO_API_KEY in the client config
+`,
+  },
+  {
+    slug: "build-assistant",
+    title: "Build a fonio assistant with this MCP",
+    summary:
+      "How Claude uses templates, build_assistant, prompt validation, and knowledge Q&A — then you paste the spec into app.fonio.ai.",
+    category: "API",
+    url: "https://fonio.info/articles/prompt",
+    tags: ["mcp", "prompt", "assistant", "templates", "knowledge"],
+    body: `# Build a fonio assistant with this MCP
+
+fonio has no public “create assistant” API. This community MCP therefore builds a **paste-ready spec** you drop into app.fonio.ai — the same job ElevenLabs MCP does when it can write agents directly.
+
+## Flow
+
+1. \`list_assistant_templates\` — receptionist, answering machine, appointment scheduling, first-level support, outbound callback, WhatsApp booking.
+2. \`build_assistant\` — company, use case, languages, transfers, booking event, hours, facts.
+3. \`validate_assistant_prompt\` — headings, If-Then, AI + recording disclosure, escape hatch, 100k limit.
+4. \`draft_knowledge_base\` — Q&A phrased the way callers ask. Facts stay here, not duplicated in the prompt.
+5. Paste into Assistants → Create New. Enable the listed tools. Connect a number.
+
+## App checklist (always)
+
+- Name, start message, voice, language (Multi needs a multilingual voice: Anna, Sophie, Ben, Brian, plus Deepgram).
+- Paste the prompt. The entire text is used — no comments.
+- Knowledge → Information for Q&A. Enable Answer Questions on this assistant.
+- Tools: transfers, Scheduler/Cal.com, email/SMS, HTTP as listed.
+- Inbound: fonio number + carrier forwarding. Outbound: imported/SIP number, Teams, KYC.
+- Test with real calls. Test Call cannot test forwarding.
+
+## GDPR
+
+Introduce as AI and mention recording. Azure EU voices are treated as GDPR-compliant; ElevenLabs voices are not yet. Prefer automatic deletion if the caller refuses recording.
 `,
   },
   {

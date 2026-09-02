@@ -24,12 +24,13 @@ export default async function HomePage() {
               Unofficial · MIT · community
             </Badge>
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-              Bring fonio to the assistants you already use.
+              Build fonio agents in Claude, ChatGPT, and Cursor.
             </h1>
             <p className="mt-4 max-w-xl text-lg text-muted-foreground text-pretty">
-              Independent open-source MCP for fonio’s public API. Connect Claude,
-              ChatGPT, or Cursor, sign in on the official fonio app, then search
-              docs and place outbound calls. Not affiliated with fonio GmbH.
+              Independent open-source MCP for fonio.ai — the same idea as
+              ElevenLabs MCP. Connect, sign in on the official app, then design
+              voice and WhatsApp assistants in chat and paste them into
+              app.fonio.ai. Not affiliated with fonio GmbH.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="#install" className={cn(buttonVariants({ size: "lg" }), "h-10 px-4")}>
@@ -71,8 +72,8 @@ export default async function HomePage() {
           {[
             {
               icon: BookOpen,
-              title: "Docs, not guesswork",
-              body: "Articles from fonio.info: prompts, webhooks, campaigns, calendar, WhatsApp.",
+              title: "Build the agent in chat",
+              body: "Templates, paste-ready prompts, knowledge Q&A, and an app checklist. fonio has no create-assistant API yet.",
             },
             {
               icon: PhoneCall,
@@ -141,7 +142,7 @@ export default async function HomePage() {
             ))}
           </div>
           <h3 className="mt-12 text-lg font-semibold">Prompts</h3>
-          <div className="mt-4 grid gap-4 md:grid-cols-3">
+          <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {PROMPTS.map((prompt) => (
               <Card key={prompt.name}>
                 <CardHeader>

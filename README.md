@@ -8,9 +8,9 @@ The software is provided **“as is”**, without warranty of any kind. The auth
 
 ---
 
-Community [Model Context Protocol](https://modelcontextprotocol.io) server that talks to [fonio.ai](https://www.fonio.ai)’s **public** API. Same idea as the ElevenLabs MCP: add a URL in Claude, ChatGPT, or Cursor, complete **Sign in with fonio** on the official app, then search [fonio.info](https://fonio.info) and trigger outbound calls.
+Community [Model Context Protocol](https://modelcontextprotocol.io) server that talks to [fonio.ai](https://www.fonio.ai)’s **public** API and helps you **build agents in Claude, ChatGPT, or Cursor** — same idea as the ElevenLabs MCP. Add a URL, complete **Sign in with fonio** on the official app, then design paste-ready voice/WhatsApp assistants, search [fonio.info](https://fonio.info), and trigger outbound calls.
 
-fonio’s public API is API-key based today (no workspace OAuth client yet). Sign in with fonio opens [app.fonio.ai/login](https://app.fonio.ai/login). After you copy a key from [API keys](https://app.fonio.ai/api-keys), this server verifies it live with `POST /public/v1/test-api-key` and keeps an encrypted session on the host — not in the chat. It never collects your fonio password.
+fonio’s public API is API-key based today (no workspace OAuth client yet, and **no create-assistant endpoint**). Sign in with fonio opens [app.fonio.ai/login](https://app.fonio.ai/login). After you copy a key from [API keys](https://app.fonio.ai/api-keys), this server verifies it live with `POST /public/v1/test-api-key` and keeps an encrypted session on the host — not in the chat. It never collects your fonio password. Agent-builder tools (`build_assistant`, templates, prompt validation) work before login.
 
 ## Connect (hosted)
 
@@ -63,6 +63,7 @@ Open `/examples` on the site, or ask the connected assistant for `list_examples`
 
 | You say | What happens |
 | --- | --- |
+| Build a receptionist that books Prophylaxe and transfers billing to Anna | `build_assistant` + `validate_assistant_prompt` + paste-ready spec |
 | Write a receptionist prompt that books Prophylaxe and transfers billing to Anna | `search_docs` + paste-ready prompt |
 | Look this caller up in HubSpot before the greeting | Inbound webhook JSON + `{{inboundContext}}` |
 | A lead submitted the form — call Ada back about the Q3 quote | Outbound API curl, KYC checklist |
@@ -72,14 +73,16 @@ Open `/examples` on the site, or ask the connected assistant for `list_examples`
 
 | Tool | Purpose |
 | --- | --- |
+| `list_assistant_templates` / `build_assistant` / `validate_assistant_prompt` / `draft_knowledge_base` / `list_voices` | Build paste-ready voice and WhatsApp agents |
 | `search_docs` / `get_doc` / `list_docs` | Help-center knowledge |
 | `list_examples` | Ready-to-paste prompts |
 | `get_api_reference` | OpenAPI, webhook IPs, `{{variables}}` |
 | `test_api_key` | Connected workspace or `FONIO_API_KEY` |
+| `list_remote_integration_servers` / `register_remote_integration_server` / `delete_remote_integration_server` | Live integration-manifest servers |
 | `prepare_outbound_call` | Validate a destination and return a short-lived confirmation token |
 | `trigger_outbound_call` | Real call — requires a matching `confirmationToken` and `confirmedToNumber` after you confirm the number |
 
-Docs tools work before login. Live calls need the OAuth session (hosted) or `FONIO_API_KEY` (local stdio). Outbound still requires a fonio Teams plan, KYC, and an imported/SIP `fromNumber`. You are responsible for any carrier cost.
+Docs tools and the agent builder work before login. Live calls and remote integration servers need the OAuth session (hosted) or `FONIO_API_KEY` (local stdio). Outbound still requires a fonio Teams plan, KYC, and an imported/SIP `fromNumber`. You are responsible for any carrier cost.
 
 The outbound flow first prepares the exact numbers without dialing. It will only proceed when the short-lived `confirmationToken` and `confirmedToNumber` both match that preparation after you have explicitly confirmed the destination. The token is consumed after use to help prevent accidental or repeated calls.
 

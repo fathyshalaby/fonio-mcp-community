@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   assertE164,
   assertConfirmedDestination,
+  assertHttpsUrl,
   FonioApiError,
   FonioClient,
   normalizePhoneNumber,
@@ -36,6 +37,15 @@ describe("assertConfirmedDestination", () => {
   });
 });
 
+describe("assertHttpsUrl", () => {
+  it("normalizes and rejects junk", () => {
+    expect(assertHttpsUrl("baseUrl", "https://dev.example/")).toBe(
+      "https://dev.example",
+    );
+    expect(() => assertHttpsUrl("baseUrl", "not-a-url")).toThrow(/absolute URL/);
+  });
+});
+
 describe("docs catalog", () => {
   it("lists every article with a slug and body", () => {
     const listed = listArticles();
@@ -54,6 +64,13 @@ describe("docs catalog", () => {
   it("finds inbound webhook context", () => {
     const hits = searchDocs("inbound webhook inboundContext");
     expect(hits.some((hit) => hit.slug === "api-webhooks")).toBe(true);
+  });
+
+  it("finds agent-builder guidance", () => {
+    const hits = searchDocs("build assistant paste-ready prompt");
+    expect(hits.some((hit) => hit.slug === "build-assistant" || hit.slug === "mcp")).toBe(
+      true,
+    );
   });
 
   it("returns empty for nonsense", () => {
@@ -98,5 +115,40 @@ describe("FonioClient", () => {
     );
     const client = new FonioClient("bad", "https://app.fonio.ai/api", fetchImpl);
     await expect(client.testApiKey()).rejects.toBeInstanceOf(FonioApiError);
+  });
+
+  it("lists and registers remote integration servers", async () => {
+    const fetchImpl = vi.fn(async (...args: Parameters<typeof fetch>) => {
+      const init = args[1];
+      if (init?.method === "GET") {
+        return new Response(
+          JSON.stringify([
+            { id: "11111111-1111-1111-8111-111111111111", baseUrl: "https://dev.example" },
+          ]),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      return new Response(JSON.stringify({ baseUrl: "https://dev.example" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    });
+    const client = new FonioClient("test-key", "https://app.fonio.ai/api", fetchImpl);
+    const listed = await client.listRemoteIntegrationServers();
+    expect(listed[0]?.baseUrl).toBe("https://dev.example");
+    expect(String(fetchImpl.mock.calls[0]?.[0])).toBe(
+      "https://app.fonio.ai/api/integrations/remote-registry/servers",
+    );
+    const saved = await client.registerRemoteIntegrationServer({
+      baseUrl: "https://dev.example/",
+      authToken: "secret-token",
+    });
+    expect(saved.baseUrl).toBe("https://dev.example");
+    const put = fetchImpl.mock.calls[1] as unknown as [string, RequestInit];
+    expect(put[1].method).toBe("PUT");
+    expect(JSON.parse(String(put[1].body))).toEqual({
+      baseUrl: "https://dev.example",
+      authToken: "secret-token",
+    });
   });
 });
