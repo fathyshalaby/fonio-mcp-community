@@ -15,6 +15,6 @@ function createServer() {
 
 serveStdio(() => createServer(), {
   onerror: (error) => {
-    console.error("[fonio-mcp]", error);
+    console.error("[unofficial-fonio-mcp]", error);
   },
 });

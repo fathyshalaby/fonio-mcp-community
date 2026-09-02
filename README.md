@@ -73,11 +73,11 @@ Without `NEXT_PUBLIC_MCP_ORIGIN`, OAuth metadata is inferred from the `Host` hea
 ### Docker
 
 ```bash
-docker build -t fonio-mcp .
+docker build -t unofficial-fonio-mcp .
 docker run --rm -p 43147:43147 \
   -e FONIO_MCP_SECRET="$(openssl rand -hex 32)" \
   -e NEXT_PUBLIC_MCP_ORIGIN="https://your.public.host" \
-  fonio-mcp
+  unofficial-fonio-mcp
 ```
 
 Put a reverse proxy or Cloudflare Tunnel in front so Claude/ChatGPT can reach HTTPS.

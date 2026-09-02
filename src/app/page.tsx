@@ -24,12 +24,13 @@ export default async function HomePage() {
               Weekend project · MIT · not a SaaS
             </Badge>
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-              An unofficial fonio MCP for Claude and ChatGPT.
+              Unofficial fonio MCP for Claude and ChatGPT.
             </h1>
             <p className="mt-4 max-w-xl text-lg text-muted-foreground text-pretty">
-              Software you run yourself — a weekend project by a community
-              member, not a product, not fonio GmbH. Self-host or use local
-              stdio. A volunteer free-domain copy has no SLA and no liability.
+              fonio GmbH does not ship an official MCP. This is a weekend
+              project by a community member — not a product, not fonio staff.
+              Self-host or use local stdio. A volunteer free-domain copy has no
+              SLA and no liability.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="#install" className={cn(buttonVariants({ size: "lg" }), "h-10 px-4")}>
