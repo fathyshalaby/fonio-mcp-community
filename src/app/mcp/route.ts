@@ -44,7 +44,10 @@ function authed(request: Request) {
   return withMcpAuth(inner, verifyToken, {
     required: true,
     resourceMetadataPath: "/.well-known/oauth-protected-resource",
-    resourceUrl: `${publicOrigin(request)}/mcp`,
+    // mcp-handler concatenates this with resourceMetadataPath. It is the
+    // public origin, not the /mcp resource URL, so Claude/ChatGPT do not
+    // follow a 404 at /mcp/.well-known/oauth-protected-resource.
+    resourceUrl: publicOrigin(request),
   })(request);
 }
 
