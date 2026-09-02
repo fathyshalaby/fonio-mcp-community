@@ -1,6 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { AUTH_REQUIRED_MESSAGE } from "@/lib/legal";
+import { AUTH_REQUIRED_MESSAGE, NO_OFFICIAL_MCP } from "@/lib/legal";
 import { connectionSnapshot } from "@/mcp/register";
+import { SERVER_NAME } from "@/mcp/version";
+import { SITE } from "@/lib/site";
+
+describe("unofficial naming", () => {
+  it("is named unofficial-fonio-mcp, not fonio MCP", () => {
+    expect(SERVER_NAME).toBe("unofficial-fonio-mcp");
+    expect(SITE.name).toBe("Unofficial fonio MCP");
+    expect(NO_OFFICIAL_MCP).toMatch(/no official fonio MCP/i);
+    expect(NO_OFFICIAL_MCP).toMatch(/registry/);
+  });
+});
 
 describe("connectionSnapshot", () => {
   it("reports disconnected without a key", () => {

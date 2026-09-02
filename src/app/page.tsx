@@ -24,7 +24,7 @@ export default async function HomePage() {
               Weekend project · MIT · not a SaaS
             </Badge>
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-              An unofficial MCP for fonio agents in Claude and ChatGPT.
+              An unofficial fonio MCP for Claude and ChatGPT.
             </h1>
             <p className="mt-4 max-w-xl text-lg text-muted-foreground text-pretty">
               Software you run yourself — a weekend project by a community

@@ -7,6 +7,7 @@ import {
   HOSTING_GUIDANCE,
   LIABILITY_DISCLAIMER,
   MCP_LIMITATION,
+  NO_OFFICIAL_MCP,
   NOT_SAAS,
 } from "@/lib/legal";
 import { SITE } from "@/lib/site";
@@ -16,11 +17,12 @@ export const metadata: Metadata = { title: "License, hosting & disclaimer" };
 export default function LegalPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
-      <p className="text-sm font-medium text-primary">Open source · not a SaaS</p>
+      <p className="text-sm font-medium text-primary">Unofficial fonio MCP · not a SaaS</p>
       <h1 className="mt-1 text-3xl font-semibold tracking-tight">
         License, hosting, and disclaimer
       </h1>
       <p className="mt-4 text-muted-foreground">{NOT_SAAS}</p>
+      <p className="mt-4 text-muted-foreground">{NO_OFFICIAL_MCP}</p>
       <p className="mt-4 text-muted-foreground">{AFFILIATION_DISCLAIMER}</p>
       <p className="mt-4 text-muted-foreground">{LIABILITY_DISCLAIMER}</p>
       <p className="mt-4 text-muted-foreground">{API_KEY_DISCLAIMER}</p>

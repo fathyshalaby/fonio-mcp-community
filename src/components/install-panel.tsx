@@ -9,33 +9,33 @@ export function InstallPanel({ origin }: { origin: string }) {
 
   const snippets = useMemo(
     () => ({
-      claude: `Add a custom connector in Claude with this URL. The client will ask you to authorize this unofficial community MCP (not fonio GmbH):
+      claude: `Add a custom connector in Claude named unofficial-fonio-mcp with this URL (not an official fonio product):
 
 ${httpUrl}
 
 On that screen: open official app.fonio.ai/login, copy a workspace key from app.fonio.ai/api-keys, paste it, allow access.
 
 Prefer running this repo yourself (npm run mcp + FONIO_API_KEY, or Docker). A volunteer URL is unpaid, no warranty, no liability.`,
-      claudeCode: `claude mcp add --transport http fonio-community ${httpUrl}
+      claudeCode: `claude mcp add --transport http unofficial-fonio-mcp ${httpUrl}
 
 # then inside a session:
 /mcp
-# complete the community connector (paste workspace API key)`,
+# complete the unofficial connector (paste workspace API key)`,
       cursor: `{
   "mcpServers": {
-    "fonio-community": {
+    "unofficial-fonio-mcp": {
       "url": "${httpUrl}"
     }
   }
 }`,
-      openai: `ChatGPT custom connector / OpenAI Agents remote MCP:
+      openai: `ChatGPT custom connector / OpenAI Agents remote MCP (label it unofficial-fonio-mcp):
 
 ${httpUrl}
 
-ChatGPT starts community MCP OAuth (401 + resource metadata). Log in on official app.fonio.ai, paste a workspace API key. This is open-source software, not a SaaS. A volunteer URL has no warranty.`,
+ChatGPT starts unofficial MCP OAuth (401 + resource metadata). Log in on official app.fonio.ai, paste a workspace API key. This is open-source software, not a SaaS, not fonio GmbH. A volunteer URL has no warranty.`,
       vscode: `{
   "servers": {
-    "fonio-community": {
+    "unofficial-fonio-mcp": {
       "type": "http",
       "url": "${httpUrl}"
     }
@@ -43,7 +43,7 @@ ChatGPT starts community MCP OAuth (401 + resource metadata). Log in on official
 }`,
       stdio: `{
   "mcpServers": {
-    "fonio-community": {
+    "unofficial-fonio-mcp": {
       "command": "npx",
       "args": ["tsx", "./src/mcp/stdio.ts"],
       "env": {
@@ -79,7 +79,7 @@ ChatGPT starts community MCP OAuth (401 + resource metadata). Log in on official
         <TabsContent value="claude-code">
           <p className="mb-3 text-sm text-muted-foreground">
             Run the add command, then <code className="text-xs">/mcp</code> to
-            paste a workspace API key on this community host.
+            paste a workspace API key on this unofficial instance.
           </p>
           <CopyBlock code={snippets.claudeCode} />
         </TabsContent>

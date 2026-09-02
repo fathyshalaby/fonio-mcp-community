@@ -1,6 +1,8 @@
-# Community MCP for fonio (unofficial)
+# Unofficial fonio MCP
 
-**Weekend project: an open-source MCP server — not a SaaS product.** Built by a fonio community member, not fonio staff. MIT licensed.
+**Weekend project: unofficial open-source MCP for fonio.ai — not a SaaS, not fonio GmbH.** Built by a community member, not fonio staff. MIT licensed.
+
+**There is no official fonio MCP** as of 2026-09-02: the public OpenAPI (`app.fonio.ai/api/docs`) has no MCP, [fonio.info](https://fonio.info) has no MCP article, and the [public MCP registry](https://registry.modelcontextprotocol.io/v0/servers?search=fonio) returns zero servers for “fonio”. If fonio ships one later, use that instead.
 
 This repository is **not affiliated with, endorsed by, sponsored by, or associated with fonio GmbH or fonio.ai**. The maintainers have no employment or contractor relationship with fonio. fonio® and related marks belong to their owners.
 
@@ -29,7 +31,7 @@ This does **not** go into Claude’s or ChatGPT’s official connector catalogs.
 
 It **does** show up as a custom MCP **for people who add a `/mcp` URL** (or run local stdio):
 
-- The client lists `fonio-community` and the model can call the tools in that chat.
+- The client lists `unofficial-fonio-mcp` and the model can call the tools in that chat.
 - Opt-in per user or workspace — not a store listing, not a SaaS.
 - It does **not** appear inside fonio’s own phone/WhatsApp assistants on app.fonio.ai.
 
@@ -46,7 +48,7 @@ HTTP MCP **requires** a Bearer token so those clients start OAuth (401 + `WWW-Au
 Claude Code:
 
 ```bash
-claude mcp add --transport http fonio-community https://<your-host>/mcp
+claude mcp add --transport http unofficial-fonio-mcp https://<your-host>/mcp
 ```
 
 Then `/mcp` and paste the key.

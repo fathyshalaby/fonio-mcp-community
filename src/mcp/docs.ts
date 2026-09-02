@@ -42,15 +42,17 @@ export const WEBHOOK_SOURCE_IPS = [
 export const articles: DocArticle[] = [
   {
     slug: "mcp",
-    title: "Community MCP for fonio",
+    title: "Unofficial fonio MCP",
     summary:
-      "Unofficial open-source MCP (not a SaaS): Claude, ChatGPT, and Cursor configure paste-ready agents and call the public API with a workspace API key. Not fonio GmbH.",
+      "Unofficial fonio MCP (not a SaaS, not fonio GmbH). There is no official fonio MCP as of 2026-09-02. Claude, ChatGPT, and Cursor configure paste-ready agents and call the public API with a workspace API key.",
     category: "API",
     url: "https://fonio.info",
     tags: ["mcp", "claude", "openai", "cursor", "chatgpt", "agents"],
-    body: `# Community MCP for fonio (unofficial)
+    body: `# Unofficial fonio MCP
 
-This MCP server is an **unofficial open-source** Model Context Protocol interface for fonio — **not a SaaS product**. The authors are community members, not fonio staff. It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software or a volunteer-hosted copy, including billed phone calls and stored API keys.
+This is an **unofficial fonio MCP** — a weekend open-source Model Context Protocol server. **Not a SaaS.** **Not fonio GmbH.** The authors are community members, not fonio staff. MIT licensed, no warranty, and the authors are not liable for use of the software or a volunteer-hosted copy, including billed phone calls and stored API keys.
+
+**There is no official fonio MCP** (checked 2026-09-02): public OpenAPI at https://app.fonio.ai/api/docs has only outbound call, API-key test, and remote integration servers; https://fonio.info has no MCP article; the public MCP registry search for “fonio” returns zero servers. If fonio ships an official MCP later, use that instead.
 
 Bundled articles can be incomplete or wrong versus https://fonio.info — trust the official app and docs if they disagree.
 
