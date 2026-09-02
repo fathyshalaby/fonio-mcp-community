@@ -17,9 +17,9 @@ export function SiteHeader() {
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <FonioMark className="size-8 text-primary" />
           <span className="leading-tight">
-            Community MCP
+            unofficial fonio MCP
             <span className="block text-[11px] font-normal text-muted-foreground">
-              unofficial · open source
+              not fonio GmbH · weekend project
             </span>
           </span>
         </Link>

@@ -15,10 +15,10 @@ export function FonioAuthShell({
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(88,93,254,0.35),transparent_55%)]" />
         <div className="relative">
           <p className="text-xs font-medium uppercase tracking-wide text-white/55">
-            Open source · not a SaaS · community member
+            Open source · unofficial · not a SaaS
           </p>
           <p className="mt-2 text-lg font-semibold tracking-tight">
-            Community MCP for fonio
+            {SITE.name}
           </p>
         </div>
         <div className="relative max-w-md">
@@ -45,7 +45,7 @@ export function FonioAuthShell({
             <p className="text-xs font-medium uppercase tracking-wide text-primary">
               Unofficial community project
             </p>
-            <p className="font-semibold">Community MCP for fonio</p>
+            <p className="font-semibold">{SITE.name}</p>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight">
             Allow this unofficial MCP

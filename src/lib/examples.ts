@@ -171,11 +171,11 @@ export const EXAMPLES: Example[] = [
 ];
 
 export function linkedInPostEn(mcpUrl: string) {
-  return `Weekend project: an unofficial open-source MCP for fonio.ai.
+  return `Weekend project: unofficial fonio MCP.
 
-I don’t work at fonio. This is not a SaaS, not affiliated with fonio GmbH, MIT, no warranty — I’m not liable for use (including billed outbound calls or a volunteer-hosted URL).
+I don’t work at fonio. There is no official fonio MCP (public API + fonio.info + MCP registry). This is not a SaaS, MIT, no warranty — I’m not liable for use (including billed outbound calls or a volunteer-hosted URL).
 
-Self-host the repo, or add this /mcp URL in Claude / ChatGPT / Cursor at your own risk. Paste a workspace API key from app.fonio.ai/api-keys (never a fonio password), then build paste-ready voice and WhatsApp agents in chat.
+Self-host the repo, or add this /mcp URL in Claude / ChatGPT / Cursor at your own risk. Paste a workspace API key from app.fonio.ai/api-keys (never a fonio password).
 
 ${mcpUrl}
 
@@ -187,11 +187,11 @@ Try: “Build a receptionist that books Prophylaxe in the Scheduler and transfer
 }
 
 export function linkedInPostDe(mcpUrl: string) {
-  return `Wochenendprojekt: inoffizieller Open-Source-MCP für fonio.ai.
+  return `Wochenendprojekt: inoffizieller fonio-MCP.
 
-Ich arbeite nicht bei fonio. Das ist kein SaaS, keine Verbindung zu fonio GmbH, MIT, ohne Gewähr — keine Haftung (auch nicht für kostenpflichtige Outbound-Anrufe oder eine ehrenamtlich gehostete URL).
+Ich arbeite nicht bei fonio. Es gibt keinen offiziellen fonio-MCP (Public API + fonio.info + MCP-Registry). Kein SaaS, MIT, ohne Gewähr — keine Haftung (auch nicht für kostenpflichtige Outbound-Anrufe oder eine ehrenamtlich gehostete URL).
 
-Repo selbst hosten oder diese /mcp-URL in Claude / ChatGPT / Cursor auf eigenes Risiko eintragen. Workspace-API-Key von app.fonio.ai/api-keys (kein fonio-Passwort), dann Sprach- und WhatsApp-Agenten im Chat bauen.
+Repo selbst hosten oder diese /mcp-URL in Claude / ChatGPT / Cursor auf eigenes Risiko eintragen. Workspace-API-Key von app.fonio.ai/api-keys (kein fonio-Passwort).
 
 ${mcpUrl}
 
@@ -203,7 +203,7 @@ Z.B.: „Bau einen Empfangs-Agenten, der Prophylaxe im Scheduler bucht und Billi
 }
 
 export function shortPostEn(mcpUrl: string) {
-  return `Weekend project: unofficial open-source MCP for fonio.ai (I don’t work there, not a SaaS, MIT, no liability).
+  return `Weekend project: unofficial fonio MCP (I don’t work at fonio; they don’t ship an official MCP). Not a SaaS. MIT, no liability.
 
 Self-host or add ${mcpUrl} in Claude/ChatGPT with a workspace API key.
 
@@ -211,7 +211,7 @@ https://github.com/fathyshalaby/fonio-mcp-community`;
 }
 
 export function shortPostDe(mcpUrl: string) {
-  return `Wochenendprojekt: inoffizieller Open-Source-MCP für fonio.ai (ich arbeite nicht dort, kein SaaS, MIT, keine Haftung).
+  return `Wochenendprojekt: inoffizieller fonio-MCP (ich arbeite nicht dort; es gibt keinen offiziellen). Kein SaaS. MIT, keine Haftung.
 
 Selbst hosten oder ${mcpUrl} in Claude/ChatGPT mit Workspace-API-Key.
 

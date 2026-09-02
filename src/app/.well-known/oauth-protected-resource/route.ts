@@ -29,6 +29,6 @@ export function GET(request: Request) {
     authorization_servers: [origin],
     bearer_methods_supported: ["header"],
     scopes_supported: ["fonio"],
-    resource_name: "Unofficial community MCP for fonio (not fonio GmbH)",
+    resource_name: "Unofficial fonio MCP (not fonio GmbH)",
   });
 }

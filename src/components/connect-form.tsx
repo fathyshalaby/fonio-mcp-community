@@ -175,7 +175,7 @@ export function ConnectShell({
         <p className="text-xs font-medium uppercase tracking-wide text-primary">
           Unofficial community project
         </p>
-        <p className="font-semibold">Community MCP for fonio</p>
+        <p className="font-semibold">{SITE.name}</p>
         <p className="text-xs text-muted-foreground">
           Open source · not a SaaS · MIT · no liability
         </p>

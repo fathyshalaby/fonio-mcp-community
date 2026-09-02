@@ -44,7 +44,7 @@ export default function OgImage() {
           >
             C
           </div>
-          Community MCP for fonio
+          Unofficial fonio MCP
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div
@@ -56,7 +56,7 @@ export default function OgImage() {
               maxWidth: 900,
             }}
           >
-            Open source. Not a SaaS. Self-host or volunteer URL.
+            Unofficial fonio MCP. Not a SaaS. Self-host or volunteer URL.
           </div>
           <div style={{ marginTop: 24, fontSize: 28, color: "#5c6070", maxWidth: 820 }}>
             Not fonio GmbH. MIT, no warranty, no liability.

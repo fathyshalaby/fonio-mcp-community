@@ -4,7 +4,10 @@ export const AFFILIATION_DISCLAIMER =
   "This is an independent, unofficial, open-source community project. It is not affiliated with, endorsed by, sponsored by, or associated with fonio GmbH or fonio.ai. The authors are community members and have no employment or contractor relationship with fonio.";
 
 export const NOT_SAAS =
-  "This is not a SaaS product, company, or paid service. It is a weekend open-source MCP server (MIT). You run it yourself (local stdio or self-host). A volunteer may also put a copy on a free domain as a convenience. That copy is not a product: no accounts, no subscription, no SLA, no support, and no liability.";
+  "This is not a SaaS product, company, or paid service. It is a weekend unofficial fonio MCP (MIT open source). You run it yourself (local stdio or self-host). A volunteer may also put a copy on a free domain as a convenience. That copy is not a product: no accounts, no subscription, no SLA, no support, and no liability.";
+
+export const NO_OFFICIAL_MCP =
+  "As of 2026-09-02 there is no official fonio MCP from fonio GmbH. Checked: public OpenAPI at app.fonio.ai/api/docs (outbound call, API-key test, remote integration servers only), fonio.info help center (no MCP article), and the public MCP registry search for “fonio” (zero servers). If fonio later ships an official MCP, use that instead of this weekend project.";
 
 export const LIABILITY_DISCLAIMER =
   "The software is licensed under the MIT License and provided “as is”, without warranty of any kind. The authors and contributors are not liable for anything that happens if you use the code or a volunteer-hosted copy — including downtime, lost data, billed phone calls, leaked or stored API keys, account issues, or other damages. Using a free-domain instance is entirely at your own risk.";
@@ -30,6 +33,6 @@ export const MCP_LIMITATION =
 export const ASSISTANT_VISIBILITY = `What shows up in Claude, ChatGPT, or Cursor:
 
 - Only after someone pastes a /mcp URL (or runs local stdio). Anthropic and OpenAI do not scrape this repo and will not list or promote it in their official connector catalogs.
-- In that user’s chat it is a normal custom MCP: the client shows the server name (fonio-community) and the model can call the tools. That is opt-in per user or workspace, not a store listing and not a SaaS.
+- In that user’s chat it is a normal custom MCP: the client shows the server name unofficial-fonio-mcp. That is opt-in per user or workspace, not a store listing and not a SaaS.
 - It does not appear inside fonio’s own phone/WhatsApp assistants on app.fonio.ai.
-- Do not submit this connector to Claude/ChatGPT directories as “the fonio MCP”. If you mention it, call it an unofficial open-source community MCP.`;
+- Do not submit this connector to Claude/ChatGPT directories as “the fonio MCP”. Call it the unofficial fonio MCP.`;

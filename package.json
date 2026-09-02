@@ -1,9 +1,9 @@
 {
-  "name": "fonio-mcp",
+  "name": "unofficial-fonio-mcp",
   "version": "1.2.0",
   "private": true,
   "license": "MIT",
-  "description": "Unofficial open-source MCP server for fonio.ai. Not a SaaS, not affiliated with fonio GmbH. MIT, no warranty.",
+  "description": "Unofficial fonio MCP — open-source weekend project, not fonio GmbH, not a SaaS. MIT, no warranty.",
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 43147",
     "build": "next build",

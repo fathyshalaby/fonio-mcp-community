@@ -1,8 +1,8 @@
 export const SITE = {
-  name: "Community MCP for fonio",
-  tagline: "Weekend project — open-source MCP, not a SaaS",
+  name: "Unofficial fonio MCP",
+  tagline: "Weekend project — not fonio GmbH, not a SaaS",
   description:
-    "Unofficial MIT open-source MCP server for fonio.ai. Not a SaaS, not fonio GmbH. Self-host it, or use a volunteer free-domain copy with no warranty and no liability.",
+    "Unofficial MIT open-source MCP for fonio.ai. fonio GmbH does not ship an official MCP. Not a SaaS. Self-host it, or use a volunteer free-domain copy with no warranty and no liability.",
   app: "https://app.fonio.ai",
   login: "https://app.fonio.ai/login",
   apiKeys: "https://app.fonio.ai/api-keys",
