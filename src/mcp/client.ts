@@ -169,7 +169,7 @@ export class FonioClient {
     const headers: Record<string, string> = {
       Authorization: `Bearer ${this.apiKey}`,
       Accept: "application/json",
-      "User-Agent": "fonio-mcp/1.1",
+      "User-Agent": "fonio-community-mcp/1.2",
     };
     let payload: string | undefined;
     if (body !== undefined) {

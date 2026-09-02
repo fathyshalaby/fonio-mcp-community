@@ -171,43 +171,51 @@ export const EXAMPLES: Example[] = [
 ];
 
 export function linkedInPostEn(mcpUrl: string) {
-  return `Unofficial community MCP for fonio.ai (not affiliated with, endorsed by, or sponsored by fonio GmbH).
+  return `Weekend project: an unofficial open-source MCP for fonio.ai.
 
-Open source, MIT, no warranty — I have no association with fonio. The authors are not liable for use, including billed outbound calls.
+I don’t work at fonio. This is not a SaaS, not affiliated with fonio GmbH, MIT, no warranty — I’m not liable for use (including billed outbound calls or a volunteer-hosted URL).
 
-Same idea as the ElevenLabs MCP: add this URL in Claude / ChatGPT / Cursor, Sign in with fonio, then build voice and WhatsApp agents in chat:
+Self-host the repo, or add this /mcp URL in Claude / ChatGPT / Cursor at your own risk. Paste a workspace API key from app.fonio.ai/api-keys (never a fonio password), then build paste-ready voice and WhatsApp agents in chat.
 
 ${mcpUrl}
 
-Then you can say:
-
-“Build a receptionist that books Prophylaxe in the Scheduler and transfers billing to Anna.”
-“Look this caller up in HubSpot before the greeting.”
-“A lead just submitted the form — call Ada back from our imported number about the Q3 quote.”
-
 Repo: https://github.com/fathyshalaby/fonio-mcp-community
 
-#MCP #VoiceAI #Claude #OpenAI #OpenSource`;
+Try: “Build a receptionist that books Prophylaxe in the Scheduler and transfers billing to Anna.”
+
+#MCP #OpenSource #Claude #ChatGPT #VoiceAI #WeekendProject`;
 }
 
 export function linkedInPostDe(mcpUrl: string) {
-  return `Inoffizieller Community-MCP für fonio.ai (keine Verbindung zu fonio GmbH, nicht von fonio unterstützt oder gesponsert).
+  return `Wochenendprojekt: inoffizieller Open-Source-MCP für fonio.ai.
 
-Open Source, MIT, ohne Gewähr — ich habe keine Verbindung zu fonio. Keine Haftung für die Nutzung, einschließlich kostenpflichtiger Outbound-Anrufe.
+Ich arbeite nicht bei fonio. Das ist kein SaaS, keine Verbindung zu fonio GmbH, MIT, ohne Gewähr — keine Haftung (auch nicht für kostenpflichtige Outbound-Anrufe oder eine ehrenamtlich gehostete URL).
 
-Wie der ElevenLabs-MCP: URL in Claude / ChatGPT / Cursor eintragen, anmelden, dann Sprach- und WhatsApp-Agenten im Chat bauen:
+Repo selbst hosten oder diese /mcp-URL in Claude / ChatGPT / Cursor auf eigenes Risiko eintragen. Workspace-API-Key von app.fonio.ai/api-keys (kein fonio-Passwort), dann Sprach- und WhatsApp-Agenten im Chat bauen.
 
 ${mcpUrl}
 
-Dann z.B.:
-
-„Bau einen Empfangs-Agenten, der Prophylaxe im Scheduler bucht und Billing an Anna weiterleitet.“
-„Schau den Anrufer vor der Begrüßung in HubSpot nach.“
-„Ein Lead hat das Formular abgeschickt — ruf Ada von unserer importierten Nummer wegen des Q3-Angebots zurück.“
-
 Repo: https://github.com/fathyshalaby/fonio-mcp-community
 
-#MCP #VoiceAI #Claude #OpenAI #OpenSource`;
+Z.B.: „Bau einen Empfangs-Agenten, der Prophylaxe im Scheduler bucht und Billing an Anna weiterleitet.“
+
+#MCP #OpenSource #Claude #ChatGPT #VoiceAI #Wochenendprojekt`;
+}
+
+export function shortPostEn(mcpUrl: string) {
+  return `Weekend project: unofficial open-source MCP for fonio.ai (I don’t work there, not a SaaS, MIT, no liability).
+
+Self-host or add ${mcpUrl} in Claude/ChatGPT with a workspace API key.
+
+https://github.com/fathyshalaby/fonio-mcp-community`;
+}
+
+export function shortPostDe(mcpUrl: string) {
+  return `Wochenendprojekt: inoffizieller Open-Source-MCP für fonio.ai (ich arbeite nicht dort, kein SaaS, MIT, keine Haftung).
+
+Selbst hosten oder ${mcpUrl} in Claude/ChatGPT mit Workspace-API-Key.
+
+https://github.com/fathyshalaby/fonio-mcp-community`;
 }
 
 export const LINKEDIN_POST_EN = linkedInPostEn("https://<your-host>/mcp");

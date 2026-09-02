@@ -9,18 +9,21 @@ export function InstallPanel({ origin }: { origin: string }) {
 
   const snippets = useMemo(
     () => ({
-      claude: `Add a custom connector in Claude with this URL, then complete Sign in with fonio (official app.fonio.ai login):
+      claude: `Add a custom connector in Claude with this URL. The client will ask you to authorize this unofficial community MCP (not fonio GmbH):
 
 ${httpUrl}
 
-Claude Desktop (local stdio) still uses npm run mcp + FONIO_API_KEY if you prefer not to host.`,
-      claudeCode: `claude mcp add --transport http fonio ${httpUrl}
+On that screen: open official app.fonio.ai/login, copy a workspace key from app.fonio.ai/api-keys, paste it, allow access.
+
+Prefer running this repo yourself (npm run mcp + FONIO_API_KEY, or Docker). A volunteer URL is unpaid, no warranty, no liability.`,
+      claudeCode: `claude mcp add --transport http fonio-community ${httpUrl}
 
 # then inside a session:
-/mcp`,
+/mcp
+# complete the community connector (paste workspace API key)`,
       cursor: `{
   "mcpServers": {
-    "fonio": {
+    "fonio-community": {
       "url": "${httpUrl}"
     }
   }
@@ -29,10 +32,10 @@ Claude Desktop (local stdio) still uses npm run mcp + FONIO_API_KEY if you prefe
 
 ${httpUrl}
 
-Your client opens Sign in with fonio (log in at app.fonio.ai, then allow access). Docs tools work before that; live calls need the connected session.`,
+ChatGPT starts community MCP OAuth (401 + resource metadata). Log in on official app.fonio.ai, paste a workspace API key. This is open-source software, not a SaaS. A volunteer URL has no warranty.`,
       vscode: `{
   "servers": {
-    "fonio": {
+    "fonio-community": {
       "type": "http",
       "url": "${httpUrl}"
     }
@@ -40,7 +43,7 @@ Your client opens Sign in with fonio (log in at app.fonio.ai, then allow access)
 }`,
       stdio: `{
   "mcpServers": {
-    "fonio": {
+    "fonio-community": {
       "command": "npx",
       "args": ["tsx", "./src/mcp/stdio.ts"],
       "env": {
@@ -56,9 +59,10 @@ Your client opens Sign in with fonio (log in at app.fonio.ai, then allow access)
   return (
     <div className="rounded-2xl border bg-card p-4 shadow-sm sm:p-6">
       <p className="mb-4 text-sm text-muted-foreground">
-        Hosted MCP uses <strong>Sign in with fonio</strong> on the official app.
-        Unofficial community project — MIT, no warranty, not liable including for billed
-        phone calls, not affiliated with fonio.
+        Open-source MCP, not a SaaS. HTTP needs a <strong>workspace API key</strong>{" "}
+        (community PKCE — not fonio GmbH login). MIT, no warranty, no liability —
+        including a volunteer free-domain URL. Run it yourself unless you accept
+        an encrypted key on someone else’s machine.
       </p>
       <Tabs defaultValue="claude-code">
         <TabsList className="mb-4 h-auto w-full flex-wrap justify-start">
@@ -67,14 +71,15 @@ Your client opens Sign in with fonio (log in at app.fonio.ai, then allow access)
           <TabsTrigger value="cursor">Cursor</TabsTrigger>
           <TabsTrigger value="openai">ChatGPT / OpenAI</TabsTrigger>
           <TabsTrigger value="vscode">VS Code</TabsTrigger>
-          <TabsTrigger value="stdio">Local stdio</TabsTrigger>
+          <TabsTrigger value="stdio">Local stdio (safest)</TabsTrigger>
         </TabsList>
         <TabsContent value="claude">
           <CopyBlock code={snippets.claude} />
         </TabsContent>
         <TabsContent value="claude-code">
           <p className="mb-3 text-sm text-muted-foreground">
-            Run the add command, then <code className="text-xs">/mcp</code> to finish Sign in with fonio.
+            Run the add command, then <code className="text-xs">/mcp</code> to
+            paste a workspace API key on this community host.
           </p>
           <CopyBlock code={snippets.claudeCode} />
         </TabsContent>
@@ -92,7 +97,8 @@ Your client opens Sign in with fonio (log in at app.fonio.ai, then allow access)
         </TabsContent>
         <TabsContent value="stdio">
           <p className="mb-3 text-sm text-muted-foreground">
-            From the repo: <code className="text-xs">FONIO_API_KEY=… npm run mcp</code>
+            Key stays on your machine:{" "}
+            <code className="text-xs">FONIO_API_KEY=… npm run mcp</code>
           </p>
           <CopyBlock code={snippets.stdio} />
         </TabsContent>

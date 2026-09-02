@@ -80,7 +80,9 @@ describe("buildAssistant", () => {
     expect(spec.knowledgeBase.entries.some((entry) => /park/i.test(entry.question))).toBe(
       true,
     );
-    expect(spec.appChecklist[0]).toMatch(/Assistants/);
+    expect(spec.appChecklist[0]).toMatch(/cannot create/i);
+    expect(spec.pastePack.prompt).toContain("## Role");
+    expect(spec.howToPresent).toMatch(/pastePack/);
   });
 
   it("builds an outbound callback prompt with context variables", () => {

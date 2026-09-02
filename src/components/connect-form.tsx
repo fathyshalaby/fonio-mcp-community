@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { FonioMark } from "@/components/fonio-mark";
 import { SITE } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +20,7 @@ function HiddenFields({ fields }: { fields?: Record<string, string> }) {
 export function ConnectForm({
   action,
   hiddenFields,
-  submitLabel = "Allow access",
+  submitLabel = "Verify key and allow this unofficial MCP",
   error,
 }: {
   action: string | ((formData: FormData) => void | Promise<void>);
@@ -44,13 +43,13 @@ export function ConnectForm({
         href={SITE.login}
         target="_blank"
         rel="noreferrer"
-        className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-border bg-background text-sm font-medium hover:bg-muted"
       >
-        Continue with fonio
+        Open official fonio login (app.fonio.ai)
       </a>
       <p className="text-center text-xs text-muted-foreground">
-        Opens the official login at app.fonio.ai. We never collect your fonio
-        password.
+        That site is fonio GmbH. This page is open-source community software,
+        not a SaaS. We never collect your fonio password.
       </p>
 
       <div className="relative py-1">
@@ -62,17 +61,20 @@ export function ConnectForm({
         </div>
       </div>
       <p className="text-sm text-muted-foreground">
-        After you log in, copy a workspace key from{" "}
+        Copy a workspace API key from{" "}
         <a
           href={SITE.apiKeys}
           target="_blank"
           rel="noreferrer"
           className="font-medium text-primary hover:underline"
         >
-          API keys
+          app.fonio.ai/api-keys
         </a>
-        . We verify it live with fonio’s{" "}
-        <code className="text-xs">test-api-key</code> endpoint.
+        . We verify it with fonio’s public{" "}
+        <code className="text-xs">test-api-key</code> endpoint. This volunteer
+        instance then stores an encrypted copy so Claude/ChatGPT can call the
+        public API — no warranty, no liability. Run the repo yourself if you do
+        not want that.
       </p>
       <div className="space-y-2">
         <Label htmlFor="apiKey">Workspace API key</Label>
@@ -116,19 +118,21 @@ export function ResumeSessionForm({
   return (
     <div className="space-y-4">
       <div className="rounded-xl bg-muted/70 px-3 py-3 text-sm">
-        <p className="font-medium">Signed in to fonio</p>
+        <p className="font-medium">Workspace key saved on this volunteer instance</p>
         <p className="mt-0.5 text-muted-foreground">
-          Workspace key ending in ••••{fingerprint}
+          Key ending in ••••{fingerprint} (encrypted session, not a fonio
+          password)
         </p>
       </div>
       <p className="text-sm text-muted-foreground">
         {clientName ? (
           <>
             Allow <span className="font-medium text-foreground">{clientName}</span>{" "}
-            to use this workspace for docs and outbound calls.
+            to use this unofficial MCP with that key for docs, paste-ready
+            agents, and the public API.
           </>
         ) : (
-          <>Allow this assistant to use your connected fonio workspace.</>
+          <>Allow this assistant to use the saved workspace API key.</>
         )}
       </p>
       <form
@@ -138,7 +142,7 @@ export function ResumeSessionForm({
       >
         <HiddenFields fields={hiddenFields} />
         <Button type="submit" className="h-10 w-full" disabled={busy !== null}>
-          {busy === "allow" ? "Allowing…" : "Allow access"}
+          {busy === "allow" ? "Allowing…" : "Allow this unofficial MCP"}
         </Button>
       </form>
       <form action={switchAction} onSubmit={() => setBusy("switch")}>
@@ -149,7 +153,7 @@ export function ResumeSessionForm({
           className="h-10 w-full"
           disabled={busy !== null}
         >
-          Use a different workspace
+          Use a different workspace key
         </Button>
       </form>
     </div>
@@ -167,23 +171,26 @@ export function ConnectShell({
 }) {
   return (
     <div className="mx-auto w-full max-w-md px-4 py-16">
-      <div className="mb-6 flex items-center gap-2">
-        <FonioMark className="size-9 text-primary" />
-        <div>
-          <p className="font-semibold">fonio</p>
-          <p className="text-xs text-muted-foreground">Connect your workspace</p>
-        </div>
+      <div className="mb-6">
+        <p className="text-xs font-medium uppercase tracking-wide text-primary">
+          Unofficial community project
+        </p>
+        <p className="font-semibold">Community MCP for fonio</p>
+        <p className="text-xs text-muted-foreground">
+          Open source · not a SaaS · MIT · no liability
+        </p>
       </div>
       <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
       {clientName ? (
         <p className="mt-2 text-sm text-muted-foreground">
           <span className="font-medium text-foreground">{clientName}</span> wants
-          permission to search fonio docs and place outbound calls as your workspace.
+          to use this unofficial connector with your workspace API key.
         </p>
       ) : (
         <p className="mt-2 text-sm text-muted-foreground">
-          Log in on fonio, then paste a workspace API key. We verify it against
-          app.fonio.ai and keep an encrypted session — not in the chat transcript.
+          Log in on the official fonio app in a new tab, then paste a workspace
+          API key here. This is not a SaaS. A volunteer instance may keep an
+          encrypted session — at your own risk, not in the chat transcript.
         </p>
       )}
       <div className="mt-6 rounded-2xl border bg-card p-5 shadow-sm">{children}</div>

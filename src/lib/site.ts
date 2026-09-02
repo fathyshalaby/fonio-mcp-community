@@ -1,8 +1,8 @@
 export const SITE = {
-  name: "fonio MCP",
-  tagline: "Build fonio agents in Claude",
+  name: "Community MCP for fonio",
+  tagline: "Weekend project — open-source MCP, not a SaaS",
   description:
-    "Independent open-source MCP server for fonio.ai. Connect Claude, ChatGPT, or Cursor, then build paste-ready voice and WhatsApp agents — same idea as the ElevenLabs MCP. Not affiliated with fonio GmbH. MIT licensed, no warranty.",
+    "Unofficial MIT open-source MCP server for fonio.ai. Not a SaaS, not fonio GmbH. Self-host it, or use a volunteer free-domain copy with no warranty and no liability.",
   app: "https://app.fonio.ai",
   login: "https://app.fonio.ai/login",
   apiKeys: "https://app.fonio.ai/api-keys",
@@ -24,6 +24,12 @@ export const NAV = [
 ];
 
 export const TOOLS = [
+  {
+    name: "get_connection_status",
+    kind: "Auth",
+    summary:
+      "Show whether a workspace API key is connected (last four characters only). Hosted Claude/ChatGPT use community MCP OAuth + a key from app.fonio.ai/api-keys — not a fonio password.",
+  },
   {
     name: "list_assistant_templates",
     kind: "Agents",

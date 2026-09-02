@@ -35,7 +35,7 @@ export async function continueWorkspaceSession(formData: FormData) {
   try {
     const current = await getWorkspaceSession();
     if (!current) {
-      throw new Error("Session expired. Continue with fonio again.");
+      throw new Error("Session expired. Paste a workspace API key again.");
     }
     await completeAuthorize({ ...fields, apiKey: current.apiKey });
   } catch (err) {

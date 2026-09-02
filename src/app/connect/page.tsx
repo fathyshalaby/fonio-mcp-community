@@ -4,7 +4,7 @@ import { setWorkspaceSession } from "@/oauth/session";
 import { verifyFonioApiKey } from "@/oauth/verify-key";
 import { redirect } from "next/navigation";
 
-export const metadata: Metadata = { title: "Connect" };
+export const metadata: Metadata = { title: "Add a workspace key" };
 
 export default async function ConnectPage({
   searchParams,
@@ -28,17 +28,17 @@ export default async function ConnectPage({
   }
 
   return (
-    <ConnectShell title="Connect your fonio workspace">
+    <ConnectShell title="Connect a workspace API key">
       {ok ? (
         <p className="text-sm">
-          Signed in. Add this site’s{" "}
-          <code className="rounded bg-muted px-1">/mcp</code> URL in Claude, ChatGPT,
-          or Cursor — they open <strong>Sign in with fonio</strong> (the official
-          login at app.fonio.ai) and reuse this encrypted session so you do not
-          paste the key into chat.
+          Key verified on this volunteer instance (unpaid, no warranty, no
+          liability). Add this site’s{" "}
+          <code className="rounded bg-muted px-1">/mcp</code> URL in Claude,
+          ChatGPT, or Cursor, or run the repo yourself. Official login stays on
+          app.fonio.ai.
         </p>
       ) : (
-        <ConnectForm action={connect} error={error} submitLabel="Verify with fonio" />
+        <ConnectForm action={connect} error={error} />
       )}
     </ConnectShell>
   );

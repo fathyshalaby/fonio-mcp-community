@@ -21,32 +21,37 @@ export default async function HomePage() {
         <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:py-24">
           <div>
             <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/10">
-              Unofficial · MIT · community
+              Weekend project · MIT · not a SaaS
             </Badge>
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-              Build fonio agents in Claude, ChatGPT, and Cursor.
+              An unofficial MCP for fonio agents in Claude and ChatGPT.
             </h1>
             <p className="mt-4 max-w-xl text-lg text-muted-foreground text-pretty">
-              Independent open-source MCP for fonio.ai — the same idea as
-              ElevenLabs MCP. Connect, sign in on the official app, then design
-              voice and WhatsApp assistants in chat and paste them into
-              app.fonio.ai. Not affiliated with fonio GmbH.
+              Software you run yourself — a weekend project by a community
+              member, not a product, not fonio GmbH. Self-host or use local
+              stdio. A volunteer free-domain copy has no SLA and no liability.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="#install" className={cn(buttonVariants({ size: "lg" }), "h-10 px-4")}>
-                Connect a client
+                Install
                 <ArrowRight />
               </Link>
               <Link
                 href="/examples"
                 className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-10 px-4")}
               >
-                See examples
+                Examples
+              </Link>
+              <Link
+                href="/share"
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-10 px-4")}
+              >
+                Share copy
               </Link>
             </div>
             <p className="mt-6 text-sm text-muted-foreground">
-              Add the hosted <code className="rounded bg-muted px-1">/mcp</code> URL.
-              MIT licensed, no warranty — outbound calls can incur cost.{" "}
+              MIT licensed, no warranty — including any volunteer-hosted URL.
+              Outbound calls can incur cost.{" "}
               <Link href="/legal" className="text-primary hover:underline">
                 License and disclaimer
               </Link>
@@ -82,8 +87,8 @@ export default async function HomePage() {
             },
             {
               icon: KeyRound,
-              title: "Sign in with fonio",
-              body: "MCP OAuth opens the official login. After that, one click on this site — we never collect your fonio password.",
+              title: "Workspace API key",
+              body: "Not a SaaS login. Paste a key from app.fonio.ai/api-keys. Never a fonio password. Self-host unless you accept a volunteer storing an encrypted copy.",
             },
             {
               icon: Shield,
@@ -104,11 +109,15 @@ export default async function HomePage() {
 
       <section id="install" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16">
         <p className="text-sm font-medium text-primary">Install</p>
-        <h2 className="mt-1 text-3xl font-semibold tracking-tight">Add fonio to your client</h2>
+        <h2 className="mt-1 text-3xl font-semibold tracking-tight">
+          Run the open-source MCP
+        </h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Hosted MCP is at <code className="rounded bg-muted px-1 text-sm">{origin}/mcp</code>.
-          Paste a snippet below — Claude, ChatGPT, and Cursor will open Sign in with
-          fonio on this host.
+          Self-host at <code className="rounded bg-muted px-1 text-sm">{origin}/mcp</code>{" "}
+          (this origin if you deployed the repo). A volunteer free-domain copy
+          is unpaid, no warranty, no liability. Claude/ChatGPT list it only if
+          you add the URL — not in their official catalogs, not inside fonio’s
+          product.
         </p>
         <div className="mt-8">
           <InstallPanel origin={origin} />
