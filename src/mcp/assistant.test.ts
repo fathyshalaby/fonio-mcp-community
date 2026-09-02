@@ -71,10 +71,11 @@ describe("buildAssistant", () => {
     expect(spec.template.slug).toBe("receptionist");
     expect(spec.assistant.voice).toBe("Anna");
     expect(spec.assistant.language).toMatch(/Multi/);
+    expect(spec.assistant.prompt).toContain("## Role");
     expect(spec.assistant.prompt).toContain("You are Marie");
     expect(spec.assistant.prompt).toContain("Prophylaxe");
-    expect(spec.assistant.prompt).toContain("call is recorded");
-    expect(spec.assistant.prompt).toMatch(/^# Conversation flow/m);
+    expect(spec.assistant.prompt).toMatch(/recorded/i);
+    expect(spec.assistant.prompt).toMatch(/^## Role/m);
     expect(spec.validation.ok).toBe(true);
     expect(spec.knowledgeBase.entries.some((entry) => /park/i.test(entry.question))).toBe(
       true,
@@ -89,7 +90,7 @@ describe("buildAssistant", () => {
       assistantName: "Leo",
     });
     expect(spec.template.slug).toBe("outbound_callback");
-    expect(spec.assistant.prompt).toContain("{{context.name}}");
+    expect(spec.assistant.prompt).toMatch(/\{\{context\.name\}\}|\{\{first_name\}\}/);
     expect(spec.assistant.startMessageOutbound).toContain("{{context.reason}}");
   });
 

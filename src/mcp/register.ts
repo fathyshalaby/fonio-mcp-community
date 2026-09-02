@@ -187,7 +187,24 @@ export function registerFonioMcp(
     async () =>
       jsonResult({
         docs: "https://app.fonio.ai/api/docs",
+        helpCenter: {
+          apiWebhooks: "https://fonio.info/articles/api-webhooks",
+          outboundApi: "https://fonio.info/articles/outbound-calls/Outbound-API",
+          promptGuide: "https://fonio.info/articles/how-to-write-a-great-prompt",
+          languages: "https://fonio.info/articles/languages",
+        },
         openapi: FONIO_OPENAPI,
+        helpCenterOutboundApi: {
+          note: "The help center documents a different body than the public OpenAPI. Copy the URL from assistant → Webhooks → Outbound API. This MCP trigger_outbound_call uses the public OpenAPI (camelCase + context).",
+          required: ["api_key", "from_number", "to_number", "agent_id"],
+          example: {
+            api_key: "YOUR_API_KEY",
+            from_number: "+43123456789",
+            to_number: "+43198765432",
+            agent_id: "YOUR_AGENT_ID",
+            first_name: "Christian",
+          },
+        },
         webhookSourceIps: WEBHOOK_SOURCE_IPS,
         builtInVariables: BUILTIN_VARIABLES,
       }),
@@ -806,11 +823,12 @@ export const MCP_INSTRUCTIONS = `You are connected to an unofficial community MC
 fonio is a European AI phone and WhatsApp assistant platform (app.fonio.ai, docs at fonio.info). This MCP is for building those agents from Claude, ChatGPT, or Cursor — same idea as the ElevenLabs MCP, scoped to fonio’s public API plus paste-ready assistant specs.
 
 When the user wants to create, design, or improve an assistant:
-1. Call list_assistant_templates (and list_voices if they ask about voice, Multi, or GDPR).
-2. Call build_assistant with company, use case, languages, transfers, booking event, and facts you already have. Ask only for missing essentials.
-3. Run validate_assistant_prompt and fix errors before handing the prompt over.
-4. If they provided hours, FAQs, or a website summary, call draft_knowledge_base. Facts stay in the knowledge base, not duplicated in the prompt.
-5. Give a paste-ready start message, prompt, Q&A, tools to enable, and the app.fonio.ai checklist.
+1. Call list_assistant_templates (official copy-paste kits from fonio.info) and list_voices if they ask about voice, Multi, or GDPR.
+2. Call build_assistant. Official templates use ## Role / ## Conversation flow / ## If / Then rules / ## Important rules. Keep prompts short (~300 words per the current guide).
+3. Multi language does NOT auto-switch — the prompt must contain an explicit If/Then (fonio.info/articles/languages). The start message is never translated.
+4. Run validate_assistant_prompt and fix errors.
+5. If they provided hours or FAQs, call draft_knowledge_base. Facts stay in the knowledge base.
+6. There are two outbound API shapes: public OpenAPI (camelCase, context, fromNumber selects assistant — this MCP) vs help-center Webhooks URL (snake_case, agent_id, extra top-level keys). Read outbound-api before generating curl.
 The public API cannot create or update assistants. Never claim you saved the agent in the fonio workspace.
 
 Rules:

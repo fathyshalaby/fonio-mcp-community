@@ -73,6 +73,16 @@ describe("docs catalog", () => {
     );
   });
 
+  it("finds the current prompt guide", () => {
+    const hits = searchDocs("how to write a great prompt 300 words If Then");
+    expect(hits.some((hit) => hit.slug === "prompting")).toBe(true);
+  });
+
+  it("finds both outbound API shapes", () => {
+    const hits = searchDocs("agent_id from_number outbound API");
+    expect(hits.some((hit) => hit.slug === "outbound-api")).toBe(true);
+  });
+
   it("returns empty for nonsense", () => {
     expect(searchDocs("zzzzqxq-no-such-term")).toEqual([]);
   });

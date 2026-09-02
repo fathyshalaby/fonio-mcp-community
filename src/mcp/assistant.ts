@@ -177,28 +177,28 @@ export const VOICES = [
     gender: "female",
     multilingualCapable: true,
     gdprNote:
-      "Named in fonio FAQ as a multilingual-capable voice. Set language to Multi separately — it is not automatic.",
+      "Named in fonio FAQ as a multilingual-capable voice. Language is NOT switched automatically — even with Multi you must add an If/Then switch in the prompt (fonio.info/articles/languages).",
   },
   {
     name: "Sophie",
     gender: "female",
     multilingualCapable: true,
     gdprNote:
-      "Named in fonio FAQ as a multilingual-capable voice. Set language to Multi separately — it is not automatic.",
+      "Named in fonio FAQ as a multilingual-capable voice. Language is NOT switched automatically — even with Multi you must add an If/Then switch in the prompt (fonio.info/articles/languages).",
   },
   {
     name: "Ben",
     gender: "male",
     multilingualCapable: true,
     gdprNote:
-      "Named in fonio FAQ as a multilingual-capable voice. Set language to Multi separately — it is not automatic.",
+      "Named in fonio FAQ as a multilingual-capable voice. Language is NOT switched automatically — even with Multi you must add an If/Then switch in the prompt (fonio.info/articles/languages).",
   },
   {
     name: "Brian",
     gender: "male",
     multilingualCapable: true,
     gdprNote:
-      "Named in fonio FAQ as a multilingual-capable voice. Set language to Multi separately — it is not automatic.",
+      "Named in fonio FAQ as a multilingual-capable voice. Language is NOT switched automatically — even with Multi you must add an If/Then switch in the prompt (fonio.info/articles/languages).",
   },
   {
     name: "Maria",
@@ -214,13 +214,13 @@ export const LANGUAGE_NOTES = [
     id: "single",
     label: "Single language",
     detail:
-      "Pick the caller’s language in the assistant. All listed languages are included in the plan.",
+      "Pick the caller’s language in assistant Essentials. The start message is never translated — keep it short and neutral.",
   },
   {
     id: "multi",
-    label: "Multi (mid-call switching)",
+    label: "Multi (does not auto-switch)",
     detail:
-      "Switches among about eight languages when both voice and language are Multi. Requires a multilingual voice (Anna, Sophie, Ben, Brian) and Deepgram STT. If Multi is greyed out, the voice or STT provider is wrong.",
+      "fonio.info/articles/languages: the assistant does NOT reliably switch mid-call on its own, even with a multilingual setting. Pick a neutral/multilingual voice, set language to Multi, AND add an explicit If/Then in the prompt. Waiting messages are also not auto-translated.",
   },
 ] as const;
 
@@ -233,6 +233,7 @@ export function listAssistantTemplates() {
     direction: template.direction,
     defaultVoice: template.defaultVoice,
     toolsToEnable: template.toolsToEnable,
+    officialTemplate: OFFICIAL_TEMPLATE_URL[template.slug] ?? null,
   }));
 }
 
@@ -395,21 +396,21 @@ export function validateAssistantPrompt(prompt: string): {
       message: "Prompt is too short to act as a production script. Add flow, if-then rules, and an escape hatch.",
     });
   }
-  if (!/^#\s+/m.test(text)) {
+  if (!/^#{1,6}\s+/m.test(text)) {
     issues.push({
       severity: "error",
       code: "headings",
-      message: "Use Markdown headings (`# Conversation flow`) so fonio can follow sections. `#` is a heading, not a comment.",
+      message: "Use Markdown headings (`## Role`, `## Conversation flow`, `## If / Then rules`) so fonio can follow sections. `#` is a heading, not a comment.",
     });
   }
-  if (!/\bif\b[\s\S]{0,80}\bthen\b/i.test(text) && !/if-then/i.test(text)) {
+  if (!/\bif\b[\s\S]{0,120}\bthen\b/i.test(text) && !/if\s*\/\s*then/i.test(text) && !/if-then/i.test(text) && !/→/.test(text)) {
     issues.push({
       severity: "error",
       code: "if_then",
-      message: "Add If-Then rules for the main paths (book, transfer, unclear request, recording refused).",
+      message: "Add If / Then rules for the main paths (book, transfer, unclear request, recording refused). Official templates: fonio.info/articles/how-to-write-a-great-prompt",
     });
   }
-  if (!/\b(ai|künstliche intelligenz|ki-telefon|telephone assistant|whatsapp assistant)\b/i.test(text)) {
+  if (!/\b(ai|künstliche intelligenz|ki-telefon|telephone assistant|whatsapp assistant|virtual (receptionist|assistant))\b/i.test(text)) {
     issues.push({
       severity: "error",
       code: "ai_disclosure",
@@ -423,7 +424,7 @@ export function validateAssistantPrompt(prompt: string): {
       message: "Tell the caller the call is recorded. Without this, AI calls are not possible.",
     });
   }
-  if (!/\b(escape|cannot assist|nicht (helfen|unterstützen)|unclear|others|callback|nachricht)\b/i.test(text)) {
+  if (!/\b(escape|cannot assist|nicht (helfen|unterstützen)|unclear|others|callback|nachricht|get back|colleague)\b/i.test(text)) {
     issues.push({
       severity: "error",
       code: "escape_hatch",
@@ -442,6 +443,14 @@ export function validateAssistantPrompt(prompt: string): {
       severity: "warning",
       code: "sensitive_topics",
       message: "List sensitive topics the assistant must refuse (legal, medical advice, politics, religion).",
+    });
+  }
+  const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+  if (wordCount > 350) {
+    issues.push({
+      severity: "warning",
+      code: "length_guide",
+      message: `Current prompt guide on fonio.info says keep it under ~300 words (this draft is ${wordCount}). The hard platform limit is still ${PROMPT_CHARACTER_LIMIT} characters.`,
     });
   }
   if (/\b(todo|fixme|ignore this|comment:)\b/i.test(text)) {
@@ -476,14 +485,112 @@ function languageSetting(languages: string): { appValue: string; promptLine: str
   const raw = languages.trim() || "match the business";
   if (/\bmulti\b/i.test(raw)) {
     return {
-      appValue: "Multi (and pick a multilingual voice: Anna, Sophie, Ben, or Brian)",
-      promptLine: `Start in the caller’s language. If they switch (e.g. “Can we continue in English?”), switch. App language must be Multi.`,
+      appValue: "Multi + a neutral/multilingual voice. Prompt must allow the switch — it is not automatic.",
+      promptLine:
+        "If the caller speaks another language (e.g. English), switch completely to that language for the rest of the conversation — including follow-up questions and the goodbye.",
     };
   }
   return {
     appValue: raw,
     promptLine: `Speak ${raw}.`,
   };
+}
+
+const OFFICIAL_TEMPLATE_URL: Record<string, string> = {
+  receptionist: "https://fonio.info/articles/how-to-write-a-great-prompt/receptionist",
+  answering_machine: "https://fonio.info/articles/how-to-write-a-great-prompt/answering-machine",
+  appointment_scheduling: "https://fonio.info/articles/how-to-write-a-great-prompt/appointment-booking",
+  first_level_support: "https://fonio.info/articles/how-to-write-a-great-prompt/first-level-support",
+};
+
+function officialCore(slug: AssistantTemplateSlug, name: string, company: string): string | undefined {
+  if (slug === "receptionist") {
+    return `## Role
+You are ${name}, the virtual receptionist for ${company}. You speak in a friendly, professional tone.
+
+## Conversation flow
+1. Greet the caller and introduce yourself.
+2. Ask how you can help.
+3. Decide based on the request:
+   - General question → answer using the knowledge base.
+   - Wants to speak to a specific person → transfer the call.
+   - Wants an appointment → start the booking flow.
+4. End the call politely.
+
+## If / Then rules
+If you don't know the answer → say: "I'll have a colleague get back to you" and take their name + phone number.
+
+## Important rules
+- Never invent information that is not in the knowledge base.
+- Always confirm phone numbers digit by digit.
+- Keep replies short — under 2 sentences if possible.`;
+  }
+  if (slug === "answering_machine") {
+    return `## Role
+You are ${name}, the virtual assistant for ${company}. You speak in a friendly, helpful tone.
+
+## Conversation flow
+1. Greet the caller warmly and introduce yourself.
+2. Ask for their first name. Confirm it.
+3. Ask for their last name. Confirm it.
+4. Ask what their call is about — in one sentence.
+5. Say: "Thank you — someone will call you back within 24 hours."
+6. End the call politely.
+
+## If / Then rules
+If the caller says it is urgent → note this and say a colleague will call back as soon as possible.
+If asked about prices → say: "I'll have a colleague send you our pricing by email."
+
+## Important rules
+- Always confirm the caller's name before ending the call.
+- Do not make any commitments on behalf of the team.`;
+  }
+  if (slug === "appointment_scheduling") {
+    return `## Role
+You are ${name}, the booking assistant for ${company}. You speak in a friendly, efficient tone.
+
+## Conversation flow
+1. Greet the caller and ask what kind of appointment they need.
+2. Ask for their first and last name. Confirm.
+3. Ask for their phone number. Read it back digit by digit to confirm.
+4. Offer the next available slots from the calendar.
+5. Once a slot is chosen, confirm: date, time, name.
+6. Send a confirmation by SMS / email.
+7. End the call politely.
+
+## If / Then rules
+If the caller wants a slot that is not available → offer the two closest alternatives.
+If the caller wants to reschedule → ask for their name and existing appointment date, then move it.
+If the caller wants to cancel → ask for their name and date, then cancel and confirm.
+
+## Important rules
+- Never double-book a slot.
+- Always read phone numbers and email addresses back to confirm.`;
+  }
+  if (slug === "first_level_support") {
+    return `## Role
+You are ${name}, the first-level support assistant for ${company}. You speak in a calm, helpful tone.
+
+## Conversation flow
+1. Greet the caller and ask how you can help.
+2. Let them describe the problem in their own words. Listen first.
+3. Ask up to 2 clarifying questions to narrow it down.
+4. Look up the answer in the knowledge base.
+5. Explain the fix in simple steps.
+6. Confirm the issue is solved. If not → escalate.
+
+## If / Then rules
+If the issue matches a known article → walk the caller through the steps.
+If the caller is frustrated → acknowledge the frustration, then continue.
+If the issue cannot be solved in 1 call → create a ticket with: name, phone number, short problem description, and say a specialist will call back within 24 hours.
+If the caller asks about billing → take a callback request or transfer if a billing number is configured.
+
+## Important rules
+- Never guess. If unsure, say so and take a callback request.
+- Stay calm, even if the caller is not.
+- Keep technical language to a minimum.`;
+  }
+  return undefined;
 }
 
 export function buildAssistantPrompt(input: {
@@ -499,75 +606,65 @@ export function buildAssistantPrompt(input: {
   hours?: string;
   direction?: string;
 }): string {
-  const { template, name, german, company, useCase } = input;
-  const languages = languageSetting(input.languages ?? (german ? "German" : "English"));
+  const { template, name, company, useCase } = input;
+  const languages = languageSetting(input.languages ?? (input.german ? "German" : "English"));
   const event = input.bookingEvent?.trim();
   const transfers = input.transferTargets?.trim();
   const hours = input.hours?.trim();
   const outbound = template.direction === "outbound" || input.direction === "outbound";
+  const channel = template.channel === "whatsapp" ? "WhatsApp" : "telephone";
 
-  const ifThen = [
-    ...template.extraIfThen,
-    "If the request is unclear, ask one open follow-up question, then continue.",
-    "If the caller refuses recording, stop content work: end the call or transfer so automatic deletion can run.",
-    event
-      ? `If you schedule an appointment, use the event “${event}”.`
-      : undefined,
-    transfers
-      ? `If the caller matches these transfer rules, transfer: ${transfers}. Recap in one sentence first. Wait the platform default (~30 seconds) if the target does not pick up.`
-      : undefined,
-    hours
-      ? `If they ask whether you are open, use the knowledge base / stated hours: ${hours}.`
-      : undefined,
-  ].filter((line): line is string => Boolean(line));
+  const extras: string[] = [];
+  if (transfers) extras.push(`If the caller matches these transfer rules → transfer: ${transfers}.`);
+  if (event) extras.push(`If you schedule an appointment → use the event “${event}”.`);
+  if (hours) extras.push(`If they ask whether you are open → use only the knowledge base (hours: ${hours}).`);
+  extras.push("If the caller refuses recording → end or transfer so automatic deletion can run.");
 
-  const faqBlock = german
-    ? `- Question: Wer sind Sie?\n  Answer: Ich bin ${name}, die KI-Telefonassistenz von ${company}. Fakten zu Stunden und Leistungen nur aus der Knowledge Base.`
-    : `- Question: Who are you?\n  Answer: I am ${name}, the AI telephone assistant from ${company}. Hours and services come only from the knowledge base.`;
+  const core =
+    officialCore(template.slug, name, company) ??
+    `## Role
+You are ${name}, the ${channel} assistant for ${company}. Use case: ${useCase}.
 
-  const sensitive = german
-    ? `- Rechtliche Fragen\n- Medizinische Beratung\n- Politische Themen\n- Religion\n- Rabatte oder Angebote, die nicht in der Knowledge Base stehen`
-    : `- Legal questions\n- Medical advice\n- Political topics\n- Religion\n- Discounts or quotes that are not in the knowledge base`;
+## Conversation flow
+1. Greet the caller and introduce yourself.
+2. Ask how you can help.
+3. Complete the goal: ${template.goal}.
+4. End politely.
+
+## If / Then rules
+If the request is unclear → ask one follow-up question.
+
+## Important rules
+- Never invent facts that are not in the knowledge base.
+- Keep replies short.`;
+
+  const withExtras = extras.length
+    ? core.replace("## Important rules", `${extras.map((line) => (line.startsWith("If ") ? line : `If ${line}`)).join("\n")}\n\n## Important rules`)
+    : core;
+
+  const languageBlock = /\bmulti\b/i.test(input.languages ?? "")
+    ? `\n${languages.promptLine}\n`
+    : "";
 
   const outboundBlock = outbound
     ? `
-# Outbound context
-You placed this call. Use only {{context.*}} fields you actually received.
-- You are calling {{context.name}}{{#if context.company}} at {{context.company}}{{/if}}{{#if context.reason}} about {{context.reason}}{{/if}}.
-- If a field is missing, skip it. Never invent a name or reason.
+## Outbound context
+You placed this call. Use only fields you actually received (public API: {{context.name}}, {{context.reason}}; help-center Outbound API: {{first_name}}, {{email}}). Never invent a name or reason.
 `
     : "";
 
-  return `# Conversation flow
-You are ${name}, an AI ${template.channel === "whatsapp" ? "WhatsApp" : "telephone"} assistant from ${company}.
-Single goal: ${template.goal}. Use case from the operator: ${useCase}.
-${languages.promptLine}
+  const recording =
+    template.channel === "whatsapp"
+      ? "Introduce yourself as an AI. Chats may be stored."
+      : "Introduce yourself as an AI and mention that the call is recorded.";
 
-# Behavioral rules
-- Introduce yourself as an AI and mention that the ${template.channel === "whatsapp" ? "chat may be stored" : "call is recorded"} (GDPR / EU AI Act).
-- For company-specific information (hours, prices, address, services, names of staff), use only the stored knowledge base. Do not invent facts.
-- One question at a time. Keep turns short enough for ${template.channel === "whatsapp" ? "chat" : "the phone"}.
-- ${input.formality ? `Address the person with “${input.formality}”.` : german ? "Use Sie unless the operator specified Du." : "Use a polite professional register."}
-- Never give legal, medical, or political advice.
-
-## If-Then rules
-${ifThen.map((line) => `- ${line}`).join("\n")}
-
-# General information
-- About you: You are an AI ${template.channel === "whatsapp" ? "WhatsApp" : "telephone"} assistant from ${company}
-- Your name: ${name}
-- The company you work for: ${company}
-${outboundBlock}
-# Frequently asked questions
-${faqBlock}
-Do not duplicate long facts here — they live in the knowledge base.
-
-# Sensitive topics
-If the customer talks about the following, say you cannot assist:
-${sensitive}
-
-# Escape hatch
-If none of the paths apply, take a callback number and a short message, confirm both, then end politely.
+  return `${withExtras}${languageBlock}${outboundBlock}
+## Important extras (fonio.info)
+- ${recording}
+- For company-specific information, use only the stored knowledge base. If the answer is not there, say a colleague will get back to them. Never guess.
+- Always repeat prices, phone numbers, email addresses and opening hours exactly as they appear in the knowledge base.
+- ${input.formality ? `Address the person with “${input.formality}”.` : input.german ? "Use Sie unless Du was specified." : "Keep a polite professional register."}
+- Paste into: Assistants → Custom Prompt / Instructions → Custom Prompts. Keep the whole prompt short (fonio’s current prompt guide: under ~300 words).
 `;
 }
 

@@ -85,7 +85,7 @@ Outbound calls incur carrier cost, require the Teams plan, an imported or SIP nu
     summary:
       "How Claude uses templates, build_assistant, prompt validation, and knowledge Q&A — then you paste the spec into app.fonio.ai.",
     category: "API",
-    url: "https://fonio.info/articles/prompt",
+    url: "https://fonio.info/articles/how-to-write-a-great-prompt",
     tags: ["mcp", "prompt", "assistant", "templates", "knowledge"],
     body: `# Build a fonio assistant with this MCP
 
@@ -95,7 +95,7 @@ fonio has no public “create assistant” API. This community MCP therefore bui
 
 1. \`list_assistant_templates\` — receptionist, answering machine, appointment scheduling, first-level support, outbound callback, WhatsApp booking.
 2. \`build_assistant\` — company, use case, languages, transfers, booking event, hours, facts.
-3. \`validate_assistant_prompt\` — headings, If-Then, AI + recording disclosure, escape hatch, 100k limit.
+3. \`validate_assistant_prompt\` — official headings, If/Then, AI + recording disclosure, ~300 word guide, 100k hard limit.
 4. \`draft_knowledge_base\` — Q&A phrased the way callers ask. Facts stay here, not duplicated in the prompt.
 5. Paste into Assistants → Create New. Enable the listed tools. Connect a number.
 
@@ -108,9 +108,7 @@ fonio has no public “create assistant” API. This community MCP therefore bui
 - Inbound: fonio number + carrier forwarding. Outbound: imported/SIP number, Teams, KYC.
 - Test with real calls. Test Call cannot test forwarding.
 
-## GDPR
-
-Introduce as AI and mention recording. Azure EU voices are treated as GDPR-compliant; ElevenLabs voices are not yet. Prefer automatic deletion if the caller refuses recording.
+Official templates live at https://fonio.info/articles/how-to-write-a-great-prompt (Role, Conversation flow, If / Then, Important rules; keep ~300 words). Multi does not auto-switch — see languages. There are two outbound API bodies — see outbound-api.
 `,
   },
   {
@@ -174,76 +172,52 @@ Webhook and outbound API setups are covered in the API / Webhooks article and in
     slug: "prompting",
     title: "How to write a great prompt",
     summary:
-      "Prompt rules for fonio assistants: sections, if-then logic, Handlebars, character limits, and a reusable template.",
+      "Current fonio.info prompt guide: five rules, official copy-paste templates, ~300 word target, and hallucination guards.",
     category: "Assistants",
-    url: "https://fonio.info/articles/prompt",
+    url: "https://fonio.info/articles/how-to-write-a-great-prompt",
     tags: ["prompt", "handlebars", "templates", "if-then"],
-    body: `# Prompt
+    body: `# How to write a great prompt
 
-Write as if you are briefing a new employee. Use headings, not a wall of text. Each fact should appear once. Think in if-then rules. Always give an escape route. Enforce duties and forbid sensitive topics. Limit: 100,000 characters. Markdown headings use \`#\`. The entire prompt is used — do not leave comments for yourself.
+Official guide: https://fonio.info/articles/how-to-write-a-great-prompt (last reviewed 2026-07-29)
 
-## Why it matters
+The in-app prompt builder drafts a prompt — always review the Conversation flow. ChatGPT text prompts are written for chat, not phone calls; they often confuse a fonio assistant.
 
-A structured prompt is the script: goal, tone, flow, boundaries. It improves recognition, shortens calls, and reduces handovers.
+## The 5 rules
 
-## Building blocks
+1. Start with who the assistant is (name, role, tone).
+2. Use headers: \`## Role\`, \`## Conversation flow\`, \`## If / Then rules\`, \`## Important rules\`.
+3. Write every decision as If / Then.
+4. Tell it what TO do, not only what NOT to do.
+5. Keep it under ~300 words. Longer prompts skip rules. The old 100,000-character platform limit still exists.
 
-\`\`\`
-# Conversation flow
-Describe the single goal of your assistant.
+## Official copy-paste templates
 
-# Behavioral rules
-Specify how the assistant should behave.
+https://fonio.info/articles/how-to-write-a-great-prompt/copy-paste-templates
 
-## If-Then rules
-- If [Condition A], then [Action A]
-- If [Condition B], then [Action B]
+- Answering machine
+- Receptionist
+- Appointment booking
+- 1st level support
 
-# General information
-- About you: You are an AI telephone assistant from [Company]
-- Your name: Marie
-You must introduce yourself as an AI and mention that the call is recorded (GDPR / EU AI Act).
+Paste into: Assistants → Custom Prompt / Instructions → Custom Prompts. Replace every \`[bracket]\` or the assistant will read it aloud.
 
-# Frequently asked questions
-- Question: Do you have parking?
-- Answer: Yes, directly in front of the building.
+## Prevent hallucinations
 
-# Sensitive topics
-If the customer talks about the following, say you cannot assist:
-- Legal questions
-- Medical advice
-- Political topics
-\`\`\`
+Facts (prices, hours, addresses) go in the knowledge base, not the prompt. Add: "For company-specific information, use only the stored knowledge base." Repeat prices and numbers verbatim. Do not volunteer employee personal data.
 
-## Prompt vs knowledge base
+Integration WHEN-conditions live on the integration, not in the prompt.
 
-- Prompt = behaviour (flow, tone, when to transfer or book)
-- Knowledge base = facts (hours, prices, services)
-Anything that changes or must be said verbatim belongs in the knowledge base. Put this block in the prompt: "For company-specific information, use only the stored knowledge base."
+## Language switch
+
+https://fonio.info/articles/languages — Multi does **not** reliably auto-switch. Add: "If the caller speaks another language (e.g. English), switch completely to that language for the rest of the conversation." The start message is never translated.
+
+## GDPR
+
+Introduce as an AI and mention recording. Prefer automatic deletion if refused.
 
 ## Handlebars
 
-Simple placeholders: \`{{name}}\`, \`{{contact.firstName}}\`, \`{{company.name}}\`.
-
-Conditional:
-
-\`\`\`
-{{#if hasAppointment}}
-I see you already have an appointment scheduled today.
-{{else}}
-I see no appointment for today. Would you like to make a new one?
-{{/if}}
-\`\`\`
-
-Inbound webhook data: \`{{variable}}\`. Outbound API / campaign context: \`{{context.fieldName}}\`. After a call, inbound webhook fields are also \`{{inboundContext.fieldName}}\`.
-
-## Capturing emails and IDs
-
-Ask the caller to spell the address. Stay silent while they spell. Confirm with the phonetic alphabet. Repeat the full address before saving. After two failures, offer SMS fallback. For customer numbers, specify the expected format in the prompt (length, prefix).
-
-## Testing
-
-Run 3–5 typical test calls. Watch success rate, handover rate, and duration. Shorten wording, fix order, add missing paths.
+\`{{name}}\`, \`{{#if}}\`, inbound webhook fields as \`{{variable}}\`, public outbound API as \`{{context.field}}\`, help-center Outbound API extra keys as \`{{first_name}}\`. After a call, inbound webhook fields are also \`{{inboundContext.field}}\`.
 `,
   },
   {
@@ -336,23 +310,22 @@ See who was called, duration, result, transcript, and CSV context.
     slug: "outbound-api",
     title: "Outbound API",
     summary:
-      "POST /public/v1/outbound_call — fromNumber selects the assistant, toNumber is E.164, context is injected into the prompt.",
+      "Two outbound APIs: public OpenAPI (camelCase + context) and the help-center assistant URL (snake_case + agent_id).",
     category: "API",
-    url: "https://app.fonio.ai/api/docs",
-    tags: ["api", "outbound", "fromNumber", "context"],
+    url: "https://fonio.info/articles/outbound-calls/Outbound-API",
+    tags: ["api", "outbound", "fromNumber", "context", "agent_id"],
     body: `# Outbound API
 
-Public docs: https://app.fonio.ai/api/docs
+Help center: https://fonio.info/articles/outbound-calls/Outbound-API
+Public OpenAPI: https://app.fonio.ai/api/docs
 
-Base URL: \`https://app.fonio.ai/api\`
+fonio currently documents **two request shapes**. This MCP’s \`trigger_outbound_call\` uses the public OpenAPI.
 
-## Authentication
+## A. Public REST (OpenAPI) — what this MCP calls
 
-Send the workspace API key as \`Authorization: Bearer <key>\`. Test a key with POST \`/public/v1/test-api-key\`.
+POST \`https://app.fonio.ai/api/public/v1/outbound_call\`
 
-## Trigger a call
-
-POST \`/public/v1/outbound_call\`
+Auth: \`Authorization: Bearer <key>\` (or \`apiKey\` in the JSON body).
 
 \`\`\`json
 {
@@ -366,19 +339,33 @@ POST \`/public/v1/outbound_call\`
 }
 \`\`\`
 
-- \`fromNumber\` (required): your outbound-capable fonio number. This selects the outbound assistant assigned to that number (it can even be chosen dynamically).
-- \`toNumber\` (required): destination, pattern \`^\\+\\d+$\` (E.164).
-- \`context\` (optional object): available in the prompt as \`{{context.name}}\` etc.
+- \`fromNumber\` selects the outbound assistant assigned to that imported/SIP number.
+- \`toNumber\` must match \`^\\+\\d+$\`.
+- Extra fields go in \`context\` and appear in the prompt as \`{{context.name}}\`.
 
-Response: \`{ "status": "success" | "error", "message": "..." }\`
+## B. Help-center Outbound API (assistant Webhooks)
 
-## Requirements
+Copy the URL from the assistant → Webhooks → Outbound API. Documented body:
 
-Imported or SIP number, Teams plan, completed KYC. Shared fonio numbers cannot place outbound calls. Voicemail is detected in a few seconds; the assistant hangs up rather than looping.
+\`\`\`json
+{
+  "api_key": "YOUR_API_KEY",
+  "from_number": "+43123456789",
+  "to_number": "+43198765432",
+  "agent_id": "YOUR_AGENT_ID",
+  "first_name": "Christian",
+  "last_name": "Mueller",
+  "email": "christian@example.com"
+}
+\`\`\`
 
-## Typical automation
+Required: \`api_key\`, \`from_number\`, \`to_number\`, \`agent_id\`. Any extra keys become prompt variables (\`{{first_name}}\`). Variable names in the request must match the prompt.
 
-A contact form, CRM, or n8n/Make scenario calls this endpoint when a lead arrives. The assistant qualifies the person and can book a calendar slot. Pass known fields in \`context\` so the greeting is personal.
+## Shared requirements
+
+Imported or SIP number, Teams plan, KYC under Subscription & billing, extra carrier cost. Shared fonio numbers cannot place outbound. Voicemail is detected and the call ends.
+
+Prompt the outbound assistant for the purpose of the call and reference every variable you send.
 `,
   },
   {
@@ -421,11 +408,18 @@ Typical Make/n8n flow: custom webhook → lookup by phone number → router foun
 
 ## During the call
 
-Use an HTTP Request integration (see Integrations). The assistant fires it when the condition matches. Response fields are read back to the caller automatically.
+Official: https://fonio.info/articles/api-webhooks/webhook-during-the-call
+
+Two ways:
+
+1. **Webhook during the call** (assistant → Webhooks): POST to your n8n/Make URL when a condition matches. Waiting message up to 5 seconds. Dynamic parameters are extracted from speech (describe the field, give the spoken format in the prompt, e.g. order numbers like BP20260001).
+2. **HTTP Request integration** during the call: URL/method/headers/body. Response fields are read back automatically.
+
+Typical flow: caller asks status → assistant asks for the ID in the documented format → webhook fires → n8n looks up a row → assistant reads product, date, status.
 
 ## After the call
 
-Post-call HTTP, email, SMS, WhatsApp, or Sheets. Conditions live on the integration, not in the prompt. Post-processing runs once and is not manually re-triggered. Use \`{{inboundContext.*}}\` for deterministic data and extracted \`{{custom}}\` fields for conversation data.
+Post-call HTTP, email, SMS, WhatsApp, or Sheets. Conditions live on the integration (Settings tab), not in the prompt. Post-processing runs once. Use \`{{inboundContext.*}}\` for deterministic inbound-webhook data and extracted custom fields for conversation data.
 `,
   },
   {
@@ -646,6 +640,66 @@ Extra columns and the \`context\` object: \`{{context.fieldName}}\`.
 Object paths, \`{{#if}}\` / \`{{else}}\` / \`{{/if}}\`, loops. Start messages can differ for inbound vs outbound.
 
 A variable cannot toggle opening hours or forwarding rules. Forwarding conditions may mention something the caller said, but routing stays configured.
+`,
+  },
+  {
+    slug: "languages",
+    title: "Languages & multilingual calls",
+    summary:
+      "Language and voice in Essentials. Multi does not auto-switch — put an If/Then in the prompt. The start message is never translated.",
+    category: "Assistants",
+    url: "https://fonio.info/articles/languages",
+    tags: ["languages", "multi", "voice", "gdpr"],
+    body: `# Languages & multilingual calls
+
+Official: https://fonio.info/articles/languages (last reviewed 2026-07-29)
+
+Set language and voice in the assistant’s basic settings. That language is the default spoken language.
+
+## Multi does not auto-switch
+
+The assistant does NOT reliably switch language mid-call on its own — not even with a multilingual setting. You must allow the switch in the prompt:
+
+\`\`\`
+If the caller speaks another language (e.g. English), switch completely to that language for the rest of the conversation — including follow-up questions and the goodbye.
+\`\`\`
+
+Use a neutral / multilingual voice so every language sounds natural.
+
+## Start message is never translated
+
+It is always read exactly as written. Keep it short and neutral (greeting + company). Then the assistant can switch per the prompt.
+
+Waiting messages for integrations are also not auto-translated — write them in the callers’ language. Account UI language is Settings → Account → Language.
+`,
+  },
+  {
+    slug: "webchat",
+    title: "Webchat",
+    summary:
+      "Chat assistant as a website widget or hosted link, SDK methods, human handover, and a GDPR privacy template.",
+    category: "Product",
+    url: "https://fonio.info/articles/webchat",
+    tags: ["webchat", "widget", "sdk", "chat"],
+    body: `# Webchat
+
+Official: https://fonio.info/articles/webchat
+
+Create a Chat assistant (same family as WhatsApp), then Set up Webchat: website widget or hosted link.
+
+Essentials: name, language, formality (formal / informal / custom via prompt), conversation timeout.
+
+Answer Questions can live-read allowed website URLs. Conversation Handling: AI, team, or a condition. Enable human handover with written conditions. Custom prompt can also trigger handover — keep conditions consistent.
+
+Calendars: Scheduler or Cal.com. Webhooks and integrations work in chat. Test with Test chat.
+
+Widget: colours, position, greeting. Paste the script before \`</body>\`. SDK after load:
+
+- window.fonio.webchat.open()
+- close() / toggle() / show() / hide()
+- startNewConversation()
+
+Include a Webchat section in the site privacy notice (fonio as processor). A sample GDPR template is on the article.
 `,
   },
   {
