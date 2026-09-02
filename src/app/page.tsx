@@ -21,16 +21,16 @@ export default async function HomePage() {
         <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:py-24">
           <div>
             <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/10">
-              Unofficial · MIT · community
+              Unofficial · community member · MIT
             </Badge>
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
               Build fonio agents in Claude, ChatGPT, and Cursor.
             </h1>
             <p className="mt-4 max-w-xl text-lg text-muted-foreground text-pretty">
-              Independent open-source MCP for fonio.ai — the same idea as
-              ElevenLabs MCP. Connect, sign in on the official app, then design
-              voice and WhatsApp assistants in chat and paste them into
-              app.fonio.ai. Not affiliated with fonio GmbH.
+              Independent community MCP for fonio.ai — not fonio GmbH, not
+              staff. Connect with a workspace API key, then configure a full
+              paste-ready voice or WhatsApp agent in chat. Live API calls need
+              that key. Prefer self-hosting so this operator never holds it.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="#install" className={cn(buttonVariants({ size: "lg" }), "h-10 px-4")}>
@@ -82,8 +82,8 @@ export default async function HomePage() {
             },
             {
               icon: KeyRound,
-              title: "Sign in with fonio",
-              body: "MCP OAuth opens the official login. After that, one click on this site — we never collect your fonio password.",
+              title: "Workspace API key",
+              body: "Claude and ChatGPT open this community connector, then you paste a key from app.fonio.ai/api-keys. Not fonio GmbH OAuth — we never collect your password.",
             },
             {
               icon: Shield,
@@ -104,11 +104,12 @@ export default async function HomePage() {
 
       <section id="install" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16">
         <p className="text-sm font-medium text-primary">Install</p>
-        <h2 className="mt-1 text-3xl font-semibold tracking-tight">Add fonio to your client</h2>
+        <h2 className="mt-1 text-3xl font-semibold tracking-tight">Add this unofficial MCP</h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Hosted MCP is at <code className="rounded bg-muted px-1 text-sm">{origin}/mcp</code>.
-          Paste a snippet below — Claude, ChatGPT, and Cursor will open Sign in with
-          fonio on this host.
+          Claude and ChatGPT will 401 without a key and open this community
+          connector. Self-host if you do not want this host to store an encrypted
+          key.
         </p>
         <div className="mt-8">
           <InstallPanel origin={origin} />

@@ -8,7 +8,7 @@ import {
 import { getWorkspaceSession } from "@/oauth/session";
 import { readClient, redirectUriAllowed } from "@/oauth/tokens";
 
-export const metadata = { title: "Sign in with fonio · community connector" };
+export const metadata = { title: "Connect a workspace key · unofficial community MCP" };
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -74,7 +74,7 @@ export default async function AuthorizePage({ searchParams }: Props) {
           action={connectWorkspace}
           error={error}
           hiddenFields={hiddenFields}
-          submitLabel="Allow access"
+          submitLabel="Verify key and allow this unofficial MCP"
         />
       )}
     </FonioAuthShell>

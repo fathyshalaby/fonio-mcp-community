@@ -10,9 +10,9 @@ export default function ToolsPage() {
     <div className="mx-auto max-w-6xl px-4 py-12">
       <h1 className="text-3xl font-semibold tracking-tight">MCP tools</h1>
       <p className="mt-2 max-w-2xl text-muted-foreground">
-        Every tool registered by the fonio MCP server. Agent-builder and docs tools
-        are read-only. Outbound calling is a write operation and incurs carrier
-        cost.
+        Every tool registered by this unofficial community MCP. Agent-builder and
+        docs tools are read-only. Hosted Claude/ChatGPT need a workspace API key.
+        Outbound calling is a write operation and incurs carrier cost.
       </p>
       <div className="mt-8 grid gap-4">
         {TOOLS.map((tool) => (

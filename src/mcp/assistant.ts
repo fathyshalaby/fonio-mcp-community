@@ -701,22 +701,36 @@ export function setupChecklist(input: {
   languages: string;
   voice: string;
   event?: string;
+  transfers?: string;
 }): string[] {
-  const steps = [
-    `Open ${input.template.channel === "whatsapp" ? "Assistants → Create New → WhatsApp Assistant" : "Assistants → Create New"}.`,
-    `Name the assistant “${input.name}”. Paste the start message. Pick voice “${input.voice}” (confirm the live list in the app).`,
-    `Set language to: ${languageSetting(input.languages).appValue}.`,
-    "Paste the prompt into the prompt field. Do not leave comments — the whole text is used.",
-    "Knowledge Base → Information: add the Q&A entries. Enable Answer Questions on this assistant. Put website/PDF facts there, not in the prompt.",
-    ...input.template.toolsToEnable.map((tool) => `Enable: ${tool}.`),
+  const whatsapp = input.template.channel === "whatsapp";
+  const outbound = input.template.direction === "outbound";
+  return [
+    "Limitation: fonio’s public API cannot create or update assistants. Paste every section of this spec into the official app (app.fonio.ai). This unofficial community MCP only talks to documented public endpoints (API-key test, outbound calls, remote integration servers).",
+    `Create: Assistants → ${whatsapp ? "Create New → WhatsApp Assistant" : "Create New"}. Name it “${input.name}”.`,
+    `Start message: paste the inbound (and outbound if you use both) greeting. It is never auto-translated — write it in the language callers hear first.`,
+    `Voice “${input.voice}” (confirm the live picker). Language: ${languageSetting(input.languages).appValue}. Waiting messages for integrations are also not auto-translated.`,
+    "Prompt: Assistants → Custom Prompt / Instructions → Custom Prompts. Paste the full prompt. The entire text is used — no comments, no leftover [brackets].",
+    "Knowledge → Information: paste each Q&A as its own entry (or Generate from the website). Enable Answer Questions on this assistant. Facts stay here, not in the prompt.",
+    input.transfers
+      ? `Transfers: describe If → Then rules matching “${input.transfers}”. Test Call cannot test forwarding — use a real phone. SIP needs the SIP toggle. International forwarding is under Technical.`
+      : "Transfers: add If → Then rules for named people or topics. Test Call cannot test forwarding.",
+    ...input.template.toolsToEnable.map((tool) => `Enable tool: ${tool}.`),
     input.event
-      ? `Connect calendar event “${input.event}” to this assistant. The prompt already names that event.`
-      : "If you book appointments, create an event type and name it in the prompt.",
-    "Technical: set max call duration from typical calls + buffer; enable automatic deletion if recording is refused.",
-    "Phone: buy or forward a fonio number for inbound. Outbound needs an imported or SIP number, Teams, and KYC.",
-    "Test with 3–5 real calls (Test Call cannot test forwarding). Watch handover rate and missing paths, then shorten the prompt.",
+      ? `Calendar: connect event “${input.event}” (fonio Scheduler, Cal.com, or Calendly) to this assistant. The prompt already names that event.`
+      : "Calendar: if you book, create an event type and name it in the prompt.",
+    "After-call: email (Fixed or Dynamic recipients; whitelist app@mail.fonio.com) and/or SMS confirmations if the add-on is on.",
+    "During-call HTTP / inbound webhook: only if this use case looks up CRM or order data. Allowlist fonio webhook IPs. Waiting message ≤ 5 seconds.",
+    "Technical: max call duration from typical calls + buffer; interrupt sensitivity; Accurate Information Processing for emails and IDs; disclose AI + recording; prefer automatic deletion if recording is refused.",
+    outbound
+      ? "Phone: outbound needs an imported or SIP fromNumber, Teams plan, and KYC. fromNumber selects the outbound assistant. Do not use a shared fonio number for outbound."
+      : "Phone: buy a fonio number (inbound) and forward your existing line at the carrier. Outbound later needs import/SIP + Teams + KYC.",
+    whatsapp
+      ? "WhatsApp: finish Meta / fonio WhatsApp setup in the app, then paste the start message and prompt on the WhatsApp assistant."
+      : "Optional webchat: window.fonio.webchat.* on your site after the assistant exists — see fonio.info/articles/webchat.",
+    "Test with 3–5 real calls. Watch missing paths and handover rate, then shorten the prompt (~300 words per the current fonio.info guide).",
+    "If this community snapshot disagrees with app.fonio.ai or fonio.info, trust the official app/docs.",
   ];
-  return steps;
 }
 
 export function buildAssistant(input: BuildAssistantInput) {
@@ -763,13 +777,25 @@ export function buildAssistant(input: BuildAssistantInput) {
   const validation = validateAssistantPrompt(prompt);
   const outbound = template.direction === "outbound" || input.direction === "outbound";
 
+  const appChecklist = setupChecklist({
+    template: resolvedTemplate,
+    name,
+    languages,
+    voice,
+    event: input.bookingEvent,
+    transfers: input.transferTargets,
+  });
+
   return {
     status: "ready_to_paste" as const,
     limitation:
-      "fonio’s public API cannot create or update assistants. Paste this spec into app.fonio.ai. This MCP can then test the API key and, after you confirm a number, place an outbound call.",
+      "fonio’s public API cannot create or update assistants. Paste this entire spec into app.fonio.ai. After the assistant exists, this unofficial community MCP can test the workspace API key and, with confirmation, place an outbound call.",
+    howToPresent:
+      "Walk the user through every pastePack section in order. Do not claim the assistant was saved in the fonio workspace.",
     template: {
       slug: template.slug,
       title: template.title,
+      officialTemplateUrl: OFFICIAL_TEMPLATE_URL[template.slug] ?? null,
     },
     assistant: {
       name,
@@ -780,6 +806,8 @@ export function buildAssistant(input: BuildAssistantInput) {
       startMessage: outbound ? greetings.outbound : greetings.inbound,
       startMessageInbound: greetings.inbound,
       startMessageOutbound: greetings.outbound,
+      waitingMessageNote:
+        "Waiting messages for HTTP/integrations are not auto-translated. Write them in the callers’ language.",
       prompt,
     },
     knowledgeBase: {
@@ -787,7 +815,16 @@ export function buildAssistant(input: BuildAssistantInput) {
       promptReminder:
         "For company-specific information, use only the stored knowledge base.",
     },
+    transfers: input.transferTargets?.trim() || null,
+    calendar: input.bookingEvent?.trim() || null,
     toolsToEnable: template.toolsToEnable,
+    webhooks: {
+      inbound:
+        "Optional pre-call CRM lookup: POST {fromNumber, toNumber} → JSON fields become {{field}} in the start message and prompt. After the call they are also {{inboundContext.field}}.",
+      duringCall:
+        "Optional HTTP Request on the assistant (waiting message ≤ 5s). Describe spoken IDs in the prompt.",
+      afterCall: "Email and/or SMS. Whitelist app@mail.fonio.com.",
+    },
     technical: {
       maxCallDuration: "Set from typical calls plus a buffer.",
       interruptSensitivity:
@@ -796,17 +833,25 @@ export function buildAssistant(input: BuildAssistantInput) {
         "Enable for emails, customer numbers, and spelled names.",
       recording:
         "Record audio ~30 days. Always disclose AI + recording. Prefer automatic deletion if refused.",
+      internationalForwarding:
+        "Technical → International call forwarding if you transfer abroad.",
     },
+    phone: outbound
+      ? "Imported or SIP fromNumber, Teams, KYC. fromNumber selects this outbound assistant."
+      : "fonio number for inbound + carrier forwarding. Import/SIP later for outbound.",
+    gdpr: "Introduce as an AI and mention recording on every voice call (EU AI Act / GDPR). Automatic deletion if refused.",
     variables: outbound
       ? ["{{context.name}}", "{{context.company}}", "{{context.reason}}"]
       : ["{{firstname}} from inbound webhook JSON", "{{personNumber}}", "{{conversationLink}}"],
-    appChecklist: setupChecklist({
-      template: resolvedTemplate,
-      name,
-      languages,
-      voice,
-      event: input.bookingEvent,
-    }),
+    appChecklist,
+    pastePack: {
+      startMessageInbound: greetings.inbound,
+      startMessageOutbound: greetings.outbound,
+      prompt,
+      knowledgeBase: knowledge,
+      toolsToEnable: template.toolsToEnable,
+      appChecklist,
+    },
     validation,
   };
 }

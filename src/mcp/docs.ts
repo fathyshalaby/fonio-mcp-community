@@ -42,41 +42,44 @@ export const WEBHOOK_SOURCE_IPS = [
 export const articles: DocArticle[] = [
   {
     slug: "mcp",
-    title: "fonio MCP server",
+    title: "Community MCP for fonio",
     summary:
-      "Connect Claude, ChatGPT, Cursor, and other MCP clients to fonio: build paste-ready agents, search docs, inspect the public API, test an API key, and trigger outbound calls.",
+      "Unofficial community MCP: Claude, ChatGPT, and Cursor configure paste-ready agents and call the public API with a workspace API key. Not fonio GmbH.",
     category: "API",
     url: "https://fonio.info",
     tags: ["mcp", "claude", "openai", "cursor", "chatgpt", "agents"],
-    body: `# fonio MCP server
+    body: `# Community MCP for fonio (unofficial)
 
-This MCP server is an **unofficial community** Model Context Protocol interface for fonio. It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software, including billed phone calls.
+This MCP server is an **unofficial community** Model Context Protocol interface for fonio. The authors are community members, not fonio staff. It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software, including billed phone calls.
 
-The goal is the same as the ElevenLabs MCP: connect Claude, ChatGPT, or Cursor, then **build and operate fonio agents in chat**. fonio’s public API cannot create assistants, so this server generates paste-ready specs (prompt, start message, knowledge Q&A, app checklist) and wraps the live public endpoints (API-key test, outbound calls, remote integration servers).
+Bundled articles can be incomplete or wrong versus https://fonio.info — trust the official app and docs if they disagree.
 
-Once connected, an assistant can design a voice or WhatsApp agent, look up Fonio docs, inspect the public API, verify a workspace API key, and trigger outbound calls. You are responsible for any call costs.
+The goal: connect Claude, ChatGPT, or Cursor, then **configure a full paste-ready agent in chat**. fonio’s public API cannot create assistants, so this server generates a paste pack (prompt, start messages, knowledge Q&A, transfers, calendar, webhooks, technical/GDPR, phone, app checklist) and wraps the live public endpoints (API-key test, outbound calls, remote integration servers).
 
 ## What it can do
 
-- Build a paste-ready assistant from a business description (\`build_assistant\`)
+- Report whether a workspace API key is connected (\`get_connection_status\`)
+- Build a full paste-ready assistant from a business description (\`build_assistant\`)
 - Validate prompts against documented fonio rules (headings, If-Then, AI + recording disclosure)
 - Draft knowledge-base Q&A from company facts
-- Search and read fonio help-center articles
+- Search and read fonio help-center articles (community snapshot)
 - Return the public OpenAPI reference (outbound calls, API-key test, remote integration servers)
-- Test a FONIO_API_KEY
+- Test a workspace API key
 - Prepare and, after confirmation, trigger an outbound call from one of your imported / SIP numbers
 - List, register, and delete remote integration servers that serve live manifests to fonio
 
 ## Authentication
 
-Hosted MCP: complete **Sign in with fonio** (login at https://app.fonio.ai/login, then get a workspace key from https://app.fonio.ai/api-keys). Local stdio: set \`FONIO_API_KEY\`. Docs search and agent-builder tools work without a key. Live API tools require a connected workspace.
+Hosted Claude/ChatGPT: the HTTP MCP returns 401 without a Bearer token so the client starts **community MCP OAuth** (not fonio GmbH login). Open https://app.fonio.ai/login, copy a workspace key from https://app.fonio.ai/api-keys, paste it on this host. The host encrypts the key. It never collects your fonio password. Prefer self-hosting this repo if you do not want the operator to store that encrypted key.
+
+Local stdio: set \`FONIO_API_KEY\`.
 
 Outbound calls incur carrier cost, require the Teams plan, an imported or SIP number, and completed KYC. Prepare the call first, ask the user to confirm the exact destination, then pass the short-lived \`confirmationToken\` and the same E.164 value as \`confirmedToNumber\` to the trigger tool.
 
 ## Hosted HTTP vs local stdio
 
-- HTTP (Claude Code, Cursor, ChatGPT connectors): \`/mcp\` on this docs site
-- stdio (Claude Desktop): \`npm run mcp\` with FONIO_API_KEY in the client config
+- HTTP (Claude, ChatGPT, Cursor): \`/mcp\` — requires the community connector + API key
+- stdio (Claude Desktop): \`npm run mcp\` with FONIO_API_KEY in the client config (safest: key never leaves the machine)
 `,
   },
   {

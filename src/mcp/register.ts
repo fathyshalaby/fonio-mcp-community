@@ -25,8 +25,13 @@ import { EXAMPLES } from "@/lib/examples";
 import { SERVER_NAME, SERVER_VERSION } from "./version";
 import {
   consumeOutboundConfirmation,
+  fingerprintKey,
   issueOutboundConfirmation,
 } from "@/oauth/tokens";
+import {
+  AUTH_REQUIRED_MESSAGE,
+  MCP_LIMITATION,
+} from "@/lib/legal";
 import {
   ASSISTANT_TEMPLATES,
   buildAssistant,
@@ -73,11 +78,60 @@ function apiKeyFrom(
 function requireClient(ctx: ServerContext | undefined, allowEnvApiKey: boolean): FonioClient {
   const key = apiKeyFrom(ctx, allowEnvApiKey);
   if (!key) {
-    throw new Error(
-      "Connect your fonio workspace first. In Claude, ChatGPT, or Cursor, complete Sign in with fonio (official login at app.fonio.ai). For local stdio, set FONIO_API_KEY.",
-    );
+    throw new Error(AUTH_REQUIRED_MESSAGE);
   }
   return new FonioClient(key);
+}
+
+export function connectionSnapshot(
+  ctx: ServerContext | undefined,
+  allowEnvApiKey: boolean,
+) {
+  const extra = ctx?.http?.authInfo?.extra?.apiKey;
+  if (typeof extra === "string" && extra.trim()) {
+    return {
+      connected: true,
+      source: "community_mcp_oauth" as const,
+      keyFingerprint: fingerprintKey(extra),
+      livePublicApi: [
+        "POST /public/v1/test-api-key",
+        "POST /public/v1/outbound_call",
+        "GET/PUT/DELETE /integrations/remote-registry/servers",
+      ],
+      cannotDo: [
+        "Create or update assistants in app.fonio.ai (no public API)",
+        "Collect a fonio password",
+        "Call undocumented private app APIs",
+      ],
+      limitation: MCP_LIMITATION,
+    };
+  }
+  const envKey = allowEnvApiKey ? getApiKey() : undefined;
+  if (envKey) {
+    return {
+      connected: true,
+      source: "FONIO_API_KEY" as const,
+      keyFingerprint: fingerprintKey(envKey),
+      livePublicApi: [
+        "POST /public/v1/test-api-key",
+        "POST /public/v1/outbound_call",
+        "GET/PUT/DELETE /integrations/remote-registry/servers",
+      ],
+      cannotDo: [
+        "Create or update assistants in app.fonio.ai (no public API)",
+        "Collect a fonio password",
+        "Call undocumented private app APIs",
+      ],
+      limitation: MCP_LIMITATION,
+    };
+  }
+  return {
+    connected: false,
+    source: "none" as const,
+    keyFingerprint: null,
+    next: AUTH_REQUIRED_MESSAGE,
+    limitation: MCP_LIMITATION,
+  };
 }
 
 export function registerFonioMcp(
@@ -85,6 +139,17 @@ export function registerFonioMcp(
   options: RegisterOptions = {},
 ) {
   const allowEnvApiKey = options.allowEnvApiKey === true;
+  server.registerTool(
+    "get_connection_status",
+    {
+      title: "Check workspace API key",
+      description:
+        "Show whether this unofficial community MCP has a fonio workspace API key (last four characters only). Hosted Claude/ChatGPT connect via community MCP OAuth plus a key from app.fonio.ai/api-keys — never a fonio password. Call this first if live API tools fail.",
+      inputSchema: z.object({}),
+      annotations: readOnly,
+    },
+    async (_input, ctx) => jsonResult(connectionSnapshot(ctx, allowEnvApiKey)),
+  );
   server.registerTool(
     "search_docs",
     {
@@ -259,7 +324,7 @@ export function registerFonioMcp(
     {
       title: "Build a fonio assistant",
       description:
-        "Turn a business description into a paste-ready fonio agent: start message, structured prompt, knowledge Q&A, tools to enable, technical defaults, and an app.fonio.ai checklist. The public API cannot create assistants — paste the output in the app. Prefer this when the user wants to create or redesign an agent.",
+        "Turn a business description into a full paste-ready fonio agent: start messages, structured prompt, knowledge Q&A, transfers, calendar, webhooks, technical/GDPR, phone, and an app.fonio.ai checklist. The public API cannot create assistants — walk the user through pastePack. Prefer this when they want to create or configure an agent.",
       inputSchema: z.object({
         company: z.string().describe("Company or practice name."),
         useCase: z
@@ -366,7 +431,7 @@ export function registerFonioMcp(
     {
       title: "Test fonio API key",
       description:
-        "Verify that the connected fonio workspace key is valid via POST /public/v1/test-api-key. Uses the hosted OAuth session or FONIO_API_KEY for local stdio.",
+        "Verify that the connected workspace API key is valid via POST /public/v1/test-api-key. Uses the community MCP OAuth session (hosted) or FONIO_API_KEY (local stdio).",
       inputSchema: z.object({}),
       annotations: { ...readOnly, openWorldHint: true },
     },
@@ -495,7 +560,7 @@ export function registerFonioMcp(
     {
       title: "List remote integration servers",
       description:
-        "List development servers registered on the workspace via GET /integrations/remote-registry/servers. These serve live integration manifests to fonio (not Claude MCP). Requires Sign in with fonio or FONIO_API_KEY.",
+        "List development servers registered on the workspace via GET /integrations/remote-registry/servers. These serve live integration manifests to fonio (not Claude MCP). Requires a connected workspace API key.",
       inputSchema: z.object({}),
       annotations: { ...readOnly, openWorldHint: true },
     },
@@ -818,22 +883,24 @@ function formatError(error: unknown): string {
   return String(error);
 }
 
-export const MCP_INSTRUCTIONS = `You are connected to an unofficial community MCP server for fonio.ai (${SERVER_NAME} v${SERVER_VERSION}). It is not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, and the authors are not liable for use of the software, including billed phone calls.
+export const MCP_INSTRUCTIONS = `You are connected to an unofficial community MCP server for fonio.ai (${SERVER_NAME} v${SERVER_VERSION}). The authors are community members, not fonio staff. Not affiliated with, endorsed by, or sponsored by fonio GmbH. MIT licensed, no warranty, not liable including billed phone calls. Bundled docs can be wrong — prefer fonio.info and app.fonio.ai.
 
-fonio is a European AI phone and WhatsApp assistant platform (app.fonio.ai, docs at fonio.info). This MCP is for building those agents from Claude, ChatGPT, or Cursor — same idea as the ElevenLabs MCP, scoped to fonio’s public API plus paste-ready assistant specs.
+fonio is a European AI phone and WhatsApp assistant platform (app.fonio.ai, docs at fonio.info). This MCP lets Claude, ChatGPT, or Cursor configure a complete paste-ready agent and call the documented public API. ${MCP_LIMITATION}
 
-When the user wants to create, design, or improve an assistant:
-1. Call list_assistant_templates (official copy-paste kits from fonio.info) and list_voices if they ask about voice, Multi, or GDPR.
-2. Call build_assistant. Official templates use ## Role / ## Conversation flow / ## If / Then rules / ## Important rules. Keep prompts short (~300 words per the current guide).
-3. Multi language does NOT auto-switch — the prompt must contain an explicit If/Then (fonio.info/articles/languages). The start message is never translated.
-4. Run validate_assistant_prompt and fix errors.
-5. If they provided hours or FAQs, call draft_knowledge_base. Facts stay in the knowledge base.
-6. There are two outbound API shapes: public OpenAPI (camelCase, context, fromNumber selects assistant — this MCP) vs help-center Webhooks URL (snake_case, agent_id, extra top-level keys). Read outbound-api before generating curl.
-The public API cannot create or update assistants. Never claim you saved the agent in the fonio workspace.
+Auth: hosted Claude/ChatGPT must complete this community connector (open official app.fonio.ai/login, then paste a workspace key from app.fonio.ai/api-keys). That is not fonio GmbH OAuth and never collects a password. Local stdio uses FONIO_API_KEY. Call get_connection_status if unsure. If it is not connected, tell the user to finish the community connector in their MCP client (or self-host this repo so the operator never holds their key).
+
+When the user wants to create, design, configure, or improve an assistant:
+1. Call get_connection_status if they also want live API actions.
+2. Call list_assistant_templates (official copy-paste kits from fonio.info) and list_voices if they ask about voice, Multi, or GDPR.
+3. Call build_assistant. Walk through every pastePack section (start messages, prompt, knowledge, tools, transfers, calendar, webhooks, technical, phone, GDPR, checklist). Official templates use ## Role / ## Conversation flow / ## If / Then rules / ## Important rules. Keep prompts short (~300 words).
+4. Multi language does NOT auto-switch — the prompt must contain an explicit If/Then (fonio.info/articles/languages). The start message is never translated.
+5. Run validate_assistant_prompt and fix errors.
+6. If they provided hours or FAQs, call draft_knowledge_base. Facts stay in the knowledge base.
+7. There are two outbound API shapes: public OpenAPI (camelCase, context, fromNumber selects assistant — this MCP) vs help-center Webhooks URL (snake_case, agent_id, extra top-level keys). Read outbound-api before generating curl.
+Never claim you saved the agent in the fonio workspace.
 
 Rules:
 - Search or read docs before inventing product behaviour.
 - Never place an outbound call unless the user clearly asked and confirmed the destination number. First use prepare_outbound_call, ask for confirmation, then use its short-lived token plus confirmedToNumber with trigger_outbound_call.
 - Outbound calls cost money and need KYC + an imported/SIP fromNumber. The user is responsible for those costs.
-- Docs, templates, and build_assistant work without a key. Live API tools (test_api_key, outbound, remote integration servers) use the Sign in with fonio OAuth session (official login at app.fonio.ai), or FONIO_API_KEY for local stdio.
-- If a live tool fails for missing auth, tell the user to complete Connect / Sign in with fonio in their MCP client.`;
+- Live API tools need a connected workspace key. If they fail for missing auth, quote get_connection_status.next and do not invent a login to fonio GmbH.`;

@@ -42,7 +42,7 @@ const cors: Record<string, string> = {
 
 function authed(request: Request) {
   return withMcpAuth(inner, verifyToken, {
-    required: false,
+    required: true,
     resourceMetadataPath: "/.well-known/oauth-protected-resource",
     resourceUrl: `${publicOrigin(request)}/mcp`,
   })(request);
@@ -59,7 +59,7 @@ async function withCors(request: Request) {
       headers: {
         ...cors,
         "Content-Type": "application/json",
-        "WWW-Authenticate": `Bearer realm="fonio", resource_metadata="${publicOrigin(request)}/.well-known/oauth-protected-resource"`,
+        "WWW-Authenticate": `Bearer realm="community-mcp-for-fonio", resource_metadata="${publicOrigin(request)}/.well-known/oauth-protected-resource"`,
       },
     });
   }

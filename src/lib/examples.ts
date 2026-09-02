@@ -175,7 +175,7 @@ export function linkedInPostEn(mcpUrl: string) {
 
 Open source, MIT, no warranty — I have no association with fonio. The authors are not liable for use, including billed outbound calls.
 
-Same idea as the ElevenLabs MCP: add this URL in Claude / ChatGPT / Cursor, Sign in with fonio, then build voice and WhatsApp agents in chat:
+Same idea as the ElevenLabs MCP, but unofficial: add this URL in Claude / ChatGPT / Cursor, paste a workspace API key on the community connector (not fonio GmbH OAuth), then build voice and WhatsApp agents in chat:
 
 ${mcpUrl}
 
@@ -195,7 +195,7 @@ export function linkedInPostDe(mcpUrl: string) {
 
 Open Source, MIT, ohne Gewähr — ich habe keine Verbindung zu fonio. Keine Haftung für die Nutzung, einschließlich kostenpflichtiger Outbound-Anrufe.
 
-Wie der ElevenLabs-MCP: URL in Claude / ChatGPT / Cursor eintragen, anmelden, dann Sprach- und WhatsApp-Agenten im Chat bauen:
+Wie der ElevenLabs-MCP, aber inoffiziell: URL in Claude / ChatGPT / Cursor eintragen, Workspace-API-Key im Community-Connector einfügen (kein fonio-GmbH-Login), dann Sprach- und WhatsApp-Agenten im Chat bauen:
 
 ${mcpUrl}
 

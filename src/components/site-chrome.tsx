@@ -16,7 +16,12 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <FonioMark className="size-8 text-primary" />
-          <span>fonio MCP</span>
+          <span className="leading-tight">
+            Community MCP
+            <span className="block text-[11px] font-normal text-muted-foreground">
+              unofficial · for fonio.ai
+            </span>
+          </span>
         </Link>
         <nav className="hidden items-center gap-5 text-sm text-muted-foreground lg:flex">
           {NAV.map((item) => (
@@ -56,9 +61,9 @@ export function SiteFooter() {
     <footer className="border-t border-border bg-card">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>
-          Unofficial community MCP — MIT, no warranty, not liable including for
-          billed phone calls, not affiliated with, endorsed by, or sponsored by
-          fonio GmbH.{" "}
+          Unofficial community MCP by a community member — not fonio staff. MIT,
+          no warranty, not liable including for billed phone calls, not
+          affiliated with, endorsed by, or sponsored by fonio GmbH.{" "}
           <Link href="/legal" className="hover:text-foreground">
             License and disclaimer
           </Link>

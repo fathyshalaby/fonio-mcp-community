@@ -1,4 +1,3 @@
-import { FonioMark } from "@/components/fonio-mark";
 import { SITE } from "@/lib/site";
 
 export function FonioAuthShell({
@@ -14,43 +13,57 @@ export function FonioAuthShell({
     <div className="grid min-h-screen bg-background lg:grid-cols-2">
       <aside className="relative hidden overflow-hidden bg-[#0f0f16] px-12 py-16 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(88,93,254,0.35),transparent_55%)]" />
-        <div className="relative flex items-center gap-3">
-          <FonioMark className="size-10 text-primary" />
-          <span className="text-lg font-semibold tracking-tight">fonio MCP</span>
+        <div className="relative">
+          <p className="text-xs font-medium uppercase tracking-wide text-white/55">
+            Unofficial · community member project
+          </p>
+          <p className="mt-2 text-lg font-semibold tracking-tight">
+            Community MCP for fonio
+          </p>
         </div>
         <div className="relative max-w-md">
-          <p className="text-3xl font-semibold tracking-tight text-balance">Connect a workspace</p>
+          <p className="text-3xl font-semibold tracking-tight text-balance">
+            Connect a workspace API key
+          </p>
           <p className="mt-4 text-base text-white/70 text-pretty">
-            This independent community connector lets Claude, ChatGPT, and Cursor
-            search Fonio docs and use the public API in your workspace.
+            This is not fonio GmbH. Claude, ChatGPT, and Cursor use a workspace
+            key from the official app so they can configure paste-ready agents
+            and call the documented public API.
           </p>
         </div>
         <p className="relative text-sm text-white/45">
-          Unofficial project · MIT · not affiliated with fonio GmbH. You log in on{" "}
-          {SITE.app.replace("https://", "")} — we never ask for your fonio password.
+          MIT · not affiliated with fonio GmbH. You log in on{" "}
+          {SITE.app.replace("https://", "")} — this host never asks for your
+          fonio password. Prefer self-hosting if you do not want an encrypted
+          key stored here.
         </p>
       </aside>
 
       <div className="flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <FonioMark className="size-9 text-primary" />
-            <span className="font-semibold">fonio MCP</span>
+          <div className="mb-8 lg:hidden">
+            <p className="text-xs font-medium uppercase tracking-wide text-primary">
+              Unofficial community project
+            </p>
+            <p className="font-semibold">Community MCP for fonio</p>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">Connect with fonio</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Allow this unofficial MCP
+          </h1>
           <p className="mt-1 text-base text-muted-foreground">
-            Log in to continue
+            Official fonio login stays on app.fonio.ai. Paste a workspace API
+            key here.
           </p>
           {clientName ? (
             <p className="mt-3 text-sm text-muted-foreground">
               <span className="font-medium text-foreground">{clientName}</span>{" "}
-              wants permission to search fonio docs and place outbound calls as
-              your workspace.
+              wants to search bundled docs, build paste-ready agents, and call
+              the public API with your key.
             </p>
           ) : (
             <p className="mt-3 text-sm text-muted-foreground">
-              Continue on fonio, then allow this assistant. Your workspace key
-              stays in an encrypted session — not in the chat.
+              After the official login, copy a key from API keys. The key stays
+              in an encrypted session on this community host — not in the chat.
             </p>
           )}
           {error ? (
@@ -62,8 +75,9 @@ export function FonioAuthShell({
             {children}
           </div>
           <p className="mt-6 text-center text-xs text-muted-foreground">
-            Unofficial community MCP · MIT · no warranty · no liability for billed calls ·
-            not affiliated with, endorsed by, or sponsored by fonio GmbH
+            Unofficial community MCP · authors are not fonio employees · MIT ·
+            no warranty · no liability for billed calls · not affiliated with,
+            endorsed by, or sponsored by fonio GmbH
             <br />
             Official app:{" "}
             <a
@@ -78,6 +92,10 @@ export function FonioAuthShell({
               className="font-medium text-foreground underline-offset-2 hover:underline"
             >
               API keys
+            </a>
+            {" · "}
+            <a href="/legal" className="font-medium text-foreground underline-offset-2 hover:underline">
+              Legal
             </a>
           </p>
         </div>
