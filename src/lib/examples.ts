@@ -16,6 +16,46 @@ export type Example = {
 
 export const EXAMPLES: Example[] = [
   {
+    slug: "build-agent",
+    title: "Build a fonio agent from a sentence",
+    eyebrow: "Agent builder",
+    summary:
+      "Claude picks a template, generates a paste-ready prompt and knowledge Q&A, validates GDPR rules, and hands you an app.fonio.ai checklist — the ElevenLabs-style flow, scoped to fonio.",
+    prompt:
+      "Build a fonio voice agent for Praxis Sonnenberg in Vienna. German first, switch to English if asked. Book hygiene in the Scheduler event “Prophylaxe”. Transfer billing to Anna on +43123456789. Hours Mon–Thu 08–16, Fri 08–12. Parking in front of the building.",
+    tools: [
+      "list_assistant_templates",
+      "build_assistant",
+      "validate_assistant_prompt",
+      "draft_knowledge_base",
+    ],
+    thread: [
+      {
+        role: "user",
+        text: "Build a fonio voice agent for Praxis Sonnenberg in Vienna. German first, Multi if needed. Book Prophylaxe. Transfer billing to Anna. Hours Mon–Thu 08–16.",
+      },
+      {
+        role: "tool",
+        name: "list_assistant_templates",
+        text: "receptionist — greet, knowledge Q&A, named Scheduler event, named transfers.",
+      },
+      {
+        role: "tool",
+        name: "build_assistant",
+        text: "ready_to_paste · Marie · voice Anna · language Multi · start message with {{firstname}} fallback · prompt with If-Then booking/transfer · Q&A for hours and parking · checklist for app.fonio.ai.",
+      },
+      {
+        role: "tool",
+        name: "validate_assistant_prompt",
+        text: "{\"ok\":true,\"issues\":[]}",
+      },
+      {
+        role: "assistant",
+        text: "Paste this in Assistants → Create New. Start message and prompt are ready. Add the Q&A under Knowledge → Information, connect event “Prophylaxe”, and set Call transfer → Anna. The public API cannot save the assistant for you — that step is in the app. I can place a test outbound call later if you confirm the number.",
+      },
+    ],
+  },
+  {
     slug: "receptionist-prompt",
     title: "Write a receptionist that books and transfers",
     eyebrow: "Prompting",
@@ -135,13 +175,13 @@ export function linkedInPostEn(mcpUrl: string) {
 
 Open source, MIT, no warranty — I have no association with fonio. The authors are not liable for use, including billed outbound calls.
 
-Same idea as the ElevenLabs MCP: add this URL in Claude / ChatGPT / Cursor, then Sign in with fonio on the official app:
+Same idea as the ElevenLabs MCP: add this URL in Claude / ChatGPT / Cursor, Sign in with fonio, then build voice and WhatsApp agents in chat:
 
 ${mcpUrl}
 
 Then you can say:
 
-“Write a receptionist prompt that books Prophylaxe in the Scheduler and transfers billing to Anna.”
+“Build a receptionist that books Prophylaxe in the Scheduler and transfers billing to Anna.”
 “Look this caller up in HubSpot before the greeting.”
 “A lead just submitted the form — call Ada back from our imported number about the Q3 quote.”
 
@@ -155,13 +195,13 @@ export function linkedInPostDe(mcpUrl: string) {
 
 Open Source, MIT, ohne Gewähr — ich habe keine Verbindung zu fonio. Keine Haftung für die Nutzung, einschließlich kostenpflichtiger Outbound-Anrufe.
 
-Wie der ElevenLabs-MCP: URL in Claude / ChatGPT / Cursor eintragen, dann auf der offiziellen App anmelden:
+Wie der ElevenLabs-MCP: URL in Claude / ChatGPT / Cursor eintragen, anmelden, dann Sprach- und WhatsApp-Agenten im Chat bauen:
 
 ${mcpUrl}
 
 Dann z.B.:
 
-„Schreib einen Empfangs-Prompt, der Prophylaxe im Scheduler bucht und Billing an Anna weiterleitet.“
+„Bau einen Empfangs-Agenten, der Prophylaxe im Scheduler bucht und Billing an Anna weiterleitet.“
 „Schau den Anrufer vor der Begrüßung in HubSpot nach.“
 „Ein Lead hat das Formular abgeschickt — ruf Ada von unserer importierten Nummer wegen des Q3-Angebots zurück.“
 

@@ -23,8 +23,10 @@ export default function ApiPage() {
         <a href="https://app.fonio.ai/api/docs" className="text-primary hover:underline">
           app.fonio.ai/api/docs
         </a>
-        . The MCP <code>get_api_reference</code> and{" "}
-        <code>trigger_outbound_call</code> tools wrap this surface.
+        . The MCP <code>get_api_reference</code>,{" "}
+        <code>trigger_outbound_call</code>, and remote-integration tools wrap this
+        surface. Creating assistants still happens in the app — use{" "}
+        <code>build_assistant</code> for a paste-ready spec.
       </p>
 
       <h2 className="mt-10 text-xl font-semibold">Authentication</h2>
@@ -46,6 +48,17 @@ export default function ApiPage() {
       <div className="mt-4">
         <CopyBlock code={curl} />
       </div>
+
+      <h2 className="mt-10 text-xl font-semibold">Remote integration servers</h2>
+      <p className="mt-2 text-muted-foreground">
+        PUT/GET/DELETE <code>/integrations/remote-registry/servers</code> registers
+        a development server that serves integration manifests to fonio (max 5 per
+        company). This is not the Claude MCP URL — it is how fonio pulls live
+        integration definitions from your host. The MCP tools{" "}
+        <code>list_remote_integration_servers</code>,{" "}
+        <code>register_remote_integration_server</code>, and{" "}
+        <code>delete_remote_integration_server</code> wrap these endpoints.
+      </p>
 
       <h2 className="mt-10 text-xl font-semibold">Webhook source IPs</h2>
       <p className="mt-2 text-muted-foreground">

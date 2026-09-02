@@ -1,8 +1,8 @@
 export const SITE = {
   name: "fonio MCP",
-  tagline: "Unofficial community MCP for fonio.ai",
+  tagline: "Build fonio agents in Claude",
   description:
-    "Independent open-source MCP server for fonio’s public API. Not affiliated with fonio GmbH. MIT licensed, no warranty.",
+    "Independent open-source MCP server for fonio.ai. Connect Claude, ChatGPT, or Cursor, then build paste-ready voice and WhatsApp agents — same idea as the ElevenLabs MCP. Not affiliated with fonio GmbH. MIT licensed, no warranty.",
   app: "https://app.fonio.ai",
   login: "https://app.fonio.ai/login",
   apiKeys: "https://app.fonio.ai/api-keys",
@@ -25,6 +25,35 @@ export const NAV = [
 
 export const TOOLS = [
   {
+    name: "list_assistant_templates",
+    kind: "Agents",
+    summary:
+      "Starter kits: receptionist, answering machine, appointment booking, first-level support, outbound callback, WhatsApp.",
+  },
+  {
+    name: "build_assistant",
+    kind: "Agents",
+    summary:
+      "Turn a business description into a paste-ready prompt, start message, knowledge Q&A, and app.fonio.ai checklist. The public API cannot create assistants.",
+  },
+  {
+    name: "validate_assistant_prompt",
+    kind: "Agents",
+    summary:
+      "Check a prompt for headings, If-Then rules, AI + recording disclosure, escape hatch, and the 100k limit.",
+  },
+  {
+    name: "draft_knowledge_base",
+    kind: "Agents",
+    summary: "Turn company facts into caller-phrased Q&A for Knowledge → Information.",
+  },
+  {
+    name: "list_voices",
+    kind: "Agents",
+    summary:
+      "Documented multilingual voices, Multi-language rules, and GDPR notes (Azure EU vs ElevenLabs).",
+  },
+  {
     name: "search_docs",
     kind: "Docs",
     summary:
@@ -43,17 +72,33 @@ export const TOOLS = [
   {
     name: "list_examples",
     kind: "Docs",
-    summary: "Ready-to-paste prompts: receptionist, inbound webhook, form-to-call, confirmed dial.",
+    summary: "Ready-to-paste prompts: build an agent, receptionist, inbound webhook, form-to-call, confirmed dial.",
   },
   {
     name: "get_api_reference",
     kind: "API",
-    summary: "OpenAPI for the public REST API, webhook source IPs, and built-in variables.",
+    summary:
+      "OpenAPI for outbound calls, API-key test, and remote integration servers, plus webhook IPs and variables.",
   },
   {
     name: "test_api_key",
     kind: "API",
     summary: "Verify FONIO_API_KEY against POST /public/v1/test-api-key.",
+  },
+  {
+    name: "list_remote_integration_servers",
+    kind: "API",
+    summary: "List development servers that serve live integration manifests to fonio.",
+  },
+  {
+    name: "register_remote_integration_server",
+    kind: "API",
+    summary: "Register a public manifest server URL (max 5 per company).",
+  },
+  {
+    name: "delete_remote_integration_server",
+    kind: "API",
+    summary: "Remove a registered remote integration server by UUID.",
   },
   {
     name: "prepare_outbound_call",
@@ -69,6 +114,10 @@ export const TOOLS = [
 ] as const;
 
 export const PROMPTS = [
+  {
+    name: "build_voice_agent",
+    summary: "Create a production voice or WhatsApp assistant from a business description.",
+  },
   {
     name: "write_assistant_prompt",
     summary: "Draft a production voice/WhatsApp prompt using documented Fonio structure.",
