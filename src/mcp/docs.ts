@@ -80,6 +80,10 @@ Outbound calls incur carrier cost, require the Teams plan, an imported or SIP nu
 
 - HTTP (Claude, ChatGPT, Cursor): \`/mcp\` — requires the community connector + API key
 - stdio (Claude Desktop): \`npm run mcp\` with FONIO_API_KEY in the client config (safest: key never leaves the machine)
+
+## What shows up in Claude / ChatGPT
+
+This is a custom MCP. It appears in the assistant only for people who add the host’s \`/mcp\` URL (or local stdio). It is not listed in Anthropic or OpenAI connector catalogs, and it is not loaded by fonio’s own phone/WhatsApp product.
 `,
   },
   {

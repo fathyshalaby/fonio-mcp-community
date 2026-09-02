@@ -23,3 +23,10 @@ export const AUTH_REQUIRED_MESSAGE =
 
 export const MCP_LIMITATION =
   "fonio’s documented public API cannot create or update assistants. This MCP generates a full paste-ready spec for app.fonio.ai and only performs live writes for outbound calls, API-key tests, and remote integration servers.";
+
+export const ASSISTANT_VISIBILITY = `What shows up in Claude, ChatGPT, or Cursor:
+
+- Only after someone pastes your /mcp URL (or runs local stdio). Anthropic and OpenAI do not scrape this repo and will not list or promote it in their official connector catalogs just because you host it.
+- In that user’s chat it is a normal custom MCP: the client shows the server name (fonio-community) and the model can call the tools. That is opt-in per user or workspace, not a store listing.
+- It does not appear inside fonio’s own phone/WhatsApp assistants on app.fonio.ai. Those products do not load this MCP.
+- Do not submit this connector to Claude/ChatGPT directories as “the fonio MCP”. If you list it anywhere, call it an unofficial community connector.`;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   AFFILIATION_DISCLAIMER,
   API_KEY_DISCLAIMER,
+  ASSISTANT_VISIBILITY,
   DOCS_ACCURACY_DISCLAIMER,
   HOSTING_GUIDANCE,
   LIABILITY_DISCLAIMER,
@@ -29,6 +30,13 @@ export default function LegalPage() {
       </h2>
       <pre className="mt-3 whitespace-pre-wrap rounded-2xl border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
         {HOSTING_GUIDANCE}
+      </pre>
+
+      <h2 className="mt-10 text-xl font-semibold tracking-tight">
+        What shows up in Claude, ChatGPT, or Cursor
+      </h2>
+      <pre className="mt-3 whitespace-pre-wrap rounded-2xl border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
+        {ASSISTANT_VISIBILITY}
       </pre>
 
       <p className="mt-4 text-muted-foreground">

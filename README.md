@@ -20,6 +20,17 @@ If you do not work at fonio, do not ship a login that looks official.
 2. **Best for Claude / ChatGPT — self-host.** Each user deploys this repo (Docker or Vercel) on their own HTTPS origin. They hold their own encrypted session. You publish code, not an official-looking fonio login.
 3. **Public community host (optional).** Label it unofficial everywhere, never collect passwords, only call the documented public API, and tell users the host stores an encrypted API key. People who do not trust the operator should self-host.
 
+## What shows up in the assistant
+
+Hosting this does **not** put it in Claude’s or ChatGPT’s official connector catalogs. Anthropic/OpenAI will not promote it for you.
+
+It **does** show up as a normal custom MCP **for the people who add your `/mcp` URL** (or run local stdio):
+
+- Claude, ChatGPT, and Cursor list the server as `fonio-community` and the model can call the tools in that chat.
+- That is opt-in per user or workspace, not a store listing.
+- It does **not** appear inside fonio’s own phone/WhatsApp assistants on app.fonio.ai.
+- Do not submit it to connector directories as “the fonio MCP”. If you mention it anywhere, call it an unofficial community connector.
+
 ## Connect (hosted)
 
 Point Claude, ChatGPT, or Cursor at:

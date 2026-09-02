@@ -108,8 +108,10 @@ export default async function HomePage() {
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Hosted MCP is at <code className="rounded bg-muted px-1 text-sm">{origin}/mcp</code>.
           Claude and ChatGPT will 401 without a key and open this community
-          connector. Self-host if you do not want this host to store an encrypted
-          key.
+          connector. That lists this MCP <strong>only for people who add the
+          URL</strong> — it is not in Claude’s or ChatGPT’s official catalogs,
+          and it does not appear inside fonio’s own product. Self-host if you do
+          not want this host to store an encrypted key.
         </p>
         <div className="mt-8">
           <InstallPanel origin={origin} />
