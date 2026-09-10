@@ -78,6 +78,8 @@ https://your-host.example/mcp
 
 Hosted mode uses the community OAuth wrapper and a Fonio workspace API key. The local browser bridge is intentionally unavailable in hosted mode.
 
+The repository has no product frontend. The only browser page retained is the small OAuth consent screen required to authorize an HTTP MCP client.
+
 ### Vercel
 
 ```bash
