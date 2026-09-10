@@ -22,13 +22,14 @@ export const HOSTING_GUIDANCE = `This is open-source software, not a hosted prod
 
 1. Recommended — run it yourself: \`npm run mcp\` with FONIO_API_KEY, or Docker/Vercel on your own HTTPS origin. Your key stays under your control.
 2. Optional — a volunteer may publish a copy on a free domain so Claude/ChatGPT have an HTTPS /mcp URL. That instance encrypts API keys on the volunteer’s machine. It can go down, disappear, or be wrong. The volunteer accepts no liability. Self-host if you do not want that.
-3. Never collect fonio passwords. Only call the documented public API. Do not brand the OAuth screen as “Sign in with fonio”.`;
+3. The optional dashboard bridge is local-only: set \`FONIO_ENABLE_BROWSER=true\` and run stdio on your machine. It uses a dedicated browser profile, and login is completed manually in the visible browser.
+4. Never collect fonio passwords. Hosted mode only calls the documented public API. Do not brand the OAuth screen as “Sign in with fonio”.`;
 
 export const AUTH_REQUIRED_MESSAGE =
   "This unofficial open-source MCP has no workspace API key yet. In Claude, ChatGPT, or Cursor, finish the community connector: open the official login at app.fonio.ai (we never collect that password), then paste a workspace key from app.fonio.ai/api-keys. Local stdio: set FONIO_API_KEY. Prefer running this repo yourself. A volunteer-hosted URL is unpaid, no warranty, no liability.";
 
 export const MCP_LIMITATION =
-  "fonio’s documented public API cannot create or update assistants. This MCP generates a full paste-ready spec for app.fonio.ai and only performs live writes for outbound calls, API-key tests, and remote integration servers.";
+  "fonio’s documented public API cannot create or update assistants. Hosted mode generates a full paste-ready spec and performs only documented API writes. Local stdio can additionally use an opt-in visible browser bridge to create or update the assistant through app.fonio.ai after explicit confirmation; it never calls private Fonio APIs and never runs on a hosted instance.";
 
 export const ASSISTANT_VISIBILITY = `What shows up in Claude, ChatGPT, or Cursor:
 

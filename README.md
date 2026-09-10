@@ -12,7 +12,7 @@ The software is provided **“as is”**, without warranty of any kind. The auth
 
 Open-source [Model Context Protocol](https://modelcontextprotocol.io) for [fonio.ai](https://www.fonio.ai)’s **public** API. Self-host it (or run local stdio). A volunteer may also put a copy on a **free domain** so Claude/ChatGPT have an HTTPS URL — that is unpaid, no SLA, no support, **no liability**.
 
-Claude, ChatGPT, and Cursor can **configure a full paste-ready agent** and call the documented live endpoints. There is **no create-assistant API** — never claim the agent was saved in the workspace.
+Claude, ChatGPT, and Cursor can **configure a full paste-ready agent** and call the documented live endpoints. There is **no public create-assistant API**. Local stdio users can optionally enable a visible Playwright bridge that completes the dashboard form in their own browser after confirmation; hosted MCP users cannot use that bridge.
 
 Auth is a **workspace API key** from [app.fonio.ai/api-keys](https://app.fonio.ai/api-keys), verified with `POST /public/v1/test-api-key`. HTTP MCP OAuth is a **community PKCE wrapper** around that key. It is **not** fonio GmbH login. This project never collects your fonio password.
 
@@ -24,6 +24,25 @@ This is software you run, not a company you sign up for.
 2. **Optional volunteer URL.** Someone may host a copy on a free domain. Use it at your own risk. Self-host if you do not want a volunteer storing an encrypted key.
 
 Do not ship a login that looks like official fonio.
+
+### Local dashboard bridge
+
+The public Fonio API does not expose assistant CRUD, so the repository includes an opt-in local browser adapter for users who want the full dashboard workflow. It uses Playwright Core with a dedicated Chrome profile, opens a visible `app.fonio.ai` window, and requires you to log in manually. Your password and browser session never leave your machine.
+
+```bash
+cp .env.example .env.local
+# Set FONIO_ENABLE_BROWSER=true in .env.local
+npm run mcp
+```
+
+Use the MCP tools in this order:
+
+1. `get_dashboard_browser_status`
+2. `open_dashboard_browser` and log in manually
+3. `prepare_dashboard_assistant`
+4. After reviewing the plan and explicitly confirming it, call `create_dashboard_assistant` or `update_dashboard_assistant`
+
+The bridge fills the assistant name, greeting, and prompt when the dashboard’s accessible fields are available. It reports any remaining knowledge, voice, calendar, transfer, webhook, or tool settings for manual review. It does not use undocumented Fonio HTTP endpoints, and it does not run in hosted mode.
 
 ## What shows up in the assistant
 
@@ -99,6 +118,9 @@ Open `/examples` on the site, or ask the connected assistant for `list_examples`
 | Tool | Purpose |
 | --- | --- |
 | `get_connection_status` | Whether a workspace API key is connected (last four chars only) |
+| `get_dashboard_browser_status` / `open_dashboard_browser` | Check and open the opt-in local dashboard bridge |
+| `prepare_dashboard_assistant` | Build a signed, reviewable create/update plan without changing Fonio |
+| `create_dashboard_assistant` / `update_dashboard_assistant` | After explicit confirmation, fill and save the visible local Fonio dashboard form |
 | `list_assistant_templates` / `build_assistant` / `validate_assistant_prompt` / `draft_knowledge_base` / `list_voices` | Full paste-ready voice and WhatsApp agents |
 | `search_docs` / `get_doc` / `list_docs` | Help-center knowledge (community snapshot) |
 | `list_examples` | Ready-to-paste prompts |

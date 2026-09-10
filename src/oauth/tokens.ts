@@ -40,7 +40,13 @@ export function decryptSecret(packed: string): string {
 
 export type SignedToken<T> = {
   v: 1;
-  t: "client" | "code" | "access" | "session" | "confirmation";
+  t:
+    | "client"
+    | "code"
+    | "access"
+    | "session"
+    | "confirmation"
+    | "dashboard";
   exp: number;
   d: T;
 };
@@ -107,6 +113,12 @@ export type WorkspaceSession = {
 export type OutboundConfirmation = {
   fromNumber: string;
   toNumber: string;
+};
+
+export type DashboardConfirmation = {
+  operation: "create" | "update";
+  assistantName: string;
+  plan?: unknown;
 };
 
 const consumedTokens = new Map<string, number>();
@@ -193,6 +205,20 @@ export function issueOutboundConfirmation(record: OutboundConfirmation): string 
 export function consumeOutboundConfirmation(token: string): OutboundConfirmation {
   const confirmation = verifyToken<OutboundConfirmation>("confirmation", token);
   consumeOnce(token, Math.floor(Date.now() / 1000) + 5 * 60);
+  return confirmation;
+}
+
+export function issueDashboardConfirmation(
+  record: DashboardConfirmation,
+): string {
+  return signToken("dashboard", record, 10 * 60);
+}
+
+export function consumeDashboardConfirmation(
+  token: string,
+): DashboardConfirmation {
+  const confirmation = verifyToken<DashboardConfirmation>("dashboard", token);
+  consumeOnce(token, Math.floor(Date.now() / 1000) + 10 * 60);
   return confirmation;
 }
 

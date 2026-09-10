@@ -25,7 +25,9 @@ import { EXAMPLES } from "@/lib/examples";
 import { SERVER_NAME, SERVER_VERSION } from "./version";
 import {
   consumeOutboundConfirmation,
+  consumeDashboardConfirmation,
   fingerprintKey,
+  issueDashboardConfirmation,
   issueOutboundConfirmation,
 } from "@/oauth/tokens";
 import {
@@ -41,6 +43,12 @@ import {
   validateAssistantPrompt,
   type AssistantTemplateSlug,
 } from "./assistant";
+import {
+  describeBrowserConfig,
+  fonioBrowserSession,
+  toDashboardAssistantPlan,
+  type DashboardAssistantPlan,
+} from "./browser";
 
 const readOnly: ToolAnnotations = {
   readOnlyHint: true,
@@ -388,6 +396,181 @@ export function registerFonioMcp(
       }
     },
   );
+
+  if (allowEnvApiKey) {
+    server.registerTool(
+    "get_dashboard_browser_status",
+    {
+      title: "Check local Fonio dashboard bridge",
+      description:
+        "Show whether the optional local-only Playwright bridge is enabled. It uses a browser profile on the user’s machine and never runs in hosted HTTP mode or receives a Fonio password.",
+      inputSchema: z.object({}),
+      annotations: readOnly,
+    },
+    async () => jsonResult(describeBrowserConfig()),
+  );
+
+    server.registerTool(
+    "open_dashboard_browser",
+    {
+      title: "Open the Fonio dashboard locally",
+      description:
+        "Open app.fonio.ai in the user’s local Chrome profile. Login is always completed manually in the visible browser. Set FONIO_ENABLE_BROWSER=true before running local stdio.",
+      inputSchema: z.object({}),
+      annotations: { ...writeCall, destructiveHint: false },
+    },
+    async () => {
+      try {
+        return jsonResult(await fonioBrowserSession.openDashboard());
+      } catch (error) {
+        return textResult(formatError(error));
+      }
+    },
+  );
+
+    server.registerTool(
+    "prepare_dashboard_assistant",
+    {
+      title: "Prepare a dashboard assistant change",
+      description:
+        "Build a full Fonio assistant plan and return a short-lived confirmation token for the local browser bridge. This does not modify Fonio. Use operation=update with targetAssistantName to update an existing assistant.",
+      inputSchema: z.object({
+        operation: z.enum(["create", "update"]).default("create"),
+        targetAssistantName: z
+          .string()
+          .optional()
+          .describe("Exact existing assistant name when operation is update."),
+        company: z.string().describe("Company or practice name."),
+        useCase: z.string().describe("What the assistant should do."),
+        template: z.string().optional(),
+        assistantName: z.string().optional().describe("Name for a new assistant."),
+        languages: z.string().optional(),
+        transferTargets: z.string().optional(),
+        bookingEvent: z.string().optional(),
+        channel: z.enum(["voice", "whatsapp"]).optional(),
+        direction: z.enum(["inbound", "outbound", "both"]).optional(),
+        companyFacts: z.string().optional(),
+        formality: z.string().optional(),
+        hours: z.string().optional(),
+      }),
+      annotations: readOnly,
+    },
+    async (input) => {
+      try {
+        if (input.operation === "update" && !input.targetAssistantName?.trim()) {
+          throw new Error("targetAssistantName is required when operation is update.");
+        }
+        const spec = buildAssistant({
+          company: input.company,
+          useCase: input.useCase,
+          template: input.template as AssistantTemplateSlug | undefined,
+          assistantName: input.assistantName,
+          languages: input.languages,
+          transferTargets: input.transferTargets,
+          bookingEvent: input.bookingEvent,
+          channel: input.channel,
+          direction: input.direction,
+          companyFacts: input.companyFacts,
+          formality: input.formality,
+          hours: input.hours,
+        });
+        const plan = toDashboardAssistantPlan(spec, input.operation);
+        const assistantName =
+          input.operation === "update"
+            ? input.targetAssistantName!.trim()
+            : plan.name;
+        const confirmationToken = issueDashboardConfirmation({
+          operation: input.operation,
+          assistantName,
+          plan,
+        });
+        return jsonResult({
+          status: "ready_for_confirmation",
+          operation: input.operation,
+          targetAssistantName: assistantName,
+          plan,
+          confirmationToken,
+          next:
+            `Review the plan. After explicit confirmation, call ${input.operation === "create" ? "create_dashboard_assistant" : "update_dashboard_assistant"} with this token and confirmedAssistantName="${assistantName}".`,
+        });
+      } catch (error) {
+        return textResult(formatError(error));
+      }
+    },
+  );
+
+    server.registerTool(
+    "create_dashboard_assistant",
+    {
+      title: "Create a Fonio assistant in the local dashboard",
+      description:
+        "After explicit user confirmation, create the prepared assistant through the visible local Fonio dashboard. This uses browser automation, not an undocumented API, and never runs on a hosted MCP instance.",
+      inputSchema: z.object({
+        confirmationToken: z.string(),
+        confirmedAssistantName: z
+          .string()
+          .describe("Repeat the exact assistant name only after the user confirms the change."),
+      }),
+      annotations: { ...writeCall, destructiveHint: false },
+    },
+    async ({ confirmationToken, confirmedAssistantName }) => {
+      try {
+        if (!fonioBrowserSession.getConfig().enabled) {
+          throw new Error("Local dashboard bridge is disabled. Set FONIO_ENABLE_BROWSER=true and run npm run mcp locally.");
+        }
+        const confirmation = consumeDashboardConfirmation(confirmationToken);
+        if (confirmation.operation !== "create" || confirmation.assistantName !== confirmedAssistantName.trim()) {
+          throw new Error("Dashboard confirmation does not match this create operation. Prepare the exact assistant again.");
+        }
+        if (!confirmation.plan || typeof confirmation.plan !== "object") {
+          throw new Error("Dashboard plan is missing. Prepare the assistant again.");
+        }
+        return jsonResult(await fonioBrowserSession.createAssistant(confirmation.plan as DashboardAssistantPlan));
+      } catch (error) {
+        return textResult(formatError(error));
+      }
+    },
+  );
+
+    server.registerTool(
+    "update_dashboard_assistant",
+    {
+      title: "Update a Fonio assistant in the local dashboard",
+      description:
+        "After explicit user confirmation, find an assistant by its exact name and update the prepared greeting and prompt through the visible local Fonio dashboard. No undocumented Fonio API is used.",
+      inputSchema: z.object({
+        confirmationToken: z.string(),
+        confirmedAssistantName: z
+          .string()
+          .describe("Repeat the exact existing assistant name only after the user confirms the change."),
+      }),
+      annotations: { ...writeCall, destructiveHint: false },
+    },
+    async ({ confirmationToken, confirmedAssistantName }) => {
+      try {
+        if (!fonioBrowserSession.getConfig().enabled) {
+          throw new Error("Local dashboard bridge is disabled. Set FONIO_ENABLE_BROWSER=true and run npm run mcp locally.");
+        }
+        const confirmation = consumeDashboardConfirmation(confirmationToken);
+        if (confirmation.operation !== "update" || confirmation.assistantName !== confirmedAssistantName.trim()) {
+          throw new Error("Dashboard confirmation does not match this update operation. Prepare the exact assistant again.");
+        }
+        if (!confirmation.plan || typeof confirmation.plan !== "object") {
+          throw new Error("Dashboard plan is missing. Prepare the assistant again.");
+        }
+        return jsonResult(
+          await fonioBrowserSession.updateAssistant(
+            confirmedAssistantName.trim(),
+            confirmation.plan as DashboardAssistantPlan,
+          ),
+        );
+      } catch (error) {
+        return textResult(formatError(error));
+      }
+    },
+  );
+
+  }
 
   server.registerTool(
     "validate_assistant_prompt",
@@ -887,6 +1070,8 @@ export const MCP_INSTRUCTIONS = `You are connected to the unofficial fonio MCP (
 
 fonio is a European AI phone and WhatsApp assistant platform (app.fonio.ai, docs at fonio.info). This MCP lets Claude, ChatGPT, or Cursor configure a complete paste-ready agent and call the documented public API. ${MCP_LIMITATION}
 
+Local dashboard bridge: only when running stdio with FONIO_ENABLE_BROWSER=true, get_dashboard_browser_status and open_dashboard_browser can open a visible dedicated Chrome profile. The user logs in manually. Use prepare_dashboard_assistant first; after explicit confirmation, create_dashboard_assistant or update_dashboard_assistant can fill and save the dashboard form. This bridge is disabled in hosted mode, never receives a password, and never calls undocumented Fonio HTTP APIs.
+
 Auth: HTTP Claude/ChatGPT must complete this unofficial connector (open official app.fonio.ai/login, then paste a workspace key from app.fonio.ai/api-keys). That is not fonio GmbH OAuth and never collects a password. Local stdio uses FONIO_API_KEY. Call get_connection_status if unsure. If it is not connected, tell the user to finish the connector or run this repo themselves. A volunteer-hosted URL is unpaid, no SLA, no liability.
 
 When the user wants to create, design, configure, or improve an assistant:
@@ -897,7 +1082,7 @@ When the user wants to create, design, configure, or improve an assistant:
 5. Run validate_assistant_prompt and fix errors.
 6. If they provided hours or FAQs, call draft_knowledge_base. Facts stay in the knowledge base.
 7. There are two outbound API shapes: public OpenAPI (camelCase, context, fromNumber selects assistant — this MCP) vs help-center Webhooks URL (snake_case, agent_id, extra top-level keys). Read outbound-api before generating curl.
-Never claim you saved the agent in the fonio workspace.
+8. Never claim an assistant was saved unless the local dashboard tool returned status=completed. A paste pack or a hosted MCP response is not a saved Fonio assistant.
 
 Rules:
 - Search or read docs before inventing product behaviour.
