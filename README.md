@@ -1,93 +1,95 @@
 # Unofficial fonio MCP
 
-**Weekend project: unofficial open-source MCP for fonio.ai — not a SaaS, not fonio GmbH.** Built by a community member, not fonio staff. MIT licensed.
+Use Claude, ChatGPT, Cursor, or another MCP client to build Fonio assistants, prepare outbound calls, search Fonio guidance, and connect remote integrations.
 
-**There is no official fonio MCP** as of 2026-09-02: the public OpenAPI (`app.fonio.ai/api/docs`) has no MCP, [fonio.info](https://fonio.info) has no MCP article, and the [public MCP registry](https://registry.modelcontextprotocol.io/v0/servers?search=fonio) returns zero servers for “fonio”. If fonio ships one later, use that instead.
+This is an independent MIT-licensed community project. It is not made by, endorsed by, or affiliated with fonio GmbH. It is not a hosted product or a Fonio login service.
 
-This repository is **not affiliated with, endorsed by, sponsored by, or associated with fonio GmbH or fonio.ai**. The maintainers have no employment or contractor relationship with fonio. fonio® and related marks belong to their owners.
+## What it can do
 
-The software is provided **“as is”**, without warranty of any kind. The authors and contributors are **not liable** for anything that results from using the code **or a volunteer-hosted copy** — including downtime, billed phone calls, stored API keys, account issues, data loss, or other damages. See [LICENSE](./LICENSE). Bundled help-center copy can lag [fonio.info](https://fonio.info); trust the official app and docs if they disagree.
+- Build a complete, paste-ready voice or WhatsApp assistant.
+- Draft the prompt, greeting, knowledge-base Q&A, tools, transfers, calendar, webhooks, and setup checklist.
+- Validate prompts against the documented Fonio guidance.
+- Test an API key and trigger outbound calls with an explicit confirmation step.
+- Register remote integration-manifest servers in Fonio.
+- Optionally create or update an assistant through the visible Fonio dashboard in a local browser.
 
----
+Fonio’s public API does not currently provide assistant create/update endpoints. The local browser option exists for that missing dashboard step; it does not use private Fonio HTTP APIs.
 
-Open-source [Model Context Protocol](https://modelcontextprotocol.io) for [fonio.ai](https://www.fonio.ai)’s **public** API. Self-host it (or run local stdio). A volunteer may also put a copy on a **free domain** so Claude/ChatGPT have an HTTPS URL — that is unpaid, no SLA, no support, **no liability**.
-
-Claude, ChatGPT, and Cursor can **configure a full paste-ready agent** and call the documented live endpoints. There is **no public create-assistant API**. Local stdio users can optionally enable a visible Playwright bridge that completes the dashboard form in their own browser after confirmation; hosted MCP users cannot use that bridge.
-
-Auth is a **workspace API key** from [app.fonio.ai/api-keys](https://app.fonio.ai/api-keys), verified with `POST /public/v1/test-api-key`. HTTP MCP OAuth is a **community PKCE wrapper** around that key. It is **not** fonio GmbH login. This project never collects your fonio password.
-
-## How to run it
-
-This is software you run, not a company you sign up for.
-
-1. **Recommended — yourself.** `npm run mcp` with `FONIO_API_KEY`, or Docker/Vercel on your own origin.
-2. **Optional volunteer URL.** Someone may host a copy on a free domain. Use it at your own risk. Self-host if you do not want a volunteer storing an encrypted key.
-
-Do not ship a login that looks like official fonio.
-
-### Local dashboard bridge
-
-The public Fonio API does not expose assistant CRUD, so the repository includes an opt-in local browser adapter for users who want the full dashboard workflow. It uses Playwright Core with a dedicated Chrome profile, opens a visible `app.fonio.ai` window, and requires you to log in manually. Your password and browser session never leave your machine.
+## Quick start: local MCP
 
 ```bash
+git clone https://github.com/fathyshalaby/fonio-mcp-community.git
+cd fonio-mcp-community
+npm install
 cp .env.example .env.local
-# Set FONIO_ENABLE_BROWSER=true in .env.local
 npm run mcp
 ```
 
-Use the MCP tools in this order:
+For local API access, set `FONIO_API_KEY` in `.env.local`. Create a key in [Fonio API keys](https://app.fonio.ai/api-keys). Never put your Fonio password in the environment file.
 
-1. `get_dashboard_browser_status`
-2. `open_dashboard_browser` and log in manually
-3. `prepare_dashboard_assistant`
-4. After reviewing the plan and explicitly confirming it, call `create_dashboard_assistant` or `update_dashboard_assistant`
-
-The bridge fills the assistant name, greeting, and prompt when the dashboard’s accessible fields are available. It reports any remaining knowledge, voice, calendar, transfer, webhook, or tool settings for manual review. It does not use undocumented Fonio HTTP endpoints, and it does not run in hosted mode.
-
-## What shows up in the assistant
-
-This does **not** go into Claude’s or ChatGPT’s official connector catalogs. Anthropic/OpenAI will not promote it.
-
-It **does** show up as a custom MCP **for people who add a `/mcp` URL** (or run local stdio):
-
-- The client lists `unofficial-fonio-mcp` and the model can call the tools in that chat.
-- Opt-in per user or workspace — not a store listing, not a SaaS.
-- It does **not** appear inside fonio’s own phone/WhatsApp assistants on app.fonio.ai.
-
-## Add it to a client
-
-Point Claude, ChatGPT, or Cursor at your self-hosted origin, or at a volunteer free-domain `/mcp` if you accept no warranty:
-
-```
-https://<your-host-or-volunteer-domain>/mcp
-```
-
-HTTP MCP **requires** a Bearer token so those clients start OAuth (401 + `WWW-Authenticate`). Official login stays on [app.fonio.ai/login](https://app.fonio.ai/login), then paste a workspace key.
-
-Claude Code:
+Add the running MCP to your client using its local stdio configuration. For Claude Code:
 
 ```bash
-claude mcp add --transport http unofficial-fonio-mcp https://<your-host>/mcp
+claude mcp add unofficial-fonio-mcp -- npm run mcp
 ```
 
-Then `/mcp` and paste the key.
+## Create an assistant through the local dashboard
 
-## Self-host
+The public API can’t save assistants, so local users can opt into a visible Chrome bridge. It uses a separate browser profile on your machine. You log in manually; credentials and session data never leave the machine.
 
-### Vercel (public HTTPS)
+Add this to `.env.local`:
+
+```bash
+FONIO_ENABLE_BROWSER=true
+```
+
+Then run `npm run mcp` and use the tools in this order:
+
+1. `get_dashboard_browser_status`
+2. `open_dashboard_browser`, then log in at `app.fonio.ai`
+3. `prepare_dashboard_assistant`
+4. Review the plan and explicitly confirm it.
+5. Call `create_dashboard_assistant` or `update_dashboard_assistant`.
+
+The bridge fills the assistant name, greeting, and prompt when Fonio exposes those fields accessibly. It reports the remaining voice, language, knowledge, calendar, transfer, webhook, and tool settings for review. It will not guess if the Fonio UI changes.
+
+Optional browser settings:
+
+```bash
+# Use a specific dedicated profile directory
+FONIO_BROWSER_PROFILE_DIR=/absolute/path/to/fonio-profile
+
+# Use a Chrome instance started with remote debugging
+FONIO_BROWSER_CDP_URL=http://127.0.0.1:9222
+
+# Only if Chrome is not found automatically
+FONIO_BROWSER_EXECUTABLE_PATH=/absolute/path/to/chrome
+```
+
+Never enable the browser bridge on a hosted deployment.
+
+## Connect a hosted MCP
+
+You can self-host the HTTP MCP on your own HTTPS origin and add:
+
+```text
+https://your-host.example/mcp
+```
+
+Hosted mode uses the community OAuth wrapper and a Fonio workspace API key. The local browser bridge is intentionally unavailable in hosted mode.
+
+### Vercel
 
 ```bash
 npx vercel --prod
 ```
 
-Set:
+Set these environment variables:
 
-| Variable | Value |
+| Variable | Purpose |
 | --- | --- |
-| `FONIO_MCP_SECRET` | long random string (`openssl rand -hex 32`) |
-| `NEXT_PUBLIC_MCP_ORIGIN` | the deployment URL, e.g. `https://your-app.vercel.app` |
-
-Without `NEXT_PUBLIC_MCP_ORIGIN`, OAuth metadata is inferred from the `Host` header.
+| `FONIO_MCP_SECRET` | Random secret for OAuth/session encryption |
+| `NEXT_PUBLIC_MCP_ORIGIN` | Public HTTPS URL of the deployment |
 
 ### Docker
 
@@ -95,66 +97,34 @@ Without `NEXT_PUBLIC_MCP_ORIGIN`, OAuth metadata is inferred from the `Host` hea
 docker build -t unofficial-fonio-mcp .
 docker run --rm -p 43147:43147 \
   -e FONIO_MCP_SECRET="$(openssl rand -hex 32)" \
-  -e NEXT_PUBLIC_MCP_ORIGIN="https://your.public.host" \
+  -e NEXT_PUBLIC_MCP_ORIGIN="https://your-host.example" \
   unofficial-fonio-mcp
 ```
 
-Put a reverse proxy or Cloudflare Tunnel in front so Claude/ChatGPT can reach HTTPS.
+## Main tools
 
-## Examples
-
-Open `/examples` on the site, or ask the connected assistant for `list_examples`.
-
-| You say | What happens |
+| Tool group | Tools |
 | --- | --- |
-| Build a receptionist that books Prophylaxe and transfers billing to Anna | `build_assistant` + full paste pack + `validate_assistant_prompt` |
-| Write a receptionist prompt that books Prophylaxe and transfers billing to Anna | `search_docs` + paste-ready prompt |
-| Look this caller up in HubSpot before the greeting | Inbound webhook JSON + `{{inboundContext}}` |
-| A lead submitted the form — call Ada back about the Q3 quote | Outbound API curl, KYC checklist |
-| Yes, dial +4915… from our imported number | `trigger_outbound_call` after confirm |
+| Assistant building | `list_assistant_templates`, `build_assistant`, `validate_assistant_prompt`, `draft_knowledge_base`, `list_voices` |
+| Local dashboard | `get_dashboard_browser_status`, `open_dashboard_browser`, `prepare_dashboard_assistant`, `create_dashboard_assistant`, `update_dashboard_assistant` |
+| Fonio docs | `search_docs`, `get_doc`, `list_docs`, `get_api_reference`, `list_examples` |
+| Outbound calls | `prepare_outbound_call`, `trigger_outbound_call` |
+| Remote integrations | `list_remote_integration_servers`, `register_remote_integration_server`, `delete_remote_integration_server` |
 
-## Tools
+Outbound calls can cost money and require the Fonio Teams plan, KYC, and an imported or SIP number. The tool always requires an exact destination confirmation before dialing.
 
-| Tool | Purpose |
-| --- | --- |
-| `get_connection_status` | Whether a workspace API key is connected (last four chars only) |
-| `get_dashboard_browser_status` / `open_dashboard_browser` | Check and open the opt-in local dashboard bridge |
-| `prepare_dashboard_assistant` | Build a signed, reviewable create/update plan without changing Fonio |
-| `create_dashboard_assistant` / `update_dashboard_assistant` | After explicit confirmation, fill and save the visible local Fonio dashboard form |
-| `list_assistant_templates` / `build_assistant` / `validate_assistant_prompt` / `draft_knowledge_base` / `list_voices` | Full paste-ready voice and WhatsApp agents |
-| `search_docs` / `get_doc` / `list_docs` | Help-center knowledge (community snapshot) |
-| `list_examples` | Ready-to-paste prompts |
-| `get_api_reference` | OpenAPI, webhook IPs, `{{variables}}` |
-| `test_api_key` | Connected workspace or `FONIO_API_KEY` |
-| `list_remote_integration_servers` / `register_remote_integration_server` / `delete_remote_integration_server` | Live integration-manifest servers |
-| `prepare_outbound_call` | Validate a destination and return a short-lived confirmation token |
-| `trigger_outbound_call` | Real call — requires a matching `confirmationToken` and `confirmedToNumber` |
-
-Hosted HTTP MCP requires OAuth + a verified key for **all** tools so Claude/ChatGPT actually connect. Local stdio can use docs/builder with or without `FONIO_API_KEY`; live calls still need the key. Outbound still requires a fonio Teams plan, KYC, and an imported/SIP `fromNumber`. You are responsible for any carrier cost. A volunteer free-domain instance is unpaid and carries no liability.
-
-The outbound flow first prepares the exact numbers without dialing. It will only proceed when the short-lived `confirmationToken` and `confirmedToNumber` both match that preparation after you have explicitly confirmed the destination. The token is consumed after use to help prevent accidental or repeated calls.
-
-## Local
+## Development
 
 ```bash
-git clone https://github.com/fathyshalaby/fonio-mcp-community.git
-cd fonio-mcp-community
-npm install
-cp .env.example .env.local
-# FONIO_MCP_SECRET=long-random-string
-npm run dev          # http://127.0.0.1:43147  +  /mcp
-npm run mcp          # stdio for Claude Desktop
+npm run dev
+npm run mcp
 npm test
+npm run lint
+npm run typecheck
 ```
 
-## OAuth endpoints (MCP spec)
+The public API reference is [app.fonio.ai/api/docs](https://app.fonio.ai/api/docs). If this repository disagrees with the official Fonio app or docs, trust the official source.
 
-These exist so Claude/ChatGPT can authorize against **your** process (self-host or a volunteer copy). They are not fonio GmbH OAuth.
+## License and disclaimer
 
-- `/.well-known/oauth-protected-resource`
-- `/.well-known/oauth-authorization-server`
-- `POST /oauth/register` (dynamic client registration)
-- `GET/POST /oauth/authorize` (community connector: official login + paste workspace API key)
-- `POST /oauth/token` (PKCE S256)
-
-Official fonio API (not this project): [app.fonio.ai/api/docs](https://app.fonio.ai/api/docs). Official support: support@fonio.ai.
+MIT licensed and provided “as is”. This project stores no Fonio passwords and does not claim to be an official Fonio integration. You are responsible for your own deployment, API keys, browser profile, calls, costs, and data.
